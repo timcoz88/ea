@@ -35,7 +35,7 @@
       <el-table-column align="center" label="手机号" prop="mobile"></el-table-column>
       <el-table-column align="center" label="是否激活" prop="is_active">
         <template slot-scope="{row}">
-          {{isActiveList[row.is_active]}}
+          <el-tag :type="row.is_active === 0 ? 'success' : 'danger'">{{isActiveList[row.is_active]}}</el-tag>
         </template>
       </el-table-column>
       <el-table-column align="center" label="管理员级别" prop="is_superuser">
@@ -75,7 +75,7 @@ const superUserList = {
 
 const isActiveList = {
   0: '在用',
-  1: '封停'
+  1: '失效'
 }
 
 export default {

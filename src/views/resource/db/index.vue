@@ -65,7 +65,7 @@
       <el-table-column align="center" label="数据库版本" prop="dbver"></el-table-column>
       <el-table-column align="center" label="状态" prop="status">
         <template slot-scope="{ row }">
-          <span>{{ row.status === 0 ? '新建' : '失效'  }}</span>
+          <el-tag :type="row.status === 0 ? 'success' : 'danger'">{{isActiveList[row.status]}}</el-tag>
         </template>
       </el-table-column>
       <el-table-column align="center" label="创建时间" prop="created_at">
@@ -91,13 +91,17 @@
 <script>
 import { getDbList } from '@/api/resource'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
-
+const isActiveList = {
+  0: '在用',
+  1: '失效'
+}
 export default {
   components: {
     Pagination
   },
   data() {
     return {
+      isActiveList,
       tableData: [],
       searchForm: {},
       storeForm: {},

@@ -26,6 +26,11 @@
       <el-table-column align="center" label="id" prop="id"></el-table-column>
       <el-table-column align="center" label="任务名" prop="name"></el-table-column>
       <el-table-column align="center" label="时间类型" prop="trigger"></el-table-column>
+      <el-table-column align="center" label="状态" prop="status">
+        <template slot-scope="{ row }">
+          <el-tag :type="row.next_run_time ? 'success' : 'danger'">{{row.next_run_time ? '在用' : '暂停'}}</el-tag>
+        </template>
+      </el-table-column>
       <el-table-column align="center" label="开始时间" prop="start_date"></el-table-column>
       <el-table-column align="center" label="运行间隔" prop="size">
         <template slot-scope="{ row }">
@@ -97,7 +102,7 @@ export default {
       this.pagination.page = page
       this.pagination.pageSize = limit
     },
-    diffTimeInterval({weeks, day, hours, minutes, seconds }) {
+    diffTimeInterval({ weeks, day, hours, minutes, seconds }) {
       let str = ''
       if (weeks) {
         str += `${weeks}周`
