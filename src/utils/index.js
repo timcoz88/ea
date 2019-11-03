@@ -9,6 +9,10 @@
  * @returns {string | null}
  */
 export function parseTime(time, cFormat) {
+  if (!time) {
+    return '暂无'
+  }
+
   if (arguments.length === 0) {
     return null
   }
@@ -21,7 +25,7 @@ export function parseTime(time, cFormat) {
       time = parseInt(time)
     }
     if ((typeof time === 'number') && (time.toString().length === 10)) {
-      time = time * 1000
+      time = time //  * 1000
     }
     date = new Date(time)
   }

@@ -96,8 +96,8 @@ export const constantRoutes = [
     children: [
       {
         path: 'user',
-        component: () => import('@/views/documentation/index'),
-        name: 'Documentation',
+        component: () => import('@/views/system/user/index'),
+        name: 'user',
         meta: { title: '用户管理', affix: true }
       },
       {
