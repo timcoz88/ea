@@ -30,7 +30,7 @@
       <el-table-column align="center" label="运行间隔" prop="size">
         <template slot-scope="{ row }">
           <!-- 时间要前端算 -->
-          <span>开发中</span>
+          <span>{{diffTimeInterval(row)}}</span>
         </template>
       </el-table-column>
       <el-table-column align="center" label="下一次运行时间" prop="next_run_time"></el-table-column>
@@ -87,15 +87,35 @@ export default {
     },
     getParams() {
       return Object.assign({}, {
-          page: this.pagination.page,
-          pageSize: this.pagination.pageSize
-        },
-        this.storeForm
+        page: this.pagination.page,
+        pageSize: this.pagination.pageSize
+      },
+      this.storeForm
       )
     },
     changePage({ page, limit }) {
       this.pagination.page = page
       this.pagination.pageSize = limit
+    },
+    diffTimeInterval({weeks, day, hours, minutes, seconds }) {
+      let str = ''
+      if (weeks) {
+        str += `${weeks}周`
+      }
+      if (day) {
+        str += `${day}天`
+      }
+      if (hours) {
+        str += `${hours}小时`
+      }
+      if (minutes) {
+        str += `${minutes}分钟`
+      }
+      if (seconds) {
+        str += `${seconds}秒`
+      }
+
+      return str
     }
   }
 }
