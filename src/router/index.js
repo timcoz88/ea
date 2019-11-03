@@ -102,8 +102,8 @@ export const constantRoutes = [
       },
       {
         path: 'plugin',
-        component: () => import('@/views/documentation/index'),
-        name: 'Documentation',
+        component: () => import('@/views/system/plugin/index'),
+        name: 'plugin',
         meta: { title: '插件管理', affix: true }
       }
     ]
@@ -120,20 +120,26 @@ export const constantRoutes = [
     children: [
       {
         path: 'host',
-        component: () => import('@/views/documentation/index'),
-        name: 'Documentation',
+        component: () => import('@/views/resource/host/index'),
+        name: 'host',
         meta: { title: '服务器资源', affix: true }
       },
       {
         path: 'db',
-        component: () => import('@/views/documentation/index'),
-        name: 'Documentation',
+        component: () => import('@/views/resource/db/index'),
+        name: 'db',
         meta: { title: '数据库资源', affix: true }
       },
       {
+        path: 'shell',
+        component: () => import('@/views/resource/shell/index'),
+        name: 'shell',
+        meta: { title: '脚本资源', affix: true }
+      },
+      {
         path: 'task',
-        component: () => import('@/views/documentation/index'),
-        name: 'Documentation',
+        component: () => import('@/views/resource/task/index'),
+        name: 'task',
         meta: { title: '定时任务', affix: true }
       }
     ]
