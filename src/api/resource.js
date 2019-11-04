@@ -32,3 +32,17 @@ export function getTaskList(params) {
   })
 }
 
+export function deleteHost(id) {
+  return request({
+    url: `v1/service/hosts/${id}`,
+    method: 'delete'
+  })
+}
+
+export function updateHost(id, data) {
+  return request({
+    url: `v1/service/hosts/${id}`,
+    method: 'patch',
+    data
+  })
+}

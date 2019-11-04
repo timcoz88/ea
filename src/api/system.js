@@ -8,3 +8,17 @@ export function getUserList(params) {
   })
 }
 
+export function deleteUser(id) {
+  return request({
+    url: `v1/users/${id}`,
+    method: 'delete'
+  })
+}
+
+export function updateUser(id, data) {
+  return request({
+    url: `v1/users/${id}`,
+    data,
+    method: 'patch'
+  })
+}

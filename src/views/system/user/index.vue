@@ -1,47 +1,43 @@
 <template>
   <el-card style="margin: 20px">
     <el-row :gutter="48" style="margin-bottom: 24px">
-      <el-col :span="6">
+      <el-col :span="10">
         <el-input
-          v-model="searchForm.mobile"
-          @keyup.enter.native="search"
-          placeholder="请输入手机号"></el-input>
-      </el-col>
-      <el-col :span="6">
-        <el-input
-          v-model="searchForm.email"
-          @keyup.enter.native="search"
-          placeholder="请输入邮箱"></el-input>
-      </el-col>
-      <el-col :span="6">
-        <el-input
-          v-model="searchForm.username"
-          @keyup.enter.native="search"
-          placeholder="请输入用户名"></el-input>
+          v-model="searchForm.selectContext"
+          :placeholder="placeholderText"
+          class="input-with-select"
+        >
+          <el-select
+            slot="prepend"
+            v-model="select"
+            placeholder="请选择"
+            class="find"
+            @change="changeFind"
+          >
+            <el-option label="手机号" value="1" />
+            <el-option label="邮箱" value="2" />
+            <el-option label="用户名" value="3" />
+          </el-select>
+        </el-input>
       </el-col>
       <el-col :span="6">
         <el-button type="primary" @click="search">查询</el-button>
       </el-col>
     </el-row>
 
-    <el-table
-      :data="tableData"
-      v-loading="isLoading"
-      border
-      style="width: 100%"
-    >
-      <el-table-column align="center" label="用户名" prop="username"></el-table-column>
-      <el-table-column align="center" label="邮箱" prop="email"></el-table-column>
-      <el-table-column align="center" label="手机号" prop="mobile"></el-table-column>
+    <el-table v-loading="isLoading" :data="tableData" border style="width: 100%">
+      <el-table-column align="center" label="用户名" prop="username" />
+      <el-table-column align="center" label="邮箱" prop="email" />
+      <el-table-column align="center" label="手机号" prop="mobile" />
       <el-table-column align="center" label="是否激活" prop="is_active">
         <template slot-scope="{row}">
-          <el-tag :type="row.is_active === 0 ? 'success' : 'danger'">{{isActiveList[row.is_active]}}</el-tag>
+          <el-tag
+            :type="row.is_active === 0 ? 'success' : 'danger'"
+          >{{ isActiveList[row.is_active] }}</el-tag>
         </template>
       </el-table-column>
       <el-table-column align="center" label="管理员级别" prop="is_superuser">
-        <template slot-scope="{row}">
-          {{ superUserList[row.is_superuser] }}
-        </template>
+        <template slot-scope="{row}">{{ superUserList[row.is_superuser] }}</template>
       </el-table-column>
       <el-table-column align="center" label="创建时间" prop="created_at">
         <template slot-scope="{ row }">
@@ -53,19 +49,58 @@
           <span>{{ row.last_login | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
         </template>
       </el-table-column>
+      <el-table-column align="center" label="操作">
+        <template slot-scope="scope">
+          <el-button size="small" type="text" @click="edit(scope.row)">编辑</el-button>
+          <el-button type="text" size="small" @click.native.prevent="deleteRow(scope.row)">删除</el-button>
+          <el-button type="text" size="small">修改密码</el-button>
+        </template>
+      </el-table-column>
     </el-table>
 
     <pagination
-      :total="pagination.total"
       v-show="pagination.total > 0"
+      :total="pagination.total"
       :page.sync="pagination.page"
       :limit.sync="pagination.pageSize"
-      @pagination="changePage"/>
+      @pagination="changePage"
+    />
+    <!-- 修改弹窗 -->
+    <el-dialog title="修改用户信息" :visible.sync="editShow">
+      <el-form ref="ruleForm" :model="ruleForm" :rules="rules">
+        <el-form-item label="用户名" :label-width="formLabelWidth" prop="username">
+          <el-input v-model="ruleForm.username" autocomplete="off" disabled />
+        </el-form-item>
+        <el-form-item label="邮箱" :label-width="formLabelWidth" prop="email">
+          <el-input v-model="ruleForm.email" autocomplete="off" />
+        </el-form-item>
+        <el-form-item label="手机号" :label-width="formLabelWidth" prop="phone">
+          <el-input v-model="ruleForm.mobile" autocomplete="off" />
+        </el-form-item>
+        <el-form-item label="是否激活" :label-width="formLabelWidth" prop="is_active">
+          <el-select v-model="ruleForm.is_active" placeholder="请选择">
+            <el-option label="在用" :value="0" />
+            <el-option label="失效" :value="1" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="管理员级别" :label-width="formLabelWidth" prop="is_superuser">
+          <el-select v-model="ruleForm.is_superuser" placeholder="请选择管理员">
+            <el-option label="超级管理员" :value="0" />
+            <el-option label="管理员" :value="1" />
+            <el-option label="普通管理员" :value="2" />
+          </el-select>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="maskCancel('ruleForm')">取 消</el-button>
+        <el-button type="primary" @click="maskSureUpdate('ruleForm')">确 定</el-button>
+      </div>
+    </el-dialog>
   </el-card>
 </template>
 <script>
-import { getUserList } from '@/api/system'
-import Pagination from '@/components/Pagination' // secondary package based on el-pagination
+import { getUserList, deleteUser, updateUser } from '@/api/system'
+import Pagination from '@/components/Pagination'// secondary package based on el-pagination
 
 const superUserList = {
   0: '超级管理员',
@@ -84,6 +119,23 @@ export default {
   },
   data() {
     return {
+      ruleForm: {}, // 修改弹窗
+      rules: {
+        email: [
+          // { required: true, message: '请输入邮箱地址', trigger: 'blur' },
+          {
+            type: 'email',
+            message: '请输入正确的邮箱地址',
+            trigger: ['blur', 'change']
+          }
+        ]
+      },
+      formLabelWidth: '120px',
+      editShow: false, // 编辑是否弹出
+      type: '', // 筛选类型
+      select: '', // 下拉
+      selectContext: '', // 搜索文本框内容
+      placeholderText: '', // 文本框提示
       superUserList,
       isActiveList,
       tableData: [],
@@ -101,9 +153,26 @@ export default {
     this.search()
   },
   methods: {
+    changeFind(value) {
+      console.log(value)
+      if (value === '1') {
+        this.placeholderText = '请输入手机号'
+        this.type = 'phone'
+      } else if (value === '2') {
+        this.placeholderText = '请输入邮箱'
+        this.type = 'email'
+      } else {
+        this.placeholderText = '请输入用户名'
+        this.type = 'username'
+      }
+    },
     search() {
       this.pagination.page = 1
-      this.storeForm = this.searchForm
+      const obj = {
+        [this.type]: this.searchForm.selectContext
+      }
+      console.log(obj)
+      this.storeForm = obj
       this.getList()
     },
     getList() {
@@ -118,17 +187,78 @@ export default {
         })
     },
     getParams() {
-      return Object.assign({}, {
-        page: this.pagination.page,
-        pageSize: this.pagination.pageSize
-      },
-      this.storeForm
+      return Object.assign(
+        {},
+        {
+          page: this.pagination.page,
+          pageSize: this.pagination.pageSize
+        },
+        this.storeForm
       )
     },
     changePage({ page, limit }) {
       this.pagination.page = page
       this.pagination.pageSize = limit
+      this.getList()
+    },
+    deleteRow(row) {
+      console.log(row)
+      this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      })
+        .then(() => {
+          deleteUser(row.id).then(res => {
+            console.log(res)
+          })
+          this.$message({
+            type: 'success',
+            message: '删除成功!'
+          })
+          this.getList()
+        })
+        .catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          })
+        })
+    },
+    // 确认修改
+    maskSureUpdate(formName) {
+      this.editShow = false
+      const obj = this.ruleForm
+      const updateObj = {
+        email: obj.email,
+        mobile: obj.mobile,
+        is_active: obj.is_active,
+        is_superuser: obj.is_superuser
+      }
+      updateUser(obj.id, updateObj).then(res => {
+        console.log(res)
+        this.$message({
+          type: 'success',
+          message: '修改成功!'
+        })
+        this.getList()
+      })
+      this.$refs[formName].resetFields()
+    },
+    edit(row) {
+      this.editShow = true
+      this.ruleForm = Object.assign({}, row)
+    },
+    // 取消弹窗
+    maskCancel(formName) {
+      this.editShow = false
+      this.$refs[formName].resetFields()
     }
   }
 }
 </script>
+<style scoped>
+.find {
+  width: 130px;
+}
+</style>

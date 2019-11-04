@@ -1,7 +1,25 @@
 <template>
   <el-card style="margin: 20px">
     <el-row :gutter="48" style="margin-bottom: 24px">
-      <el-col :span="6">
+      <el-col :span="10">
+        <el-input
+          v-model="searchForm.selectContext"
+          :placeholder="placeholderText"
+          class="input-with-select"
+        >
+          <el-select
+            slot="prepend"
+            v-model="select"
+            placeholder="请选择"
+            class="find"
+            @change="changeFind"
+          >
+            <el-option label="服务器名" value="1" />
+            <el-option label="服务器ip" value="2" />
+          </el-select>
+        </el-input>
+      </el-col>
+      <!-- <el-col :span="6">
         <el-input
           v-model="searchForm.hostnm"
           @keyup.enter.native="search"
@@ -12,24 +30,19 @@
           v-model="searchForm.hostip"
           @keyup.enter.native="search"
           placeholder="请输入服务器ip"></el-input>
-      </el-col>
+      </el-col>-->
       <el-col :span="6">
         <el-button type="primary" @click="search">查询</el-button>
       </el-col>
     </el-row>
 
-    <el-table
-      :data="tableData"
-      v-loading="isLoading"
-      border
-      style="width: 100%"
-    >
-      <el-table-column align="center" label="服务器名" prop="hostnm"></el-table-column>
-      <el-table-column align="center" label="服务器IP地址" prop="hostip"></el-table-column>
-      <el-table-column align="center" label="端口" prop="port"></el-table-column>
+    <el-table v-loading="isLoading" :data="tableData" border style="width: 100%">
+      <el-table-column align="center" label="服务器名" prop="hostnm" />
+      <el-table-column align="center" label="服务器IP地址" prop="hostip" />
+      <el-table-column align="center" label="端口" prop="port" />
       <el-table-column align="center" label="状态" prop="status">
         <template slot-scope="{ row }">
-          <el-tag :type="row.status === 0 ? 'success' : 'danger'">{{isActiveList[row.status]}}</el-tag>
+          <el-tag :type="row.status === 0 ? 'success' : 'danger'">{{ isActiveList[row.status] }}</el-tag>
         </template>
       </el-table-column>
       <el-table-column align="center" label="创建时间" prop="created_at">
@@ -42,18 +55,43 @@
           <span>{{ row.modify_at | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
         </template>
       </el-table-column>
+      <el-table-column align="center" label="操作">
+        <template slot-scope="scope">
+          <el-button size="mini" type="text" icon="el-icon-edit" @click="edit(scope.row)">编辑</el-button>
+          <el-button type="text" size="small" @click.native.prevent="deleteRow(scope.row)">删除</el-button>
+        </template>
+      </el-table-column>
     </el-table>
 
     <pagination
-      :total="pagination.total"
       v-show="pagination.total > 0"
+      :total="pagination.total"
       :page.sync="pagination.page"
       :limit.sync="pagination.pageSize"
-      @pagination="changePage"/>
+      @pagination="changePage"
+    />
+    <!-- 修改弹窗 -->
+    <el-dialog title="修改服务器资源" :visible.sync="editShow">
+      <el-form ref="ruleForm" :model="ruleForm">
+        <el-form-item label="服务器名" :label-width="formLabelWidth" prop="hostnm">
+          <el-input v-model="ruleForm.hostnm" autocomplete="off" />
+        </el-form-item>
+        <el-form-item label="服务器ip" :label-width="formLabelWidth" prop="hostip">
+          <el-input v-model="ruleForm.hostip" autocomplete="off" />
+        </el-form-item>
+        <el-form-item label="端口" :label-width="formLabelWidth" prop="port">
+          <el-input v-model="ruleForm.port" autocomplete="off" />
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="maskCancel('ruleForm')">取 消</el-button>
+        <el-button type="primary" @click="maskSureUpdate('ruleForm')">确 定</el-button>
+      </div>
+    </el-dialog>
   </el-card>
 </template>
 <script>
-import { getServiceHost } from '@/api/resource'
+import { getServiceHost, deleteHost, updateHost } from '@/api/resource'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 const isActiveList = {
   0: '在用',
@@ -66,6 +104,12 @@ export default {
   },
   data() {
     return {
+      formLabelWidth: '120px',
+      editShow: false,
+      ruleForm: {},
+      type: '',
+      placeholderText: '',
+      select: '',
       isActiveList,
       tableData: [],
       searchForm: {},
@@ -82,9 +126,22 @@ export default {
     this.search()
   },
   methods: {
+    changeFind(value) {
+      this.placeholderText = value
+      if (this.placeholderText === '1') {
+        this.placeholderText = '请输入服务器名'
+        this.type = 'hostnm'
+      } else {
+        this.placeholderText = '请输入服务器名'
+        this.type = 'hostip'
+      }
+    },
     search() {
       this.pagination.page = 1
-      this.storeForm = this.searchForm
+      const obj = {
+        [this.type]: this.searchForm.selectContext
+      }
+      this.storeForm = obj
       this.getList()
     },
     getList() {
@@ -99,17 +156,78 @@ export default {
         })
     },
     getParams() {
-      return Object.assign({}, {
-        page: this.pagination.page,
-        pageSize: this.pagination.pageSize
-      },
-      this.storeForm
+      return Object.assign(
+        {},
+        {
+          page: this.pagination.page,
+          pageSize: this.pagination.pageSize
+        },
+        this.storeForm
       )
     },
     changePage({ page, limit }) {
       this.pagination.page = page
       this.pagination.pageSize = limit
+      this.getList()
+    },
+    edit(row) {
+      this.editShow = true
+      this.ruleForm = Object.assign({}, row)
+    },
+    deleteRow(row) {
+      console.log(row)
+      this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      })
+        .then(() => {
+          deleteHost(row.id).then(res => {
+            console.log(res)
+          })
+          this.$message({
+            type: 'success',
+            message: '删除成功!'
+          })
+          this.getList()
+        })
+        .catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          })
+        })
+    },
+    // 取消弹窗
+    maskCancel(formName) {
+      this.editShow = false
+      this.$refs[formName].resetFields()
+    },
+    // 确认修改
+    maskSureUpdate(formName) {
+      this.editShow = false
+      const obj = this.ruleForm
+      console.log(obj)
+      const updateObj = {
+        hostnm: obj.hostnm,
+        hostip: obj.hostip,
+        port: obj.port
+      }
+      updateHost(obj.id, updateObj).then(res => {
+        console.log(res)
+        this.$message({
+          type: 'success',
+          message: '修改成功!'
+        })
+        this.getList()
+      })
+      this.$refs[formName].resetFields()
     }
   }
 }
 </script>
+<style scoped>
+.find {
+  width: 130px;
+}
+</style>
