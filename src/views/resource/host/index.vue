@@ -132,7 +132,7 @@ export default {
         this.placeholderText = '请输入服务器名'
         this.type = 'hostnm'
       } else {
-        this.placeholderText = '请输入服务器名'
+        this.placeholderText = '请输入服务器ip'
         this.type = 'hostip'
       }
     },
