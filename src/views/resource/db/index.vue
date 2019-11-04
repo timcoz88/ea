@@ -5,41 +5,26 @@
         <el-col :span="6">
           <el-form-item>
             <el-input
-              v-model="searchForm.hostip"
+              v-model.trim="searchForm.searchVal"
+              type="text"
+              class="filter-input"
+              placeholder="请输入搜索内容"
+              clearable
               @keyup.enter.native="search"
-              placeholder="请输入数据库ip"></el-input>
-          </el-form-item>
-        </el-col>
-        <el-col :span="6">
-          <el-form-item>
-          <el-input
-            v-model="searchForm.hostnm"
-            @keyup.enter.native="search"
-            placeholder="请输入数据库名"></el-input>
-          </el-form-item>
-        </el-col>
-        <el-col :span="6">
-          <el-form-item>
-          <el-input
-            v-model="searchForm.dbtype"
-            @keyup.enter.native="search"
-            placeholder="请输入数据类型"></el-input>
-          </el-form-item>
-        </el-col>
-        <el-col :span="6">
-          <el-form-item>
-          <el-input
-            v-model="searchForm.dsn"
-            @keyup.enter.native="search"
-            placeholder="请输入数据库登录名"></el-input>
-          </el-form-item>
-        </el-col>
-        <el-col :span="6">
-          <el-form-item>
-          <el-input
-            v-model="searchForm.clflag"
-            @keyup.enter.native="search"
-            placeholder="请输入数据库架构"></el-input>
+            >
+              <el-select
+                slot="prepend"
+                v-model="searchType"
+                class="filter-select"
+                style="width: 160px;"
+                placeholder="请选择查询类型">
+                <el-option
+                  v-for="item in searchOptions"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"/>
+              </el-select>
+            </el-input>
           </el-form-item>
         </el-col>
         <el-col :span="6">
@@ -78,6 +63,12 @@
           <span>{{ row.modify_at | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
         </template>
       </el-table-column>
+      <el-table-column align="center" label="操作">
+        <template slot-scope="{row, $index}">
+          <el-button type="text" @click="$refs.dbDialog.show(2, row, $index)">编辑</el-button>
+          <el-button type="text" @click="rowDel(row)">删除</el-button>
+        </template>
+      </el-table-column>
     </el-table>
 
     <pagination
@@ -86,18 +77,22 @@
       :page.sync="pagination.page"
       :limit.sync="pagination.pageSize"
       @pagination="changePage"/>
+
+    <db-dialog ref="dbDialog" @confirm="confirm"></db-dialog>
   </el-card>
 </template>
 <script>
-import { getDbList } from '@/api/resource'
+import { getDbList, delDb, updateDb } from '@/api/resource'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
+import DbDialog from "./DbDialog"
 const isActiveList = {
   0: '在用',
   1: '失效'
 }
 export default {
   components: {
-    Pagination
+    Pagination,
+    DbDialog
   },
   data() {
     return {
@@ -110,7 +105,30 @@ export default {
         total: 0,
         pageSize: 10,
         page: 1
-      }
+      },
+      searchOptions: [
+        {
+          value: 'hostnm',
+          label: '数据库名'
+        },
+        {
+          value: 'hostip',
+          label: '数据库ip'
+        },
+        {
+          value: 'dbtype',
+          label: '数据库类型'
+        },
+        {
+          value: 'dsn',
+          label: '登录名'
+        },
+        {
+          value: 'clflag',
+          label: '数据库架构'
+        }
+      ],
+      searchType: ''
     }
   },
   created() {
@@ -134,16 +152,59 @@ export default {
         })
     },
     getParams() {
+      const { searchVal, ...arg } = this.storeForm
       return Object.assign({}, {
         page: this.pagination.page,
-        pageSize: this.pagination.pageSize
+        pageSize: this.pagination.pageSize,
+        [this.searchType]: searchVal
       },
-      this.storeForm
+      arg
       )
+    },
+    confirm(type, form, index) {
+      if (type === 1) {
+        this.add(form, index)
+      } else if (type === 2) {
+        this.update(form, index)
+      }
+    },
+    update(form, index) {
+      const { id, status } = form
+      updateDb(id, { status }).then(res => {
+        this.$message({
+          type: 'success',
+          message: '修改成功!'
+        })
+        this.getList()
+      })
+    },
+    add(form, index) {
+    },
+    rowDel(row) {
+      this.$confirm('此操作将删除数据库资源, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        delDb(row.id).then(() => {
+          this.$message({
+            type: 'success',
+            message: '删除成功!'
+          })
+
+          this.getList()
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })
+      })
     },
     changePage({ page, limit }) {
       this.pagination.page = page
       this.pagination.pageSize = limit
+      this.getList()
     }
   }
 }

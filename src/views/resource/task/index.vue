@@ -39,6 +39,12 @@
         </template>
       </el-table-column>
       <el-table-column align="center" label="下一次运行时间" prop="next_run_time"></el-table-column>
+      <el-table-column align="center" label="操作" prop="next_run_time">
+        <template slot-scope="{ row, $index }">
+          <el-button type="text" @click="$refs.taskDialog.show(2, row, $index)">编辑</el-button>
+          <el-button type="text" @click="rowDel(row)">删除</el-button>
+        </template>
+      </el-table-column>
     </el-table>
 
     <pagination
@@ -47,15 +53,19 @@
       :page.sync="pagination.page"
       :limit.sync="pagination.pageSize"
       @pagination="changePage"/>
+
+    <task-dialog ref="taskDialog" @confirm="confirm"></task-dialog>
   </el-card>
 </template>
 <script>
-import { getTaskList } from '@/api/resource'
+import { getTaskList, delTask, updateTask } from '@/api/resource'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
+import TaskDialog from './TaskDialog'
 
 export default {
   components: {
-    Pagination
+    Pagination,
+    TaskDialog
   },
   data() {
     return {
@@ -74,6 +84,49 @@ export default {
     this.search()
   },
   methods: {
+    confirm(type, form, index) {
+      if (type === 1) {
+        this.addTask(form, index)
+      } else if (type === 2) {
+        this.updateTask(form, index)
+      }
+    },
+    updateTask(form, index) {
+      const { id, cron_value, cron_type } = form
+      updateTask(id, { cron_value, cron_type }).then(res => {
+        this.$message({
+          type: 'success',
+          message: '修改成功!'
+        })
+        this.getList()
+      })
+    },
+    addTask(form, index) {
+    },
+    rowDel(row) {
+      this.$confirm('此操作将删除任务, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        delTask(row.id).then(() => {
+          this.$message({
+            type: 'success',
+            message: '删除成功!'
+          })
+
+          this.getList()
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })
+      })
+    },
+    editor() {
+      this.$refs.taskDialog.show()
+    },
     search() {
       this.pagination.page = 1
       this.storeForm = this.searchForm
@@ -101,6 +154,7 @@ export default {
     changePage({ page, limit }) {
       this.pagination.page = page
       this.pagination.pageSize = limit
+      this.getList()
     },
     diffTimeInterval({ weeks, day, hours, minutes, seconds }) {
       let str = ''
