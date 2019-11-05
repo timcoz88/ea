@@ -17,12 +17,14 @@
                 v-model="searchType"
                 class="filter-select"
                 style="width: 160px;"
-                placeholder="请选择查询类型">
+                placeholder="请选择查询类型"
+              >
                 <el-option
                   v-for="item in searchOptions"
                   :key="item.value"
                   :label="item.label"
-                  :value="item.value"/>
+                  :value="item.value"
+                />
               </el-select>
             </el-input>
           </el-form-item>
@@ -35,22 +37,22 @@
     </el-row>
 
     <el-table
-      :data="tableData"
       v-loading="isLoading"
+      :data="tableData"
       border
       style="width: 100%"
     >
-      <el-table-column align="center" label="数据库名" prop="dbnm"></el-table-column>
-      <el-table-column align="center" label="数据库ip" prop="hostip"></el-table-column>
-      <el-table-column align="center" label="端口" prop="dbport"></el-table-column>
-      <el-table-column align="center" label="数据库服务名" prop="dsn"></el-table-column>
-      <el-table-column align="center" label="类型" prop="dbtype"></el-table-column>
-      <el-table-column align="center" label="登录名" prop="dbuser"></el-table-column>
-      <el-table-column align="center" label="数据库架构" prop="clflag"></el-table-column>
-      <el-table-column align="center" label="数据库版本" prop="dbver"></el-table-column>
+      <el-table-column align="center" label="数据库名" prop="dbnm" />
+      <el-table-column align="center" label="数据库ip" prop="hostip" />
+      <el-table-column align="center" label="端口" prop="dbport" />
+      <el-table-column align="center" label="数据库服务名" prop="dsn" />
+      <el-table-column align="center" label="类型" prop="dbtype" />
+      <el-table-column align="center" label="登录名" prop="dbuser" />
+      <el-table-column align="center" label="数据库架构" prop="clflag" />
+      <el-table-column align="center" label="数据库版本" prop="dbver" />
       <el-table-column align="center" label="状态" prop="status">
         <template slot-scope="{ row }">
-          <el-tag :type="row.status === 0 ? 'success' : 'danger'">{{isActiveList[row.status]}}</el-tag>
+          <el-tag :type="row.status === 0 ? 'success' : 'danger'">{{ isActiveList[row.status] }}</el-tag>
         </template>
       </el-table-column>
       <el-table-column align="center" label="创建时间" prop="created_at">
@@ -72,19 +74,20 @@
     </el-table>
 
     <pagination
-      :total="pagination.total"
       v-show="pagination.total > 0"
+      :total="pagination.total"
       :page.sync="pagination.page"
       :limit.sync="pagination.pageSize"
-      @pagination="changePage"/>
+      @pagination="changePage"
+    />
 
-    <db-dialog ref="dbDialog" @confirm="confirm"></db-dialog>
+    <db-dialog ref="dbDialog" @confirm="confirm" />
   </el-card>
 </template>
 <script>
 import { getDbList, delDb, updateDb } from '@/api/resource'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
-import DbDialog from "./DbDialog"
+import DbDialog from './DbDialog'
 const isActiveList = {
   0: '在用',
   1: '失效'
@@ -108,7 +111,7 @@ export default {
       },
       searchOptions: [
         {
-          value: 'hostnm',
+          value: 'dbnm',
           label: '数据库名'
         },
         {

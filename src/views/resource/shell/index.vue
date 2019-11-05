@@ -17,12 +17,14 @@
                 v-model="searchType"
                 class="filter-select"
                 style="width: 160px;"
-                placeholder="请选择查询类型">
+                placeholder="请选择查询类型"
+              >
                 <el-option
                   v-for="item in searchOptions"
                   :key="item.value"
                   :label="item.label"
-                  :value="item.value"/>
+                  :value="item.value"
+                />
               </el-select>
             </el-input>
           </el-form-item>
@@ -35,23 +37,23 @@
     </el-row>
 
     <el-table
-      :data="tableData"
       v-loading="isLoading"
+      :data="tableData"
       border
       style="width: 100%"
     >
-      <el-table-column align="center" label="文件名" prop="name"></el-table-column>
-      <el-table-column align="center" label="后缀名" prop="extension"></el-table-column>
-      <el-table-column align="center" label="路径" prop="path"></el-table-column>
+      <el-table-column align="center" label="文件名" prop="name" />
+      <el-table-column align="center" label="后缀名" prop="extension" />
+      <el-table-column align="center" label="路径" prop="path" />
       <el-table-column align="center" label="上传类型" prop="type">
         <template slot-scope="{ row }">
-          <el-tag>{{ row.type === 1 ? 'shell' : 'other'  }}</el-tag>
+          <el-tag>{{ row.type === 1 ? 'shell' : 'other' }}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="大小" prop="size"></el-table-column>
+      <el-table-column align="center" label="大小" prop="size" />
       <el-table-column align="center" label="状态" prop="status">
         <template slot-scope="{ row }">
-          <el-tag :type="row.status === 0 ? 'success' : 'danger'">{{isActiveList[row.status]}}</el-tag>
+          <el-tag :type="row.status === 0 ? 'success' : 'danger'">{{ isActiveList[row.status] }}</el-tag>
         </template>
       </el-table-column>
       <el-table-column align="center" label="创建时间" prop="created_at">
@@ -75,13 +77,14 @@
     </el-table>
 
     <pagination
-      :total="pagination.total"
       v-show="pagination.total > 0"
+      :total="pagination.total"
       :page.sync="pagination.page"
       :limit.sync="pagination.pageSize"
-      @pagination="changePage"/>
+      @pagination="changePage"
+    />
 
-    <shell-dialog ref="shellDialog" @confirm="confirm"></shell-dialog>
+    <shell-dialog ref="shellDialog" @confirm="confirm" />
   </el-card>
 </template>
 <script>
@@ -112,11 +115,11 @@ export default {
       searchType: '',
       searchOptions: [
         {
-          value: 'hostnm',
+          value: 'name',
           label: '文件名'
         },
         {
-          value: 'hostip',
+          value: 'type',
           label: '文件类型'
         },
         {
