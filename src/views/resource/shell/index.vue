@@ -30,7 +30,10 @@
           </el-form-item>
         </el-col>
         <el-col :span="6">
-          <el-button type="primary" @click="search">查询</el-button>
+          <el-button type="primary" @click="search" :disabled="!searchType">查询</el-button>
+          <el-button type="primary" @click="imagecropperShow = true">
+            <i class="el-icon-plus"></i>新增资源
+          </el-button>
         </el-col>
       </el-form>
 
@@ -85,23 +88,36 @@
     />
 
     <shell-dialog ref="shellDialog" @confirm="confirm" />
+
+    <image-cropper
+      v-show="imagecropperShow"
+      :key="imagecropperKey"
+      url="https://httpbin.org/post"
+      lang-type="zh"
+      @close="close"
+      @crop-upload-success="cropSuccess"
+    />
   </el-card>
 </template>
 <script>
 import { getShellList, delShell, confirmShell, updateShell } from '@/api/resource'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 import ShellDialog from './ShellDialog'
+import ImageCropper from '@/components/ImageCropper'
 const isActiveList = {
-  0: '在用',
-  1: '失效'
+  0: '待审核',
+  1: '审核通过'
 }
 export default {
   components: {
     Pagination,
-    ShellDialog
+    ShellDialog,
+    ImageCropper
   },
   data() {
     return {
+      imagecropperShow: false,
+      imagecropperKey: 0,
       isActiveList,
       tableData: [],
       searchForm: {},
@@ -133,6 +149,14 @@ export default {
     this.search()
   },
   methods: {
+    cropSuccess(resData) {
+      this.imagecropperShow = false
+      this.imagecropperKey = this.imagecropperKey + 1
+      console.log(resData)
+    },
+    close() {
+      this.imagecropperShow = false
+    },
     confirm(type, form, index) {
       if (type === 1) {
         this.add(form, index)
@@ -147,6 +171,7 @@ export default {
           type: 'success',
           message: '修改成功!'
         })
+        this.$refs.shellDialog.hide()
         this.getList()
       })
     },
@@ -170,13 +195,11 @@ export default {
     },
     getParams() {
       const { searchVal, ...arg } = this.storeForm
+      const params = this.searchType ? { [this.searchType]: searchVal } : {}
       return Object.assign({}, {
         page: this.pagination.page,
         pageSize: this.pagination.pageSize,
-        [this.searchType]: searchVal
-      },
-      arg
-      )
+      }, arg, params)
     },
     changePage({ page, limit }) {
       this.pagination.page = page
@@ -194,7 +217,6 @@ export default {
             type: 'success',
             message: '删除成功!'
           })
-
           this.getList()
         })
       }).catch(() => {

@@ -30,7 +30,7 @@
           </el-form-item>
         </el-col>
         <el-col :span="6">
-          <el-button type="primary" @click="search">查询</el-button>
+          <el-button type="primary" @click="search" :disabled="!searchType">查询</el-button>
         </el-col>
       </el-form>
 
@@ -156,13 +156,11 @@ export default {
     },
     getParams() {
       const { searchVal, ...arg } = this.storeForm
+      const params = this.searchType ? { [this.searchType]: searchVal } : {}
       return Object.assign({}, {
         page: this.pagination.page,
         pageSize: this.pagination.pageSize,
-        [this.searchType]: searchVal
-      },
-      arg
-      )
+      }, arg, params)
     },
     confirm(type, form, index) {
       if (type === 1) {

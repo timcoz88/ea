@@ -76,6 +76,9 @@ export default {
         }
       }
     },
+    hide() {
+      this.isShowDialog = false
+    },
     confirm() {
       this.$refs.componentForm.validate(valid => {
         if (valid) {
