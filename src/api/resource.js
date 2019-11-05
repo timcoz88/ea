@@ -31,6 +31,76 @@ export function getTaskList(params) {
     params
   })
 }
+// 删除任务
+export function delTask(id, data) {
+  return request({
+    url: `v1/cy_aps/remove/${id}`,
+    method: 'delete',
+    data
+  })
+}
+// 更新任务
+export function updateTask(id, data) {
+  return request({
+    url: `v1/cy_aps/reschedule/${id}`,
+    method: 'put',
+    data
+  })
+}
+
+// 上传资源
+export function uploadShell(id, data) {
+  return request({
+    url: `v1/s/paramiko/upload/${id}`,
+    method: 'post',
+    data
+  })
+}
+
+// 删除脚本资源
+export function delShell(id, data) {
+  return request({
+    url: `v1/s/paramiko/files/${id}`,
+    method: 'delete',
+    data
+  })
+}
+
+// 删除脚本资源
+export function confirmShell(id, data) {
+  return request({
+    url: `v1/s/paramiko/files/${id}`,
+    method: 'patch',
+    data
+  })
+}
+
+// 删除脚本资源
+export function updateShell(id, data) {
+  return request({
+    url: `v1/s/paramiko/files/${id}`,
+    method: 'put',
+    data
+  })
+}
+
+// 删除数据库资源
+export function delDb(id, data) {
+  return request({
+    url: `v1/service/dbs/${id}`,
+    method: 'delete',
+    data
+  })
+}
+
+// 更新数据库资源
+export function updateDb(id, data) {
+  return request({
+    url: `v1/service/dbs/${id}`,
+    method: 'put',
+    data
+  })
+}
 
 export function deleteHost(id) {
   return request({

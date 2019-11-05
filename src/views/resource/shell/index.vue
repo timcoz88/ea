@@ -5,25 +5,28 @@
         <el-col :span="6">
           <el-form-item>
             <el-input
-              v-model="searchForm.name"
+              v-model.trim="searchForm.searchVal"
+              type="text"
+              class="filter-input"
+              placeholder="请输入搜索内容"
+              clearable
               @keyup.enter.native="search"
-              placeholder="请输入文件名"></el-input>
-          </el-form-item>
-        </el-col>
-        <el-col :span="6">
-          <el-form-item>
-            <el-input
-              v-model="searchForm.type"
-              @keyup.enter.native="search"
-              placeholder="请输入文件类型"></el-input>
-          </el-form-item>
-        </el-col>
-        <el-col :span="6">
-          <el-form-item>
-            <el-input
-              v-model="searchForm.extension"
-              @keyup.enter.native="search"
-              placeholder="请输入后缀名"></el-input>
+            >
+              <el-select
+                slot="prepend"
+                v-model="searchType"
+                class="filter-select"
+                style="width: 160px;"
+                placeholder="请选择查询类型"
+              >
+                <el-option
+                  v-for="item in searchOptions"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                />
+              </el-select>
+            </el-input>
           </el-form-item>
         </el-col>
         <el-col :span="6">
@@ -34,23 +37,23 @@
     </el-row>
 
     <el-table
-      :data="tableData"
       v-loading="isLoading"
+      :data="tableData"
       border
       style="width: 100%"
     >
-      <el-table-column align="center" label="文件名" prop="name"></el-table-column>
-      <el-table-column align="center" label="后缀名" prop="extension"></el-table-column>
-      <el-table-column align="center" label="路径" prop="path"></el-table-column>
+      <el-table-column align="center" label="文件名" prop="name" />
+      <el-table-column align="center" label="后缀名" prop="extension" />
+      <el-table-column align="center" label="路径" prop="path" />
       <el-table-column align="center" label="上传类型" prop="type">
         <template slot-scope="{ row }">
-          <el-tag>{{ row.type === 1 ? 'shell' : 'other'  }}</el-tag>
+          <el-tag>{{ row.type === 1 ? 'shell' : 'other' }}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="大小" prop="size"></el-table-column>
+      <el-table-column align="center" label="大小" prop="size" />
       <el-table-column align="center" label="状态" prop="status">
         <template slot-scope="{ row }">
-          <el-tag :type="row.status === 0 ? 'success' : 'danger'">{{isActiveList[row.status]}}</el-tag>
+          <el-tag :type="row.status === 0 ? 'success' : 'danger'">{{ isActiveList[row.status] }}</el-tag>
         </template>
       </el-table-column>
       <el-table-column align="center" label="创建时间" prop="created_at">
@@ -63,26 +66,39 @@
           <span>{{ row.modify_at | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
         </template>
       </el-table-column>
+      <el-table-column align="center" label="操作">
+        <template slot-scope="{row, $index}">
+          <el-button type="text" @click="$refs.shellDialog.show(2, row, $index)">编辑</el-button>
+          <el-button type="text" @click="rowDel(row)">删除</el-button>
+          <el-button type="text" @click="rowConfirm(row)">审核</el-button>
+          <el-button type="text" @click="rowDownload(row)">下载</el-button>
+        </template>
+      </el-table-column>
     </el-table>
 
     <pagination
-      :total="pagination.total"
       v-show="pagination.total > 0"
+      :total="pagination.total"
       :page.sync="pagination.page"
       :limit.sync="pagination.pageSize"
-      @pagination="changePage"/>
+      @pagination="changePage"
+    />
+
+    <shell-dialog ref="shellDialog" @confirm="confirm" />
   </el-card>
 </template>
 <script>
-import { getShellList } from '@/api/resource'
+import { getShellList, delShell, confirmShell, updateShell } from '@/api/resource'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
+import ShellDialog from './ShellDialog'
 const isActiveList = {
   0: '在用',
   1: '失效'
 }
 export default {
   components: {
-    Pagination
+    Pagination,
+    ShellDialog
   },
   data() {
     return {
@@ -95,13 +111,47 @@ export default {
         total: 0,
         pageSize: 10,
         page: 1
-      }
+      },
+      searchType: '',
+      searchOptions: [
+        {
+          value: 'name',
+          label: '文件名'
+        },
+        {
+          value: 'type',
+          label: '文件类型'
+        },
+        {
+          value: 'extension',
+          label: '后缀名'
+        }
+      ]
     }
   },
   created() {
     this.search()
   },
   methods: {
+    confirm(type, form, index) {
+      if (type === 1) {
+        this.add(form, index)
+      } else if (type === 2) {
+        this.update(form, index)
+      }
+    },
+    update(form, index) {
+      const { id, status } = form
+      updateShell(id, { status }).then(res => {
+        this.$message({
+          type: 'success',
+          message: '修改成功!'
+        })
+        this.getList()
+      })
+    },
+    add(form, index) {
+    },
     search() {
       this.pagination.page = 1
       this.storeForm = this.searchForm
@@ -119,16 +169,64 @@ export default {
         })
     },
     getParams() {
+      const { searchVal, ...arg } = this.storeForm
       return Object.assign({}, {
         page: this.pagination.page,
-        pageSize: this.pagination.pageSize
+        pageSize: this.pagination.pageSize,
+        [this.searchType]: searchVal
       },
-      this.storeForm
+      arg
       )
     },
     changePage({ page, limit }) {
       this.pagination.page = page
       this.pagination.pageSize = limit
+      this.getList()
+    },
+    rowDel(row) {
+      this.$confirm('此操作将删除脚本资源, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        delShell(row.id).then(() => {
+          this.$message({
+            type: 'success',
+            message: '删除成功!'
+          })
+
+          this.getList()
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })
+      })
+    },
+    rowConfirm(row) {
+      this.$confirm('是否审核通过', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        confirmShell(row.id).then(() => {
+          this.$message({
+            type: 'success',
+            message: '操作成功!'
+          })
+
+          this.getList()
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消'
+        })
+      })
+    },
+    rowDownload(row) {
+
     }
   }
 }

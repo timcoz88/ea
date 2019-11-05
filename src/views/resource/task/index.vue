@@ -6,8 +6,9 @@
           <el-form-item>
             <el-input
               v-model="searchForm.name"
+              placeholder="请输入文件名"
               @keyup.enter.native="search"
-              placeholder="请输入文件名"></el-input>
+            />
           </el-form-item>
         </el-col>
         <el-col :span="6">
@@ -18,44 +19,55 @@
     </el-row>
 
     <el-table
-      :data="tableData"
       v-loading="isLoading"
+      :data="tableData"
       border
       style="width: 100%"
     >
-      <el-table-column align="center" label="id" prop="id"></el-table-column>
-      <el-table-column align="center" label="任务名" prop="name"></el-table-column>
-      <el-table-column align="center" label="时间类型" prop="trigger"></el-table-column>
+      <el-table-column align="center" label="id" prop="id" />
+      <el-table-column align="center" label="任务名" prop="name" />
+      <el-table-column align="center" label="时间类型" prop="trigger" />
       <el-table-column align="center" label="状态" prop="status">
         <template slot-scope="{ row }">
-          <el-tag :type="row.next_run_time ? 'success' : 'danger'">{{row.next_run_time ? '在用' : '暂停'}}</el-tag>
+          <el-tag :type="row.next_run_time ? 'success' : 'danger'">{{ row.next_run_time ? '在用' : '暂停' }}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="开始时间" prop="start_date"></el-table-column>
+      <el-table-column align="center" label="开始时间" prop="start_date" />
       <el-table-column align="center" label="运行间隔" prop="size">
         <template slot-scope="{ row }">
           <!-- 时间要前端算 -->
-          <span>{{diffTimeInterval(row)}}</span>
+          <span>{{ diffTimeInterval(row) }}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="下一次运行时间" prop="next_run_time"></el-table-column>
+      <el-table-column align="center" label="下一次运行时间" prop="next_run_time" />
+      <el-table-column align="center" label="操作" prop="next_run_time">
+        <template slot-scope="{ row, $index }">
+          <el-button type="text" @click="$refs.taskDialog.show(2, row, $index)">编辑</el-button>
+          <el-button type="text" @click="rowDel(row)">删除</el-button>
+        </template>
+      </el-table-column>
     </el-table>
 
     <pagination
-      :total="pagination.total"
       v-show="pagination.total > 0"
+      :total="pagination.total"
       :page.sync="pagination.page"
       :limit.sync="pagination.pageSize"
-      @pagination="changePage"/>
+      @pagination="changePage"
+    />
+
+    <task-dialog ref="taskDialog" @confirm="confirm" />
   </el-card>
 </template>
 <script>
-import { getTaskList } from '@/api/resource'
+import { getTaskList, delTask, updateTask } from '@/api/resource'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
+import TaskDialog from './TaskDialog'
 
 export default {
   components: {
-    Pagination
+    Pagination,
+    TaskDialog
   },
   data() {
     return {
@@ -74,6 +86,49 @@ export default {
     this.search()
   },
   methods: {
+    confirm(type, form, index) {
+      if (type === 1) {
+        this.addTask(form, index)
+      } else if (type === 2) {
+        this.updateTask(form, index)
+      }
+    },
+    updateTask(form, index) {
+      const { id, cron_value, cron_type } = form
+      updateTask(id, { cron_value, cron_type }).then(res => {
+        this.$message({
+          type: 'success',
+          message: '修改成功!'
+        })
+        this.getList()
+      })
+    },
+    addTask(form, index) {
+    },
+    rowDel(row) {
+      this.$confirm('此操作将删除任务, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        delTask(row.id).then(() => {
+          this.$message({
+            type: 'success',
+            message: '删除成功!'
+          })
+
+          this.getList()
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })
+      })
+    },
+    editor() {
+      this.$refs.taskDialog.show()
+    },
     search() {
       this.pagination.page = 1
       this.storeForm = this.searchForm
@@ -101,6 +156,7 @@ export default {
     changePage({ page, limit }) {
       this.pagination.page = page
       this.pagination.pageSize = limit
+      this.getList()
     },
     diffTimeInterval({ weeks, day, hours, minutes, seconds }) {
       let str = ''
