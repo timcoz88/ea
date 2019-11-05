@@ -143,6 +143,24 @@ export const constantRoutes = [
         meta: { title: '定时任务', affix: true }
       }
     ]
+  },
+  {
+    path: '/handler',
+    component: Layout,
+    redirect: '/handler/record',
+    name: 'handler',
+    meta: {
+      title: '操作记录',
+      icon: 'skill'
+    },
+    children: [
+      {
+        path: 'record',
+        component: () => import('@/views/handler/record/index'),
+        name: 'handlerRecord',
+        meta: { title: '基线收集', affix: true }
+      }
+    ]
   }
 /*  {
     path: '/guide',
