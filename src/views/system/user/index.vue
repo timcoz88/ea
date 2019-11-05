@@ -1,27 +1,33 @@
 <template>
   <el-card style="margin: 20px">
     <el-row :gutter="48" style="margin-bottom: 24px">
-      <el-col :span="10">
+      <el-col :span="6">
         <el-input
-          v-model="searchForm.selectContext"
-          :placeholder="placeholderText"
-          class="input-with-select"
+          v-model.trim="searchForm.searchVal"
+          type="text"
+          class="filter-input"
+          placeholder="请输入搜索内容"
+          clearable
+          @keyup.enter.native="search"
         >
           <el-select
             slot="prepend"
-            v-model="select"
-            placeholder="请选择"
-            class="find"
-            @change="changeFind"
+            v-model="searchType"
+            class="filter-select"
+            style="width: 160px;"
+            placeholder="请选择查询类型"
           >
-            <el-option label="手机号" value="1" />
-            <el-option label="邮箱" value="2" />
-            <el-option label="用户名" value="3" />
+            <el-option
+              v-for="item in searchOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            />
           </el-select>
         </el-input>
       </el-col>
       <el-col :span="6">
-        <el-button type="primary" @click="search">查询</el-button>
+        <el-button type="primary" :disabled="!searchType" @click="search">查询</el-button>
       </el-col>
     </el-row>
 
@@ -146,34 +152,41 @@ export default {
         total: 0,
         pageSize: 10,
         page: 1
-      }
+      },
+      searchType: '',
+      searchOptions: [
+        {
+          value: 'phone',
+          label: '手机号'
+        },
+        {
+          value: 'email',
+          label: '邮箱'
+        },
+        {
+          value: 'username',
+          label: '用户名'
+        }
+      ]
     }
   },
   created() {
     this.search()
   },
   methods: {
-    changeFind(value) {
-      console.log(value)
-      if (value === '1') {
-        this.placeholderText = '请输入手机号'
-        this.type = 'phone'
-      } else if (value === '2') {
-        this.placeholderText = '请输入邮箱'
-        this.type = 'email'
-      } else {
-        this.placeholderText = '请输入用户名'
-        this.type = 'username'
-      }
-    },
     search() {
       this.pagination.page = 1
-      const obj = {
-        [this.type]: this.searchForm.selectContext
-      }
-      console.log(obj)
-      this.storeForm = obj
+
+      this.storeForm = this.searchForm
       this.getList()
+    },
+    getParams() {
+      const { searchVal, ...arg } = this.storeForm
+      const params = this.searchType ? { [this.searchType]: searchVal } : {}
+      return Object.assign({}, {
+        page: this.pagination.page,
+        pageSize: this.pagination.pageSize
+      }, params, arg)
     },
     getList() {
       this.isLoading = true
@@ -185,16 +198,6 @@ export default {
         .finally(() => {
           this.isLoading = false
         })
-    },
-    getParams() {
-      return Object.assign(
-        {},
-        {
-          page: this.pagination.page,
-          pageSize: this.pagination.pageSize
-        },
-        this.storeForm
-      )
     },
     changePage({ page, limit }) {
       this.pagination.page = page
