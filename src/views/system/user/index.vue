@@ -55,11 +55,11 @@
           <span>{{ row.last_login | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="操作">
+      <el-table-column align="center" label="操作" width="300">
         <template slot-scope="scope">
-          <el-button size="small" type="text" @click="edit(scope.row)">编辑</el-button>
-          <el-button type="text" size="small" @click.native.prevent="deleteRow(scope.row)">删除</el-button>
-          <el-button type="text" size="small">修改密码</el-button>
+          <el-button size="small" type="primary" icon="el-icon-edit" @click="edit(scope.row)">编辑</el-button>
+          <el-button icon="el-icon-delete" type="danger" size="small" @click.native.prevent="deleteRow(scope.row)">删除</el-button>
+          <el-button type="primary" size="mini">修改密码</el-button>
         </template>
       </el-table-column>
     </el-table>

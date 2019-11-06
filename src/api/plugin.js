@@ -24,3 +24,11 @@ export function reload() {
     method: 'get'
   })
 }
+// 上传
+export function uploadPlugin(data) {
+  return request({
+    url: 'v1/managers/upload',
+    method: 'put',
+    data
+  })
+}

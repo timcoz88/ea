@@ -31,7 +31,7 @@
         </el-col>
         <el-col :span="6">
           <el-button type="primary" :disabled="!searchType" @click="search">查询</el-button>
-          <el-button type="primary" @click="imagecropperShow = true">
+          <el-button type="primary" @click="$refs.uploadDialog.show()">
             <i class="el-icon-plus" />新增资源
           </el-button>
         </el-col>
@@ -69,12 +69,12 @@
           <span>{{ row.modify_at | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="操作">
+      <el-table-column align="center" label="操作" width="360">
         <template slot-scope="{row, $index}">
-          <el-button type="text" @click="$refs.shellDialog.show(2, row, $index)">编辑</el-button>
-          <el-button type="text" @click="rowDel(row)">删除</el-button>
-          <el-button type="text" @click="rowConfirm(row)">审核</el-button>
-          <el-button type="text" @click="rowDownload(row)">下载</el-button>
+          <el-button type="primary" icon="el-icon-edit" size="mini" @click="$refs.shellDialog.show(2, row, $index)">编辑</el-button>
+          <el-button type="danger" icon="el-icon-delete" size="mini" @click="rowDel(row)">删除</el-button>
+          <el-button type="primary" icon="el-icon-check" size="mini" @click="rowConfirm(row)">审核</el-button>
+          <el-button type="primary" icon="el-icon-download" size="mini" @click="rowDownload(row)">下载</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -88,22 +88,23 @@
     />
 
     <shell-dialog ref="shellDialog" @confirm="confirm" />
-
-    <image-cropper
+    <upload-dialog ref="uploadDialog" />
+    <!-- <image-cropper
       v-show="imagecropperShow"
       :key="imagecropperKey"
       url="https://httpbin.org/post"
       lang-type="zh"
       @close="close"
       @crop-upload-success="cropSuccess"
-    />
+    /> -->
   </el-card>
 </template>
 <script>
 import { getShellList, delShell, confirmShell, updateShell } from '@/api/resource'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 import ShellDialog from './ShellDialog'
-import ImageCropper from '@/components/ImageCropper'
+import uploadDialog from './uploadDialog'
+
 const isActiveList = {
   0: '待审核',
   1: '审核通过'
@@ -112,7 +113,8 @@ export default {
   components: {
     Pagination,
     ShellDialog,
-    ImageCropper
+    uploadDialog
+
   },
   data() {
     return {

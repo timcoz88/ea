@@ -141,6 +141,12 @@ export const constantRoutes = [
         component: () => import('@/views/resource/task/index'),
         name: 'task',
         meta: { title: '定时任务', affix: true }
+      },
+      {
+        path: 'taskManager',
+        component: () => import('@/views/handler/record/index'),
+        name: 'taskManager',
+        meta: { title: '任务管理', affix: true }
       }
     ]
   },
@@ -154,12 +160,12 @@ export const constantRoutes = [
       icon: 'skill'
     },
     children: [
-      {
-        path: 'record',
-        component: () => import('@/views/handler/record/index'),
-        name: 'handlerRecord',
-        meta: { title: '基线收集', affix: true }
-      }
+      // {
+      //   path: 'record',
+      //   component: () => import('@/views/handler/record/index'),
+      //   name: 'handlerRecord',
+      //   meta: { title: '基线收集', affix: true }
+      // }
     ]
   }
 /*  {

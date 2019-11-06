@@ -49,10 +49,17 @@ export function updateTask(id, data) {
 }
 
 // 上传资源
-export function uploadShell(id, data) {
+// export function uploadShell(id, data) {
+//   return request({
+//     url: `v1/s/paramiko/upload/${id}`,
+//     method: 'post',
+//     data
+//   })
+// }
+export function uploadShell(data) {
   return request({
-    url: `v1/s/paramiko/upload/${id}`,
-    method: 'post',
+    url: 'v1/s/paramiko/upload',
+    method: 'put',
     data
   })
 }

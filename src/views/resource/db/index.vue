@@ -65,10 +65,10 @@
           <span>{{ row.modify_at | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="操作">
+      <el-table-column align="center" label="操作" width="200">
         <template slot-scope="{row, $index}">
-          <el-button type="text" @click="$refs.dbDialog.show(2, row, $index)">编辑</el-button>
-          <el-button type="text" @click="rowDel(row)">删除</el-button>
+          <el-button type="primary" icon="el-icon-edit" size="mini" @click="$refs.dbDialog.show(2, row, $index)">编辑</el-button>
+          <el-button type="danger" icon="el-icon-delete" size="mini" @click="rowDel(row)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>

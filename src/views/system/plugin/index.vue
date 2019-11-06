@@ -16,8 +16,9 @@
           </el-form-item>
         </el-form>
       </el-col>
-      <el-col :span="3" style="text-align:right">
+      <el-col :span="6" style="text-align:right">
         <el-button type="primary" @click="reload">项目重载</el-button>
+        <el-button type="primary" @click="$refs.uploadDialog.show()">新增插件</el-button>
       </el-col>
     </el-row>
     <el-tag class="tag">Plugins: {{ totalCount }}</el-tag>
@@ -55,11 +56,13 @@
       :limit.sync="pagination.pageSize"
       @pagination="changePage"
     />
+    <upload-dialog ref="uploadDialog" />
   </el-card>
 </template>
 <script>
 import { getPluginList, operateStatus, reload } from '@/api/plugin'
 import Pagination from '@/components/Pagination'
+import uploadDialog from './uploadDialog'
 export default {
   filters: {
     statusFilter(value) {
@@ -68,7 +71,8 @@ export default {
     }
   },
   components: {
-    Pagination
+    Pagination,
+    uploadDialog
   },
   data() {
     return {
@@ -83,6 +87,7 @@ export default {
       }
     }
   },
+
   created() {
     this.getList()
   },

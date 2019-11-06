@@ -39,7 +39,7 @@
           placeholder="请输入服务器ip"></el-input>
       </el-col>-->
       <el-col :span="6">
-        <el-button type="primary" @click="search" :disabled="!searchType">查询</el-button>
+        <el-button type="primary" :disabled="!searchType" @click="search">查询</el-button>
       </el-col>
     </el-row>
 
@@ -62,10 +62,10 @@
           <span>{{ row.modify_at | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="操作">
+      <el-table-column align="center" label="操作" width="200">
         <template slot-scope="{ row, $index}">
-          <el-button type="text" @click="$refs.pollingDialog.show(row, $index)">调度</el-button>
-          <el-button type="text" @click.native.prevent="deleteRow(row)">资源</el-button>
+          <el-button type="primary" size="mini" @click="$refs.pollingDialog.show(row, $index)">调度</el-button>
+          <el-button type="primary" size="mini" @click.native.prevent="deleteRow(row)">资源</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -96,7 +96,7 @@
       </div>
     </el-dialog>
 
-    <polling-dialog ref="pollingDialog" @confirm="confirm"></polling-dialog>
+    <polling-dialog ref="pollingDialog" @confirm="confirm" />
   </el-card>
 </template>
 <script>
@@ -160,7 +160,7 @@ export default {
       const params = this.searchType ? { [this.searchType]: searchVal } : {}
       return Object.assign({}, {
         page: this.pagination.page,
-        pageSize: this.pagination.pageSize,
+        pageSize: this.pagination.pageSize
       }, arg, params)
     },
     getList() {

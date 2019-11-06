@@ -4,29 +4,29 @@
     :visible.sync="isShowDialog"
   >
     <el-form
-      :model="componentForm"
       ref="componentForm"
+      :model="componentForm"
       :rules="componentFormRules"
       label-position="left"
       label-width="120px"
     >
-      <el-form-item label="状态" prop="shell_id">
+      <el-form-item label="接口名称" prop="shell_id">
         <el-select
-          @change="change"
           v-model="componentForm.shell_id"
-          style="width: 60%">
+          style="width: 60%"
+          @change="change"
+        >
           <el-option
             v-for="item in shellOptions"
             :key="item.value"
             :label="item.label"
             :value="item.value"
-          >
-          </el-option>
+          />
         </el-select>
       </el-form-item>
 
       <el-form-item label="调度详情">
-        <div v-loading="isLoading"> </div>
+        <div v-loading="isLoading" />
       </el-form-item>
 
     </el-form>
@@ -48,7 +48,7 @@ export default {
       cronPopover: false,
       componentForm: {},
       componentFormRules: {
-        status: [{ required: true, message: '请选择任务类型', trigger: 'change' }],
+        status: [{ required: true, message: '请选择任务类型', trigger: 'change' }]
       },
       options: [{
         value: 0,
@@ -84,9 +84,10 @@ export default {
       getShellList()
         .then(({ results }) => {
           this.shellOptions = results.results.map(v => {
+            console.log(v)
             return {
               value: v.id,
-              label: v.extension
+              label: v.name
             }
           })
         })
@@ -97,7 +98,6 @@ export default {
     confirm() {
       this.$refs.componentForm.validate(valid => {
         if (valid) {
-          console.log(this.componentForm)
           this.$emit('confirm', this.type, this.componentForm, this.index)
         }
       })

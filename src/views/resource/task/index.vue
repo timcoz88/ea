@@ -40,10 +40,10 @@
         </template>
       </el-table-column>
       <el-table-column align="center" label="下一次运行时间" prop="next_run_time" />
-      <el-table-column align="center" label="操作" prop="next_run_time">
+      <el-table-column align="center" label="操作" prop="next_run_time" width="200">
         <template slot-scope="{ row, $index }">
-          <el-button type="text" @click="$refs.taskDialog.show(2, row, $index)">编辑</el-button>
-          <el-button type="text" @click="rowDel(row)">删除</el-button>
+          <el-button type="primary" icon="el-icon-edit" size="mini" @click="$refs.taskDialog.show(2, row, $index)">编辑</el-button>
+          <el-button type="danger" icon="el-icon-delete" size="mini" @click="rowDel(row)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
