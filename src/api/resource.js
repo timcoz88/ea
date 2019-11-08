@@ -123,3 +123,11 @@ export function updateHost(id, data) {
     data
   })
 }
+
+export function collectionList(params) {
+  return request({
+    url: 'v1/service/records',
+    method: 'get',
+    params
+  })
+}
