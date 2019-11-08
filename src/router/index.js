@@ -147,6 +147,12 @@ export const constantRoutes = [
         component: () => import('@/views/resource/task/taskManager'),
         name: 'taskManager',
         meta: { title: '任务管理', affix: true }
+      },
+      {
+        path: 'audit',
+        component: () => import('@/views/resource/audit/index'),
+        name: 'audit',
+        meta: { title: '审计'}
       }
     ]
   },

@@ -44,28 +44,22 @@
     </el-row>
 
     <el-table v-loading="isLoading" :data="tableData" border style="width: 100%">
-      <el-table-column align="center" label="服务器名" prop="hostnm" />
-      <el-table-column align="center" label="服务器IP地址" prop="hostip" />
-      <el-table-column align="center" label="端口" prop="port" />
-      <el-table-column align="center" label="状态" prop="status">
-        <template slot-scope="{ row }">
-          <el-tag :type="row.status === 0 ? 'success' : 'danger'">{{ isActiveList[row.status] }}</el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="创建时间" prop="created_at">
+      <el-table-column align="center" label="参数" prop="body">
         <template slot-scope="{row}">
-          <span>{{ row.created_at | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
+          {{ row.body }}
         </template>
       </el-table-column>
-      <el-table-column align="center" label="修改时间" prop="modify_at">
+      <el-table-column align="center" label="条件" prop="args" >
         <template slot-scope="{row}">
-          <span>{{ row.modify_at | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
+          {{ row.args }}
         </template>
       </el-table-column>
-      <el-table-column align="center" label="操作" width="200">
-        <template slot-scope="{ row, $index}">
-          <el-button type="primary" size="mini" @click="$refs.pollingDialog.show(row, $index)">调度</el-button>
-          <el-button type="primary" size="mini" @click.native.prevent="deleteRow(row)">资源</el-button>
+      <el-table-column align="center" label="路由" prop="url" />
+      <el-table-column align="center" label="请求类型" prop="method" />
+      <el-table-column align="center" label="执行人" prop="user_name" />
+      <el-table-column align="center" label="返回结果" width="200">
+        <template slot-scope="scope">
+          <el-button size="mini" type="primary" icon="el-icon-view" @click="edit(scope.row)">查看详情</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -78,32 +72,17 @@
       @pagination="changePage"
     />
     <!-- 修改弹窗 -->
-    <el-dialog title="修改服务器资源" :visible.sync="editShow">
-      <el-form ref="ruleForm" :model="ruleForm">
-        <el-form-item label="服务器名" :label-width="formLabelWidth" prop="hostnm">
-          <el-input v-model="ruleForm.hostnm" autocomplete="off" />
-        </el-form-item>
-        <el-form-item label="服务器ip" :label-width="formLabelWidth" prop="hostip">
-          <el-input v-model="ruleForm.hostip" autocomplete="off" />
-        </el-form-item>
-        <el-form-item label="端口" :label-width="formLabelWidth" prop="port">
-          <el-input v-model="ruleForm.port" autocomplete="off" />
-        </el-form-item>
-      </el-form>
+    <el-dialog title="详情" :visible.sync="editShow">
+      <pre v-html="ruleForm.response"/>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="maskCancel('ruleForm')">取 消</el-button>
-        <el-button type="primary" @click="maskSureUpdate('ruleForm')">确 定</el-button>
+        <el-button type="primary" @click="editShow = false">关 闭</el-button>
       </div>
     </el-dialog>
-
-    <polling-dialog ref="pollingDialog" @confirm="confirm" />
   </el-card>
 </template>
 <script>
-import { getServiceHost, deleteHost, updateHost } from '@/api/resource'
+import { getAuditList } from '@/api/resource'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
-import PollingDialog from './pollingDialog'
-
 const isActiveList = {
   0: '在用',
   1: '失效'
@@ -111,8 +90,7 @@ const isActiveList = {
 
 export default {
   components: {
-    Pagination,
-    PollingDialog
+    Pagination
   },
   data() {
     return {
@@ -165,7 +143,7 @@ export default {
     },
     getList() {
       this.isLoading = true
-      getServiceHost(this.getParams())
+      getAuditList(this.getParams())
         .then(({ results }) => {
           this.tableData = results.results
           this.pagination.total = results.totalCount
@@ -181,9 +159,30 @@ export default {
     },
     edit(row) {
       this.editShow = true
-      this.ruleForm = Object.assign({}, row)
+      this.ruleForm.response = this.syntaxHighlight(row.response)
     },
-    deleteRow(row) {
+    syntaxHighlight(json) {
+      if (typeof json !== 'string') {
+        json = JSON.stringify(json, undefined, 2)
+      }
+      json = json.replace(/&/g, '&').replace(/</g, '<').replace(/>/g, '>')
+      return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function(match) {
+        var cls = 'number'
+        if (/^"/.test(match)) {
+          if (/:$/.test(match)) {
+            cls = 'key'
+          } else {
+            cls = 'string'
+          }
+        } else if (/true|false/.test(match)) {
+          cls = 'boolean'
+        } else if (/null/.test(match)) {
+          cls = 'null'
+        }
+        return '<span class="' + cls + '">' + match + '</span>'
+      })
+    },
+    /* deleteRow(row) {
       console.log(row)
       this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
         confirmButtonText: '确定',
@@ -206,17 +205,14 @@ export default {
             message: '已取消删除'
           })
         })
-    },
-    confirm() {
-      this.getList()
-    },
+    },*/
     // 取消弹窗
     maskCancel(formName) {
       this.editShow = false
       this.$refs[formName].resetFields()
-    },
+    }
     // 确认修改
-    maskSureUpdate(formName) {
+    /* maskSureUpdate(formName) {
       this.editShow = false
       const obj = this.ruleForm
       console.log(obj)
@@ -234,12 +230,19 @@ export default {
         this.getList()
       })
       this.$refs[formName].resetFields()
-    }
+    } */
   }
 }
 </script>
-<style scoped>
-  .find {
-    width: 130px;
+<style>
+  pre {outline: 1px solid #ccc; padding: 5px; margin: 5px;text-align: left;
+    white-space: pre-wrap!important;
+    word-wrap: break-word!important;
+    *white-space: normal!important;
   }
+  .string { color: green; }
+  .number { color: darkorange; }
+  .boolean { color: blue; }
+  .null { color: magenta; }
+  .key { color: red; }
 </style>

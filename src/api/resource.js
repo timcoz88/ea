@@ -131,3 +131,11 @@ export function collectionList(params) {
     params
   })
 }
+
+export function getAuditList(id, params) {
+  return request({
+    url: `v1/wiki/audits`,
+    method: 'get',
+    params
+  })
+}

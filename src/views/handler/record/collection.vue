@@ -107,6 +107,25 @@
       </div>
     </el-dialog>
 
+    <el-drawer
+      title="我是标题"
+      :visible.sync="drawer"
+      :direction="direction"
+      :before-close="handleClose">
+      <div class="pre">
+        <div class="content">
+          <div
+            v-for="(code, i) in result"
+            :key="i"
+            class="pre"
+          >
+            {{code}}
+          </div>
+        </div>
+      </div>
+
+    </el-drawer>
+
     <polling-dialog ref="pollingDialog" @confirm="confirm" />
   </el-card>
 </template>
@@ -127,6 +146,9 @@ export default {
   },
   data() {
     return {
+      result: '',
+      drawer: false,
+      direction: 'rtl',
       formLabelWidth: '120px',
       editShow: false,
       ruleForm: {},
@@ -156,6 +178,13 @@ export default {
     this.search()
   },
   methods: {
+    handleClose(done) {
+      this.$confirm('确认关闭？')
+        .then(_ => {
+          done();
+        })
+        .catch(_ => {});
+    },
     search() {
       this.pagination.page = 1
 
@@ -243,15 +272,29 @@ export default {
       this.$refs[formName].resetFields()
     },
     goResult(row) {
-      this.$router.push({ name: 'recordResult', params: {
-        name: row
-      }})
+      this.drawer = true
+      this.result = row.response
     }
   }
 }
 </script>
-<style scoped>
-  .find {
-    width: 130px;
+<style lang="scss">
+  .pre {
+    font: 12px Monaco, "Courier New", Courier, monospace;
+    line-height: 28px;
+    white-space: pre-wrap !important;
+    word-wrap: break-word !important;
+    *white-space: normal !important;
+  }
+
+  .content {
+    border: 1px solid #f0dacf;
+    padding: 5px 10px;
+  }
+
+  .sql-plan-title {
+    padding: 10px 0;
+    color: #EB4339;
+    font-size: 18px;
   }
 </style>

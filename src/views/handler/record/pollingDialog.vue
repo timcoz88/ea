@@ -10,11 +10,10 @@
       label-position="left"
       label-width="120px"
     >
-      <el-form-item label="接口名称" prop="shell_id">
+      <el-form-item label="脚本名称" prop="shell_id">
         <el-select
           v-model="componentForm.shell_id"
           style="width: 60%"
-          @change="change"
         >
           <el-option
             v-for="item in shellOptions"
@@ -25,14 +24,14 @@
         </el-select>
       </el-form-item>
 
-      <el-form-item label="调度详情">
+     <!-- <el-form-item label="调度详情">
         <div v-loading="isLoading" />
-      </el-form-item>
+      </el-form-item>-->
 
     </el-form>
     <div slot="footer" class="dialog-footer">
       <el-button @click="isShowDialog = false">取 消</el-button>
-      <el-button type="primary" @click="confirm">确 定</el-button>
+      <el-button type="primary" @click="confirm" :loading="isLoading">确 定</el-button>
     </div>
   </el-dialog>
 </template>
@@ -48,7 +47,7 @@ export default {
       cronPopover: false,
       componentForm: {},
       componentFormRules: {
-        status: [{ required: true, message: '请选择任务类型', trigger: 'change' }]
+        shell_id: [{ required: true, message: '请选择任务类型', trigger: 'change' }]
       },
       options: [{
         value: 0,
@@ -64,18 +63,6 @@ export default {
     }
   },
   methods: {
-    change(val) {
-      if (val) {
-        this.isLoading = true
-        fetchDetail(this.componentForm)
-          .then(res => {
-
-          })
-          .finally(() => {
-            this.isLoading = false
-          })
-      }
-    },
     show({ hostip }, index) {
       this.isShowDialog = true
       this.componentForm.hostip = hostip
@@ -98,7 +85,15 @@ export default {
     confirm() {
       this.$refs.componentForm.validate(valid => {
         if (valid) {
-          this.$emit('confirm', this.type, this.componentForm, this.index)
+          this.isLoading = true
+          fetchDetail(this.componentForm)
+            .then(({ results }) => {
+              this.$emit('confirm')
+              this.hide()
+            })
+            .finally(() => {
+              this.isLoading = false
+            })
         }
       })
     },
