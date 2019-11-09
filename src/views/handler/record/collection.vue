@@ -111,7 +111,8 @@
       title="我是标题"
       :visible.sync="drawer"
       :direction="direction"
-      :before-close="handleClose">
+      :before-close="handleClose"
+    >
       <div class="pre">
         <div class="content">
           <div
@@ -119,7 +120,7 @@
             :key="i"
             class="pre"
           >
-            {{code}}
+            {{ code }}
           </div>
         </div>
       </div>
@@ -181,9 +182,9 @@ export default {
     handleClose(done) {
       this.$confirm('确认关闭？')
         .then(_ => {
-          done();
+          done()
         })
-        .catch(_ => {});
+        .catch(_ => {})
     },
     search() {
       this.pagination.page = 1

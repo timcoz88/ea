@@ -139,3 +139,34 @@ export function getAuditList(id, params) {
     params
   })
 }
+
+export function addDb(data) {
+  return request({
+    url: '/v1/service/dbs',
+    method: 'post',
+    data
+  })
+}
+
+export function emailList(params) {
+  return request({
+    url: '/v1/users/sends',
+    method: 'get',
+    params
+  })
+}
+
+export function delEmail(id) {
+  return request({
+    url: `/v1/users/sends/${id}`,
+    method: 'delete'
+  })
+}
+
+export function editEmail(id, data) {
+  return request({
+    url: `/v1/users/sends/${id}`,
+    method: 'patch',
+    data
+  })
+}

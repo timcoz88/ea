@@ -26,39 +26,14 @@
           </el-select>
         </el-input>
       </el-col>
-      <!-- <el-col :span="6">
-        <el-input
-          v-model="searchForm.hostnm"
-          @keyup.enter.native="search"
-          placeholder="请输入服务器名"></el-input>
-      </el-col>
-      <el-col :span="6">
-        <el-input
-          v-model="searchForm.hostip"
-          @keyup.enter.native="search"
-          placeholder="请输入服务器ip"></el-input>
-      </el-col>-->
       <el-col :span="6">
         <el-button type="primary" :disabled="!searchType" @click="search">查询</el-button>
       </el-col>
     </el-row>
-
     <el-table v-loading="isLoading" :data="tableData" border style="width: 100%">
-      <el-table-column align="center" label="服务器名" prop="hostnm" />
-      <el-table-column align="center" label="服务器IP地址" prop="hostip" />
-      <el-table-column align="center" label="端口" prop="port" />
-      <el-table-column align="center" label="用户列表">
-        <template slot-scope="scope">
-          <el-dropdown>
-            <span class="el-dropdown-link">
-              用户列表<i class="el-icon-arrow-down el-icon--right" />
-            </span>
-            <el-dropdown-menu slot="dropdown">
-              <el-dropdown-item v-for="(item,index) in scope.row.osusers" :key="index">{{ Object.keys(item)[0] }}</el-dropdown-item>
-            </el-dropdown-menu>
-          </el-dropdown>
-        </template>
-      </el-table-column>
+      <el-table-column align="center" label="邮箱名" prop="email" />
+      <el-table-column align="center" label="电话" prop="phone" />
+      <el-table-column align="center" label="姓名" prop="name" />
       <el-table-column align="center" label="状态" prop="status">
         <template slot-scope="{ row }">
           <el-tag :type="row.status === 0 ? 'success' : 'danger'">{{ isActiveList[row.status] }}</el-tag>
@@ -74,14 +49,14 @@
           <span>{{ row.modify_at | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="操作" width="200">
+      <el-table-column align="center" label="操作" width="280">
         <template slot-scope="scope">
           <el-button size="mini" type="primary" icon="el-icon-edit" @click="edit(scope.row)">编辑</el-button>
           <el-button type="danger" size="small" icon="el-icon-delete" @click.native.prevent="deleteRow(scope.row)">删除</el-button>
+          <el-button type="danger" size="small" icon="el-icon-link" @click.native.prevent="ping(scope.row)">PING</el-button>
         </template>
       </el-table-column>
     </el-table>
-
     <pagination
       v-show="pagination.total > 0"
       :total="pagination.total"
@@ -90,31 +65,68 @@
       @pagination="changePage"
     />
     <!-- 修改弹窗 -->
-    <el-dialog title="修改服务器资源" :visible.sync="editShow">
-      <el-form ref="ruleForm" :model="ruleForm">
-        <el-form-item label="服务器名" :label-width="formLabelWidth" prop="hostnm">
-          <el-input v-model="ruleForm.hostnm" autocomplete="off" />
+    <el-dialog
+      title="编辑邮箱"
+      :visible.sync="editShow"
+    >
+      <el-form ref="ruleForm" :model="ruleForm" label-width="100px" class="demo-ruleForm">
+        <el-form-item label="姓名" prop="name">
+          <el-input v-model="ruleForm.name" />
         </el-form-item>
-        <el-form-item label="服务器ip" :label-width="formLabelWidth" prop="hostip">
-          <el-input v-model="ruleForm.hostip" autocomplete="off" />
+        <el-form-item label="电话" prop="phone">
+          <el-input v-model="ruleForm.phone" />
         </el-form-item>
-        <el-form-item label="端口" :label-width="formLabelWidth" prop="port">
-          <el-input v-model="ruleForm.port" autocomplete="off" />
+        <el-form-item
+          label="邮箱"
+          prop="email"
+          :rules="[
+            { required: true, message: '请输入邮箱地址', trigger: 'blur' },
+            { type: 'email', message: '请输入正确的邮箱地址', trigger: ['blur', 'change'] }
+          ]"
+        >
+          <el-input v-model="ruleForm.email" />
+        </el-form-item>
+        <el-form-item label="状态" prop="status">
+          <el-select v-model="ruleForm.status" style="width: 60%">
+            <el-option
+              v-for="item in options"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            />
+          </el-select>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="submitForm('ruleForm')">确定</el-button>
+          <el-button @click="editShow=false">取消</el-button>
         </el-form-item>
       </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="maskCancel('ruleForm')">取 消</el-button>
-        <el-button type="primary" @click="maskSureUpdate('ruleForm')">确 定</el-button>
-      </div>
+    </el-dialog>
+
+    <!-- ping弹窗 -->
+    <el-dialog
+      title="ping"
+      :visible.sync="pingShow"
+    >
+      <el-select v-model="pingValue" style="width: 60%">
+        <el-option
+          v-for="item in pingOptions"
+          :key="item.value"
+          :label="item.label"
+          :value="item.value"
+        />
+      </el-select>
+      <el-button type="primary" @click="surePing">确定</el-button>
     </el-dialog>
   </el-card>
 </template>
+
 <script>
-import { getServiceHost, deleteHost, updateHost } from '@/api/resource'
-import Pagination from '@/components/Pagination' // secondary package based on el-pagination
+import { emailList, delEmail, editEmail } from '@/api/resource'
+import Pagination from '@/components/Pagination'
 const isActiveList = {
   0: '在用',
-  1: '失效'
+  1: '停用'
 }
 
 export default {
@@ -123,37 +135,51 @@ export default {
   },
   data() {
     return {
-      formLabelWidth: '120px',
-      editShow: false,
+      pingValue: 0,
+      pingOptions: [{
+        value: 0,
+        label: '邮箱'
+      }, {
+        value: 1,
+        label: '手机'
+      }],
+      options: [{
+        value: 0,
+        label: '在用'
+      }, {
+        value: 1,
+        label: '停用'
+      }],
+      formLabelWidth: '200',
+      pingShow: false,
       ruleForm: {},
-      type: '',
-      placeholderText: '',
-      select: '',
-      isActiveList,
+      editShow: false,
       tableData: [],
       searchForm: {},
       storeForm: {},
+      searchType: '',
       isLoading: false,
+      isActiveList,
+      pingId: '',
+      searchOptions: [
+        {
+          value: 'phone',
+          label: '手机号'
+        },
+        {
+          value: 'email',
+          label: '邮箱'
+        }
+      ],
       pagination: {
         total: 0,
         pageSize: 10,
         page: 1
-      },
-      searchType: '',
-      searchOptions: [
-        {
-          value: 'hostip',
-          label: '请输入服务器ip'
-        },
-        {
-          value: 'hostnm',
-          label: '请输入服务器名'
-        }
-      ]
+      }
     }
   },
   created() {
-    this.search()
+    this.getList()
   },
   methods: {
     search() {
@@ -172,7 +198,7 @@ export default {
     },
     getList() {
       this.isLoading = true
-      getServiceHost(this.getParams())
+      emailList(this.getParams())
         .then(({ results }) => {
           this.tableData = results.results
           this.pagination.total = results.totalCount
@@ -198,7 +224,7 @@ export default {
         type: 'warning'
       })
         .then(() => {
-          deleteHost(row.id).then(res => {
+          delEmail(row.id).then(res => {
             console.log(res)
           })
           this.$message({
@@ -214,43 +240,44 @@ export default {
           })
         })
     },
-    // 取消弹窗
-    maskCancel(formName) {
-      this.editShow = false
-      this.$refs[formName].resetFields()
-    },
-    // 确认修改
-    maskSureUpdate(formName) {
-      this.editShow = false
-      const obj = this.ruleForm
-      console.log(obj)
-      const updateObj = {
-        hostnm: obj.hostnm,
-        hostip: obj.hostip,
-        port: obj.port
-      }
-      updateHost(obj.id, updateObj).then(res => {
-        console.log(res)
-        this.$message({
-          type: 'success',
-          message: '修改成功!'
-        })
-        this.getList()
+    submitForm(formName) {
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          const obj = this.ruleForm
+          const updateObj = {
+            name: obj.name,
+            phone: obj.phone,
+            status: obj.status,
+            email: obj.email
+          }
+          editEmail(obj.id, updateObj).then(res => {
+            console.log(res)
+            this.$message({
+              type: 'success',
+              message: '修改成功!'
+            })
+            this.editShow = false
+            this.getList()
+          })
+        } else {
+          console.log('error submit!!')
+          return false
+        }
       })
-      this.$refs[formName].resetFields()
+    },
+    ping(row) {
+      this.pingShow = true
+      this.pingId = row.id
+    },
+    surePing() {
+      this.$message({
+        type: 'success',
+        message: 'ping成功!'
+      })
     }
   }
 }
 </script>
-<style scoped>
-.find {
-  width: 130px;
-}
- .el-dropdown-link {
-    cursor: pointer;
-    color: #409EFF;
-  }
-  .el-icon-arrow-down {
-    font-size: 12px;
-  }
+
+<style>
 </style>

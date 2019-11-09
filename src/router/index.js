@@ -137,22 +137,22 @@ export const constantRoutes = [
         meta: { title: '脚本资源', affix: true }
       },
       {
+        path: 'email',
+        component: () => import('@/views/resource/email/index'),
+        name: 'email',
+        meta: { title: '邮箱管理', affix: true }
+      },
+      {
         path: 'task',
         component: () => import('@/views/resource/task/index'),
         name: 'task',
         meta: { title: '定时任务', affix: true }
       },
       {
-        path: 'taskManager',
-        component: () => import('@/views/resource/task/taskManager'),
-        name: 'taskManager',
-        meta: { title: '任务管理', affix: true }
-      },
-      {
         path: 'audit',
         component: () => import('@/views/resource/audit/index'),
         name: 'audit',
-        meta: { title: '审计'}
+        meta: { title: '审计' }
       }
     ]
   },
@@ -178,6 +178,12 @@ export const constantRoutes = [
         name: 'recordResult',
         meta: { 'title': '表格结果', affix: true },
         hidden: true
+      },
+      {
+        path: 'taskManager',
+        component: () => import('@/views/resource/task/taskManager'),
+        name: 'taskManager',
+        meta: { title: '任务管理', affix: true }
       }
     ]
   }

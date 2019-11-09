@@ -31,9 +31,41 @@
         </el-col>
         <el-col :span="6">
           <el-button type="primary" :disabled="!searchType" @click="search">查询</el-button>
+          <el-button type="primary" @click="addShow=true">新增</el-button>
         </el-col>
       </el-form>
-
+      <!-- 新增 -->
+      <el-dialog
+        title="新增数据库资源"
+        :visible.sync="addShow"
+      >
+        <el-form ref="ruleForm" :model="ruleForm" :rules="rules" label-width="100px" class="demo-ruleForm">
+          <el-form-item label="IP地址" prop="hostip">
+            <el-input v-model="ruleForm.hostip" />
+          </el-form-item>
+          <el-form-item label="数据库名" prop="dsn" class="db-name">
+            <div class="db-box">
+              <el-tooltip class="item" effect="dark" content="server_name" placement="right">
+                <img src="@/assets/notice.png" class="notice-img">
+              </el-tooltip>
+              <el-input v-model="ruleForm.dsn" />
+            </div>
+          </el-form-item>
+          <el-form-item label="端口" prop="dbport">
+            <el-input v-model="ruleForm.dbport" />
+          </el-form-item>
+          <el-form-item label="用户名" prop="dbuser">
+            <el-input v-model="ruleForm.dbuser" />
+          </el-form-item>
+          <el-form-item label="密码" prop="dbpwd">
+            <el-input v-model="ruleForm.dbpwd" type="password" />
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" @click="submitForm('ruleForm')">确定</el-button>
+            <el-button @click="resetForm('ruleForm')">重置</el-button>
+          </el-form-item>
+        </el-form>
+      </el-dialog>
     </el-row>
 
     <el-table
@@ -85,7 +117,7 @@
   </el-card>
 </template>
 <script>
-import { getDbList, delDb, updateDb } from '@/api/resource'
+import { getDbList, delDb, updateDb, addDb } from '@/api/resource'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 import DbDialog from './DbDialog'
 const isActiveList = {
@@ -99,6 +131,7 @@ export default {
   },
   data() {
     return {
+      addShow: false,
       isActiveList,
       tableData: [],
       searchForm: {},
@@ -131,7 +164,22 @@ export default {
           label: '数据库架构'
         }
       ],
-      searchType: ''
+      searchType: '',
+      ruleForm: {
+        hostip: '',
+        dsn: '',
+        dbport: '',
+        dbuser: '',
+        dbpwd: ''
+      },
+      rules: {
+        hostip: [{ required: true, message: '请输入IP地址', trigger: 'blur' }],
+        dsn: [{ required: true, message: '请输入数据库名', trigger: 'blur' }],
+        dbport: [{ required: true, message: '请输入端口', trigger: 'blur' }],
+        dbuser: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
+        dbpwd: [{ required: true, message: '请输入密码', trigger: 'blur' }]
+
+      }
     }
   },
   created() {
@@ -206,7 +254,39 @@ export default {
       this.pagination.page = page
       this.pagination.pageSize = limit
       this.getList()
+    },
+    submitForm(formName) {
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          addDb(this.ruleForm).then(res => {
+            this.$message({
+              type: 'success',
+              message: '新增成功'
+            })
+            this.addShow = false
+            this.$refs[formName].resetFields()
+          })
+        } else {
+          return false
+        }
+      })
+    },
+    resetForm(formName) {
+      this.$refs[formName].resetFields()
     }
   }
 }
 </script>
+<style scoped>
+.db-box{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.notice-img{
+  width: 14px;
+  object-fit: cover;
+  position: relative;
+  left: -10px;
+}
+</style>
