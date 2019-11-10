@@ -21,7 +21,7 @@
         </el-select>
       </el-form-item>
       <el-form-item label="运行时间" prop="cron_value">
-        <el-popover v-model="cronPopover">
+        <el-popover v-model="cronPopover" v-if="componentForm.cron_type === 'cron'">
           <cron i18n="cn" @change="changeCron" @close="cronPopover = false" />
           <el-input
             slot="reference"
@@ -31,6 +31,11 @@
             @click="cronPopover = true"
           />
         </el-popover>
+        <el-input
+          v-else
+          v-model="componentForm.cron_value"
+          style="width: 60%"
+          placeholder="请输入定时策略"></el-input>
       </el-form-item>
     </el-form>
     <div slot="footer" class="dialog-footer">

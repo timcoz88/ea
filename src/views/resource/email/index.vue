@@ -49,11 +49,22 @@
           <span>{{ row.modify_at | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="操作" width="280">
+      <el-table-column align="center" label="操作" width="300">
         <template slot-scope="scope">
           <el-button size="mini" type="primary" icon="el-icon-edit" @click="edit(scope.row)">编辑</el-button>
           <el-button type="danger" size="small" icon="el-icon-delete" @click.native.prevent="deleteRow(scope.row)">删除</el-button>
-          <el-button type="danger" size="small" icon="el-icon-link" @click.native.prevent="ping(scope.row)">PING</el-button>
+          <el-dropdown @command="handleCommand">
+            <el-button
+              type="danger"
+              size="small"
+              >PING
+              <i class="el-icon-arrow-down el-icon--right"></i>
+            </el-button>
+            <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item command="phone">手机</el-dropdown-item>
+              <el-dropdown-item command="email">邮箱</el-dropdown-item>
+            </el-dropdown-menu>
+          </el-dropdown>
         </template>
       </el-table-column>
     </el-table>
@@ -182,6 +193,9 @@ export default {
     this.getList()
   },
   methods: {
+    handleCommand(command) {
+      this.$message('click on item ' + command)
+    },
     search() {
       this.pagination.page = 1
 

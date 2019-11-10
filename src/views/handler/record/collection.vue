@@ -108,19 +108,22 @@
     </el-dialog>
 
     <el-drawer
-      title="我是标题"
+      title="结果详情"
       :visible.sync="drawer"
       :direction="direction"
+      size="100%"
       :before-close="handleClose"
     >
-      <div class="pre">
-        <div class="content">
-          <div
-            v-for="(code, i) in result"
-            :key="i"
-            class="pre"
-          >
-            {{ code }}
+      <div style="overflow-y: scroll;height: 85vh;padding-left: 25px">
+        <div class="pre">
+          <div class="content">
+            <div
+              v-for="(code, key) in result"
+              :key="key"
+              class="pre"
+            >
+              <span>{{key}}:</span> {{ code }}
+            </div>
           </div>
         </div>
       </div>
@@ -149,7 +152,7 @@ export default {
     return {
       result: '',
       drawer: false,
-      direction: 'rtl',
+      direction: 'btt',
       formLabelWidth: '120px',
       editShow: false,
       ruleForm: {},
@@ -282,10 +285,15 @@ export default {
 <style lang="scss">
   .pre {
     font: 12px Monaco, "Courier New", Courier, monospace;
-    line-height: 28px;
+    line-height: 16px;
     white-space: pre-wrap !important;
     word-wrap: break-word !important;
     *white-space: normal !important;
+    span{
+      float: left;
+      display: inline-block;
+      min-width: 100px;
+    }
   }
 
   .content {
