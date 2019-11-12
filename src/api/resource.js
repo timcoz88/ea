@@ -170,3 +170,12 @@ export function editEmail(id, data) {
     data
   })
 }
+
+export function addEmail(data) {
+  return request({
+    url: '/v1/users/sends',
+    method: 'post',
+    data
+  })
+}
+

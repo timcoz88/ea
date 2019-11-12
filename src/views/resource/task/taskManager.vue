@@ -64,7 +64,7 @@
       </el-table-column>
       <el-table-column align="center" label="操作" width="200">
         <template slot-scope="{ row, $index}">
-          <el-button type="primary" size="mini" @click="$refs.pollingDialog.show(row, $index)">调度</el-button>
+          <el-button v-if="row.audsta==1" type="primary" size="mini" @click="$refs.pollingDialog.show(row, $index)">调度</el-button>
           <el-button type="primary" size="mini" @click.native.prevent="goHandleRecord(row)">调度记录</el-button>
         </template>
       </el-table-column>

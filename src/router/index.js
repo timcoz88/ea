@@ -163,7 +163,7 @@ export const constantRoutes = [
     name: 'handler',
     alwaysShow: true,
     meta: {
-      title: '操作记录',
+      title: '资源调度',
       icon: 'skill'
     },
     children: [
@@ -183,7 +183,7 @@ export const constantRoutes = [
         path: 'taskManager',
         component: () => import('@/views/resource/task/taskManager'),
         name: 'taskManager',
-        meta: { title: '任务管理', affix: true }
+        meta: { title: '脚本调度', affix: true }
       }
     ]
   }

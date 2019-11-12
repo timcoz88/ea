@@ -66,6 +66,7 @@ export default {
           this.$message.success('新增成功！')
           this.uploadShow = false
           this.$refs.fileUpload.clearFiles()
+          this.$emit('successUplod', 'success')
         })
       }
     }

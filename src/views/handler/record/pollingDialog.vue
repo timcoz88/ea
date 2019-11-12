@@ -24,14 +24,14 @@
         </el-select>
       </el-form-item>
 
-     <!-- <el-form-item label="调度详情">
+      <!-- <el-form-item label="调度详情">
         <div v-loading="isLoading" />
       </el-form-item>-->
 
     </el-form>
     <div slot="footer" class="dialog-footer">
       <el-button @click="isShowDialog = false">取 消</el-button>
-      <el-button type="primary" @click="confirm" :loading="isLoading">确 定</el-button>
+      <el-button type="primary" :loading="isLoading" @click="confirm">确 定</el-button>
     </div>
   </el-dialog>
 </template>
@@ -63,12 +63,15 @@ export default {
     }
   },
   methods: {
-    show({ hostip }, index) {
+
+    show({ hostip, status }, index) {
       this.isShowDialog = true
       this.componentForm.hostip = hostip
       this.title = '调度详情'
-
-      getShellList()
+      const obj = {
+        audsta: status
+      }
+      getShellList(obj)
         .then(({ results }) => {
           this.shellOptions = results.results.map(v => {
             console.log(v)

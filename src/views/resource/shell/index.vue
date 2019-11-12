@@ -54,9 +54,9 @@
         </template>
       </el-table-column>
       <el-table-column align="center" label="大小" prop="size" />
-      <el-table-column align="center" label="状态" prop="status">
+      <el-table-column align="center" label="状态" prop="audsta">
         <template slot-scope="{ row }">
-          <el-tag :type="row.status === 0 ? 'success' : 'danger'">{{ isActiveList[row.status] }}</el-tag>
+          <el-tag :type="row.audsta|statusFilter">{{ isActiveList[row.audsta] }}</el-tag>
         </template>
       </el-table-column>
       <el-table-column align="center" label="创建时间" prop="created_at">
@@ -70,11 +70,23 @@
         </template>
       </el-table-column>
       <el-table-column align="center" label="操作" width="360">
-        <template slot-scope="{row, $index}">
-          <el-button type="primary" icon="el-icon-edit" size="mini" @click="$refs.shellDialog.show(2, row, $index)">编辑</el-button>
-          <el-button type="danger" icon="el-icon-delete" size="mini" @click="rowDel(row)">删除</el-button>
-          <el-button type="primary" icon="el-icon-check" size="mini" @click="rowConfirm(row)">审核</el-button>
-          <el-button type="primary" icon="el-icon-download" size="mini" @click="rowDownload(row)">下载</el-button>
+        <template slot-scope="scope">
+          <!-- <el-button type="primary" icon="el-icon-edit" size="mini" @click="$refs.shellDialog.show(2, row, $index)">编辑</el-button> -->
+          <el-button type="danger" icon="el-icon-delete" size="mini" @click="rowDel(scope.row)">删除</el-button>
+          <!-- <el-button type="primary" icon="el-icon-check" size="mini" @click="rowConfirm(row)">审核</el-button> -->
+          <el-dropdown @command="handleCommand">
+            <el-button
+              type="danger"
+              size="mini"
+            >审核
+              <i class="el-icon-arrow-down el-icon--right" />
+            </el-button>
+            <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item :command="{status:1,row:scope.row}">通过</el-dropdown-item>
+              <el-dropdown-item :command="{status:2,row:scope.row}">未通过</el-dropdown-item>
+            </el-dropdown-menu>
+          </el-dropdown>
+          <el-button type="primary" icon="el-icon-download" size="mini" @click="rowDownload(scope.row)">下载</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -88,7 +100,7 @@
     />
 
     <shell-dialog ref="shellDialog" @confirm="confirm" />
-    <upload-dialog ref="uploadDialog" />
+    <upload-dialog ref="uploadDialog" @successUplod="successUplod" />
     <!-- <image-cropper
       v-show="imagecropperShow"
       :key="imagecropperKey"
@@ -107,7 +119,8 @@ import uploadDialog from './uploadDialog'
 
 const isActiveList = {
   0: '待审核',
-  1: '审核通过'
+  1: '审核通过',
+  2: '未通过'
 }
 export default {
   components: {
@@ -115,6 +128,23 @@ export default {
     ShellDialog,
     uploadDialog
 
+  },
+  filters: {
+    statusFilter(value) {
+      let status = ''
+      switch (value) {
+        case 0:
+          status = 'warning'
+          break
+        case 1:
+          status = 'success'
+          break
+
+        default:
+          status = 'danger'
+      }
+      return status
+    }
   },
   data() {
     return {
@@ -151,6 +181,61 @@ export default {
     this.search()
   },
   methods: {
+    successUplod(data) {
+      console.log(data)
+      if (data === 'success') {
+        this.getList()
+      }
+    },
+    handleCommand(command) {
+      if (command.status === 1) {
+        this.$confirm('是否审核通过', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          const obj = {
+            audsta: 1
+          }
+          confirmShell(command.row.id, obj).then(() => {
+            this.$message({
+              type: 'success',
+              message: '操作成功!'
+            })
+
+            this.getList()
+          })
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消'
+          })
+        })
+      } else {
+        this.$confirm('是否审核不通过', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          const obj = {
+            audsta: 2
+          }
+          confirmShell(command.row.id, obj).then(() => {
+            this.$message({
+              type: 'success',
+              message: '操作成功!'
+            })
+
+            this.getList()
+          })
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消'
+          })
+        })
+      }
+    },
     cropSuccess(resData) {
       this.imagecropperShow = false
       this.imagecropperKey = this.imagecropperKey + 1

@@ -28,6 +28,7 @@
       </el-col>
       <el-col :span="6">
         <el-button type="primary" :disabled="!searchType" @click="search">查询</el-button>
+        <el-button type="primary" @click="addShow=true">新增邮箱</el-button>
       </el-col>
     </el-row>
     <el-table v-loading="isLoading" :data="tableData" border style="width: 100%">
@@ -57,8 +58,8 @@
             <el-button
               type="danger"
               size="small"
-              >PING
-              <i class="el-icon-arrow-down el-icon--right"></i>
+            >PING
+              <i class="el-icon-arrow-down el-icon--right" />
             </el-button>
             <el-dropdown-menu slot="dropdown">
               <el-dropdown-item command="phone">手机</el-dropdown-item>
@@ -75,6 +76,31 @@
       :limit.sync="pagination.pageSize"
       @pagination="changePage"
     />
+    <!-- 新增弹窗 -->
+    <el-dialog title="新增邮箱" :visible.sync="addShow">
+      <el-form ref="addForm" :model="addForm" label-width="100px" class="demo-ruleForm">
+        <el-form-item label="姓名" prop="name">
+          <el-input v-model="addForm.name" />
+        </el-form-item>
+        <el-form-item label="电话" prop="phone">
+          <el-input v-model="addForm.phone" />
+        </el-form-item>
+        <el-form-item
+          label="邮箱"
+          prop="email"
+          :rules="[
+            { required: true, message: '请输入邮箱地址', trigger: 'blur' },
+            { type: 'email', message: '请输入正确的邮箱地址', trigger: ['blur', 'change'] }
+          ]"
+        >
+          <el-input v-model="addForm.email" />
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="submitFormAdd('addForm')">确定</el-button>
+          <el-button @click="addShow=false">取消</el-button>
+        </el-form-item>
+      </el-form>
+    </el-dialog>
     <!-- 修改弹窗 -->
     <el-dialog
       title="编辑邮箱"
@@ -133,7 +159,7 @@
 </template>
 
 <script>
-import { emailList, delEmail, editEmail } from '@/api/resource'
+import { emailList, delEmail, editEmail, addEmail } from '@/api/resource'
 import Pagination from '@/components/Pagination'
 const isActiveList = {
   0: '在用',
@@ -146,6 +172,12 @@ export default {
   },
   data() {
     return {
+      addForm: {
+        name: '',
+        phone: '',
+        email: ''
+      },
+      addShow: false,
       pingValue: 0,
       pingOptions: [{
         value: 0,
@@ -253,6 +285,21 @@ export default {
             message: '已取消删除'
           })
         })
+    },
+    submitFormAdd(formName) {
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          addEmail(this.addForm).then(res => {
+            this.$message({
+              type: 'success',
+              message: '新增成功!'
+            })
+            this.addShow = false
+            this.getList()
+            this.$refs[formName].resetFields()
+          })
+        }
+      })
     },
     submitForm(formName) {
       this.$refs[formName].validate((valid) => {

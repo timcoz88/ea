@@ -72,10 +72,10 @@
           <span>{{ row.end_time | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="操作" width="248">
+      <el-table-column align="center" label="操作" width="80">
         <template slot-scope="{ row, $index}">
-          <el-button type="primary" size="mini" @click="$refs.pollingDialog.show(row, $index)">调度</el-button>
-          <el-button type="primary" size="mini" @click.native.prevent="deleteRow(row)">资源</el-button>
+          <!-- <el-button type="primary" size="mini" @click="$refs.pollingDialog.show(row, $index)">调度</el-button>
+          <el-button type="primary" size="mini" @click.native.prevent="deleteRow(row)">资源</el-button> -->
           <el-button type="primary" size="mini" @click="goResult(row)">结果</el-button>
         </template>
       </el-table-column>
@@ -122,7 +122,7 @@
               :key="key"
               class="pre"
             >
-              <span>{{key}}:</span> {{ code }}
+              <span>{{ key }}:</span> {{ code }}
             </div>
           </div>
         </div>
