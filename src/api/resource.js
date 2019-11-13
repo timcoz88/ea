@@ -179,3 +179,11 @@ export function addEmail(data) {
   })
 }
 
+export function downloadShell(id, params) {
+  return request({
+    url: `/v1/s/paramiko/download/${id}`,
+    method: 'get',
+    params
+  })
+}
+

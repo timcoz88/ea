@@ -115,17 +115,33 @@
       :before-close="handleClose"
     >
       <div style="overflow-y: scroll;height: 85vh;padding-left: 25px">
-        <div class="pre">
-          <div class="content">
+        <el-table :data="result" border>
+          <el-table-column align="center" label="检查项" prop="item1" width="200px"></el-table-column>
+          <el-table-column align="left" label="检查结果" prop="item2" >
+            <template slot-scope="{ row }">
+              <div class="pre content-td">{{ row.item2 }}</div>
+            </template>
+          </el-table-column>
+          <el-table-column align="left" label="检查命令" prop="item3" width="100px"></el-table-column>
+          <el-table-column align="left" label="检查是否通过" prop="item4" width="100px"></el-table-column>
+          <el-table-column align="left" label="备注" prop="item5" width="100px"></el-table-column>
+        </el-table>
+        <!--<div class="">
+          <div class="content" style="position: relative">
+            <div class="content-th">
+              <div class="content-td content-title" style="position: absolute;width: 200px;padding: 15px 10px">检查项</div>
+              <div style="margin-left: 200px;padding: 15px 10px" class="content-td content-title">检查结果</div>
+            </div>
             <div
               v-for="(code, key) in result"
               :key="key"
-              class="pre"
+              class="content-th"
             >
-              <span>{{ key }}:</span> {{ code }}
+              <div class="content-td" style="position: absolute;width: 200px;padding: 15px 10px">{{ key }}</div>
+              <div style="margin-left: 200px;padding: 15px 10px" class="pre content-td">{{ code }}</div>
             </div>
           </div>
-        </div>
+        </div>-->
       </div>
 
     </el-drawer>
@@ -150,7 +166,7 @@ export default {
   },
   data() {
     return {
-      result: '',
+      result: [],
       drawer: false,
       direction: 'btt',
       formLabelWidth: '120px',
@@ -277,7 +293,12 @@ export default {
     },
     goResult(row) {
       this.drawer = true
-      this.result = row.response
+      let result = []
+      Object.entries(row.response).forEach(([key, val]) => {
+        result.push({ item1: key, item2: val, item3: '', item4: '', item5: '' })
+      })
+      console.log(result)
+      this.result = result
     }
   }
 }
@@ -298,7 +319,17 @@ export default {
 
   .content {
     border: 1px solid #f0dacf;
-    padding: 5px 10px;
+    .content-td + .content-td{
+      border-left: 1px solid #f0dacf;
+    }
+
+    .content-th +.content-th{
+      border-top: 1px solid #f0dacf;
+    }
+
+    .content-title{
+      color: #999;
+    }
   }
 
   .sql-plan-title {

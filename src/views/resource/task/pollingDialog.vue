@@ -14,7 +14,6 @@
         <el-select
           v-model="componentForm.shell_id"
           style="width: 60%"
-          @change="change"
         >
           <el-option
             v-for="item in shellOptions"
@@ -25,14 +24,14 @@
         </el-select>
       </el-form-item>
 
-      <el-form-item label="调度详情">
+      <!--<el-form-item label="调度详情">
         <div v-loading="isLoading" />
-      </el-form-item>
+      </el-form-item>-->
 
     </el-form>
     <div slot="footer" class="dialog-footer">
       <el-button @click="isShowDialog = false">取 消</el-button>
-      <el-button type="primary" @click="confirm">确 定</el-button>
+      <el-button type="primary" @click="confirm" :loading="isLoading">确 定</el-button>
     </div>
   </el-dialog>
 </template>
@@ -98,7 +97,14 @@ export default {
     confirm() {
       this.$refs.componentForm.validate(valid => {
         if (valid) {
-          this.$emit('confirm', this.type, this.componentForm, this.index)
+          this.isLoading = true
+          fetchDetail(this.componentForm)
+            .then(res => {
+              this.$emit('confirm', this.type, this.componentForm, this.index)
+            })
+            .finally(() => {
+              this.isLoading = false
+            })
         }
       })
     },

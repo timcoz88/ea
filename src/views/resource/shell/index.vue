@@ -112,7 +112,7 @@
   </el-card>
 </template>
 <script>
-import { getShellList, delShell, confirmShell, updateShell } from '@/api/resource'
+import { getShellList, delShell, confirmShell, updateShell, downloadShell } from '@/api/resource'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 import ShellDialog from './ShellDialog'
 import uploadDialog from './uploadDialog'
@@ -335,7 +335,9 @@ export default {
       })
     },
     rowDownload(row) {
-
+      downloadShell(row.id).then(res => {
+        console.log(res)
+      })
     }
   }
 }

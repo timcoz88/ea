@@ -171,6 +171,7 @@ export const constantRoutes = [
         path: 'record',
         component: () => import('@/views/handler/record/collection'),
         name: 'handlerRecord',
+        hidden: true,
         meta: { title: '基线收集', affix: true }
       }, {
         path: 'recordResult',

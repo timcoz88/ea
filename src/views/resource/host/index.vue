@@ -40,6 +40,7 @@
       </el-col>-->
       <el-col :span="6">
         <el-button type="primary" :disabled="!searchType" @click="search">查询</el-button>
+        <!--<el-button type="primary">新增服务器</el-button>-->
       </el-col>
     </el-row>
 
