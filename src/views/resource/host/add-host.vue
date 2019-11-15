@@ -72,10 +72,10 @@
       :visible.sync="isAppendDialog"
       append-to-body>
       <el-form ref="userForm" :model="userForm" :rules="userFormRules">
-        <el-form-item label="指向" :label-width="formLabelWidth" prop="user" >
+        <el-form-item label="用户名" :label-width="formLabelWidth" prop="user" >
           <el-input v-model="userForm.user" autocomplete="off" style="width: 60%" />
         </el-form-item>
-        <el-form-item label="被指向" :label-width="formLabelWidth" prop="password">
+        <el-form-item label="密码" :label-width="formLabelWidth" prop="password">
           <el-input v-model="userForm.password" autocomplete="off" style="width: 60%" />
         </el-form-item>
       </el-form>
