@@ -232,12 +232,14 @@ export default {
           ostype: row.ostype
         }
 
+        this.userList = []
+        this.suList = []
         row.osusers.forEach(v => {
           this.userList.push({ user: Object.keys(v)[0], password: Object.values(v)[0] })
         })
 
         row.su.forEach(v => {
-          this.suList.push({ pointTo: v[0], bePointTo: [1], default: v[2] })
+          this.suList.push({ pointTo: v[0], bePointTo: v[1], default: v[2] })
         })
       }
     },
