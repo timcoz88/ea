@@ -228,7 +228,7 @@ export default {
       } else if (type === 2) {
         this.componentForm = {
           hostip: row.hostip,
-          port: row.ostype,
+          port: row.port,
           ostype: row.ostype
         }
 
