@@ -273,12 +273,12 @@ export default {
         .then(() => {
           delEmail(row.id).then(res => {
             console.log(res)
+            this.$message({
+              type: 'success',
+              message: '删除成功!'
+            })
+            this.getList()
           })
-          this.$message({
-            type: 'success',
-            message: '删除成功!'
-          })
-          this.getList()
         })
         .catch(() => {
           this.$message({

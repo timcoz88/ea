@@ -11,7 +11,7 @@ import Layout from '@/layout'
 import chartsRouter from './modules/charts'
 
 import nestedRouter from './modules/nested'*/
-import tableRouter from './modules/table'
+// import tableRouter from './modules/table'
 
 /**
  * Note: sub-menu only appear when route children.length >= 1
@@ -265,7 +265,7 @@ export const asyncRoutes = [
   },
 
   ,*/
-  {
+ /* {
     path: '/icon',
     component: Layout,
     children: [
@@ -276,13 +276,13 @@ export const asyncRoutes = [
         meta: { title: 'Icons', icon: 'icon', noCache: true }
       }
     ]
-  },
+  },*/
   /** when your routing map is too long, you can split it into small modules **/
   /* componentsRouter,
   chartsRouter,
   nestedRouter,
   , */
-  tableRouter,
+  // tableRouter,
 
   /* {
     path: '/example',
