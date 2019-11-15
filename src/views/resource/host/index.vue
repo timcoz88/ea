@@ -40,7 +40,7 @@
       </el-col>-->
       <el-col :span="6">
         <el-button type="primary" :disabled="!searchType" @click="search">查询</el-button>
-        <el-button type="primary" @click="$refs.addHost.show()">新增服务器</el-button>
+        <el-button type="primary" @click="$refs.addHost.show(1)">新增服务器</el-button>
       </el-col>
     </el-row>
 
@@ -77,7 +77,7 @@
       </el-table-column>
       <el-table-column align="center" label="操作" width="200">
         <template slot-scope="scope">
-          <el-button size="mini" type="primary" icon="el-icon-edit" @click="edit(scope.row)">编辑</el-button>
+          <el-button size="mini" type="primary" icon="el-icon-edit" @click="$refs.addHost.show(2, scope.row)">编辑</el-button>
           <el-button type="danger" size="small" icon="el-icon-delete" @click.native.prevent="deleteRow(scope.row)">删除</el-button>
         </template>
       </el-table-column>

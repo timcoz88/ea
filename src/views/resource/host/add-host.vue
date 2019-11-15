@@ -76,7 +76,7 @@
           <el-input v-model="userForm.user" autocomplete="off" style="width: 60%" />
         </el-form-item>
         <el-form-item label="密码" :label-width="formLabelWidth" prop="password">
-          <el-input v-model="userForm.password" autocomplete="off" style="width: 60%" />
+          <el-input v-model="userForm.password" type="password" autocomplete="off" style="width: 60%" />
         </el-form-item>
       </el-form>
 
@@ -116,7 +116,11 @@ export default {
       title: '',
       formLabelWidth: '120px',
       isShowDialog: false,
-      componentForm: {},
+      componentForm: {
+        hostip: '',
+        port: '',
+        ostype: ''
+      },
       componentFormRules: {
         hostip: [{ required: true, message: '请输入服务器ip', trigger: 'blur' }],
         port: [{ required: true, message: '请输入端口号', trigger: 'blur' }],
@@ -210,8 +214,32 @@ export default {
       this.suList[index].default = 'default'
       this.suList.splice()
     },
-    show() {
+    // 1新增2编辑
+    show(type, row) {
       this.isShowDialog = true
+
+      if (type === 1) {
+        this.$nextTick(() => {
+          this.$refs.componentForm.resetFields()
+        })
+
+        this.suList = []
+        this.userList = []
+      } else if (type === 2) {
+        this.componentForm = {
+          hostip: row.hostip,
+          port: row.ostype,
+          ostype: row.ostype
+        }
+
+        row.osusers.forEach(v => {
+          this.userList.push({ user: Object.keys(v)[0], password: Object.values(v)[0] })
+        })
+
+        row.su.forEach(v => {
+          this.suList.push({ pointTo: v[0], bePointTo: [1], default: v[2] })
+        })
+      }
     },
     hide() {
       this.isShowDialog = false
@@ -236,7 +264,7 @@ export default {
 
           const su = []
           this.suList.forEach(v => {
-            su.push([v.pointTo, v.bePointTo, v.default])
+            su.push([v.pointTo, v.bePointTo, v.default ? v.default : 'undefault'])
           })
           const params = {
             su,
