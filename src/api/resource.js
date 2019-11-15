@@ -187,3 +187,11 @@ export function downloadShell(id, params) {
   })
 }
 
+export function postServiceHost(data) {
+  return request({
+    url: 'v1/service/hosts',
+    method: 'post',
+    data
+  })
+}
+

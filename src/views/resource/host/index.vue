@@ -40,7 +40,7 @@
       </el-col>-->
       <el-col :span="6">
         <el-button type="primary" :disabled="!searchType" @click="search">查询</el-button>
-        <!--<el-button type="primary">新增服务器</el-button>-->
+        <el-button type="primary" @click="$refs.addHost.show()">新增服务器</el-button>
       </el-col>
     </el-row>
 
@@ -108,10 +108,13 @@
         <el-button type="primary" @click="maskSureUpdate('ruleForm')">确 定</el-button>
       </div>
     </el-dialog>
+
+    <addHost ref="addHost" @confirm="getList"></addHost>
   </el-card>
 </template>
 <script>
 import { getServiceHost, deleteHost, updateHost } from '@/api/resource'
+import addHost from './add-host'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 const isActiveList = {
   0: '在用',
@@ -120,7 +123,8 @@ const isActiveList = {
 
 export default {
   components: {
-    Pagination
+    Pagination,
+    addHost
   },
   data() {
     return {
