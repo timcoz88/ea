@@ -122,9 +122,76 @@
               <div class="pre content-td">{{ row.item2 }}</div>
             </template>
           </el-table-column>
-          <el-table-column align="left" label="检查命令" prop="item3" width="100px"></el-table-column>
-          <el-table-column align="left" label="检查是否通过" prop="item4" width="100px"></el-table-column>
-          <el-table-column align="left" label="备注" prop="item5" width="100px"></el-table-column>
+          <el-table-column align="left" label="检查命令" prop="command" width="140px">
+            <template slot-scope="{row}">
+              <template v-if="row.edit">
+                <el-input v-model="row.command" class="edit-input" size="small" />
+                <el-button
+                  class="cancel-btn"
+                  size="small"
+                  type="text"
+                  @click="cancelEdit(row, 'Command')"
+                >
+                  取消
+                </el-button>
+              </template>
+              <span v-else>{{ row.command }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column align="left" label="检查是否通过" prop="isPass" width="140px">
+            <template slot-scope="{row}">
+              <template v-if="row.edit">
+                <el-input v-model="row.isPass" class="edit-input" size="small" />
+                <el-button
+                  class="cancel-btn"
+                  size="small"
+                  type="text"
+                  @click="cancelEdit(row, 'IsPass')"
+                >
+                  取消
+                </el-button>
+              </template>
+              <span v-else>{{ row.isPass }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column align="left" label="备注" prop="remark" width="140px">
+            <template slot-scope="{row}">
+              <template v-if="row.edit">
+                <el-input v-model="row.remark" class="edit-input" size="small" />
+                <el-button
+                  class="cancel-btn"
+                  size="small"
+                  type="text"
+                  @click="cancelEdit(row, 'Remark')"
+                >
+                  取消
+                </el-button>
+              </template>
+              <span v-else>{{ row.remark }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column align="center" label="操作" width="120">
+            <template slot-scope="{row}">
+              <el-button
+                v-if="row.edit"
+                type="success"
+                size="small"
+                icon="el-icon-circle-check-outline"
+                @click="confirmEdit(row)"
+              >
+                保存
+              </el-button>
+              <el-button
+                v-else
+                type="primary"
+                size="small"
+                icon="el-icon-edit"
+                @click="row.edit=!row.edit"
+              >
+                编辑
+              </el-button>
+            </template>
+          </el-table-column>
         </el-table>
         <!--<div class="">
           <div class="content" style="position: relative">
@@ -150,7 +217,7 @@
   </el-card>
 </template>
 <script>
-import { collectionList } from '@/api/resource'
+import { collectionList, updateCollectionList } from '@/api/resource'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 import PollingDialog from './pollingDialog'
 
@@ -191,13 +258,18 @@ export default {
           value: 'host_id',
           label: '请输入服务器id'
         }
-      ]
+      ],
+      id: '',
     }
   },
   created() {
     this.search()
   },
   methods: {
+    cancelEdit(row, key) {
+      row[key] = row['original' + key]
+      row.edit = false
+    },
     handleClose(done) {
       this.$confirm('确认关闭？')
         .then(_ => {
@@ -291,13 +363,44 @@ export default {
       // })
       this.$refs[formName].resetFields()
     },
+    confirmEdit(row) {
+      row.edit = false
+      const result = this.result.map(v => {
+        const { item1, item2, command, isPass, remark } = v
+        return {
+          item1,
+          item2,
+          command,
+          isPass,
+          remark
+        }
+      })
+
+      console.log(result)
+      updateCollectionList(this.id, {response: result})
+        .then(res => {
+          this.$message.success('保存成功')
+          this.getList()
+        })
+    },
     goResult(row) {
       this.drawer = true
+      this.id = row.id
       let result = []
-      Object.entries(row.response).forEach(([key, val]) => {
-        result.push({ item1: key, item2: val, item3: '', item4: '', item5: '' })
+      if (Array.isArray(row.response)) {
+        result = row.response
+      } else {
+        Object.entries(row.response).forEach(([key, val]) => {
+          result.push({ item1: key, item2: val, command: '', isPass: '', remark: '' })
+        })
+      }
+      result.map(v => {
+        this.$set(v, 'edit', false) // https://vuejs.org/v2/guide/reactivity.html
+        v.originalCommand = v.command //  will be used when user click the cancel botton
+        v.originalIsPass = v.isPass //  will be used when user click the cancel botton
+        v.originalRemark = v.remark //  will be used when user click the cancel botton
+        return v
       })
-      console.log(result)
       this.result = result
     }
   }
@@ -336,5 +439,15 @@ export default {
     padding: 10px 0;
     color: #EB4339;
     font-size: 18px;
+  }
+</style>
+<style scoped>
+  .edit-input {
+    padding-right: 40px;
+  }
+  .cancel-btn {
+    position: absolute;
+    right: 15px;
+    top: 10px;
   }
 </style>

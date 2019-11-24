@@ -132,6 +132,14 @@ export function collectionList(params) {
   })
 }
 
+export function updateCollectionList(id, data) {
+  return request({
+    url: `v1/service/records/${id}`,
+    method: 'patch',
+    data
+  })
+}
+
 export function getAuditList(id, params) {
   return request({
     url: `v1/wiki/audits`,

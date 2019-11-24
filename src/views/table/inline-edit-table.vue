@@ -107,7 +107,7 @@ export default {
   },
   methods: {
     async getList() {
-      this.listLoading = true
+      // this.listLoading = true
       const { data } = await fetchList(this.listQuery)
       const items = data.items
       this.list = items.map(v => {

@@ -98,13 +98,13 @@ export const constantRoutes = [
         path: 'user',
         component: () => import('@/views/system/user/index'),
         name: 'user',
-        meta: { title: '用户管理', affix: true }
+        meta: { title: '用户管理', affix: false }
       },
       {
         path: 'plugin',
         component: () => import('@/views/system/plugin/index'),
         name: 'plugin',
-        meta: { title: '插件管理', affix: true }
+        meta: { title: '插件管理', affix: false }
       }
     ]
   },
@@ -122,31 +122,31 @@ export const constantRoutes = [
         path: 'host',
         component: () => import('@/views/resource/host/index'),
         name: 'host',
-        meta: { title: '服务器资源', affix: true }
+        meta: { title: '服务器资源', affix: false }
       },
       {
         path: 'db',
         component: () => import('@/views/resource/db/index'),
         name: 'db',
-        meta: { title: '数据库资源', affix: true }
+        meta: { title: '数据库资源', affix: false }
       },
       {
         path: 'shell',
         component: () => import('@/views/resource/shell/index'),
         name: 'shell',
-        meta: { title: '脚本资源', affix: true }
+        meta: { title: '脚本资源', affix: false }
       },
       {
         path: 'email',
         component: () => import('@/views/resource/email/index'),
         name: 'email',
-        meta: { title: '邮箱管理', affix: true }
+        meta: { title: '邮箱管理', affix: false }
       },
       {
         path: 'task',
         component: () => import('@/views/resource/task/index'),
         name: 'task',
-        meta: { title: '定时任务', affix: true }
+        meta: { title: '定时任务', affix: false }
       },
       {
         path: 'audit',
@@ -172,19 +172,19 @@ export const constantRoutes = [
         component: () => import('@/views/handler/record/collection'),
         name: 'handlerRecord',
         hidden: true,
-        meta: { title: '基线收集', affix: true }
+        meta: { title: '基线收集', affix: false }
       }, {
         path: 'recordResult',
         component: () => import('@/views/handler/record/result'),
         name: 'recordResult',
-        meta: { 'title': '表格结果', affix: true },
+        meta: { 'title': '表格结果', affix: false },
         hidden: true
       },
       {
         path: 'taskManager',
         component: () => import('@/views/resource/task/taskManager'),
         name: 'taskManager',
-        meta: { title: '脚本调度', affix: true }
+        meta: { title: '脚本调度', affix: false }
       }
     ]
   }
