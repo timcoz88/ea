@@ -153,6 +153,12 @@ export const constantRoutes = [
         component: () => import('@/views/resource/audit/index'),
         name: 'audit',
         meta: { title: '审计' }
+      },
+      {
+        path: 'warning-sql',
+        component: () => import('@/views/resource/warning-sql/index'),
+        name: 'warningSql',
+        meta: { title: 'SQL预警管理' }
       }
     ]
   },

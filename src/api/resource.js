@@ -203,3 +203,27 @@ export function postServiceHost(data) {
   })
 }
 
+export function getWarningSqlList(params) {
+  return request({
+    url: 'v1/sw/sqls',
+    method: 'get',
+    params
+  })
+}
+
+export function delWarningSql(id, data) {
+  return request({
+    url: `v1/sw/sqls/${id}`,
+    method: 'delete',
+    data
+  })
+}
+
+export function updateWarningSql(id, data) {
+  return request({
+    url: `v1/sw/sqls/${id}`,
+    method: 'patch',
+    data
+  })
+}
+
