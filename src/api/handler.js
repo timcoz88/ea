@@ -15,3 +15,11 @@ export function fetchDetail(data) {
     data
   })
 }
+
+export function fetchCmdDetail(params) {
+  return request({
+    url: 'v1/s/paramiko/cmds',
+    method: 'get',
+    params
+  })
+}

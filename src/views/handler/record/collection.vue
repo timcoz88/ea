@@ -119,39 +119,28 @@
           <el-table-column align="center" label="检查项" prop="item1" width="200px"></el-table-column>
           <el-table-column align="left" label="检查结果" prop="item2" >
             <template slot-scope="{ row }">
-              <div class="pre content-td">{{ row.item2 }}</div>
+              <div class="pre content-td">{{ row.item2[0] }}</div>
             </template>
           </el-table-column>
-          <el-table-column align="left" label="检查命令" prop="command" width="140px">
+          <el-table-column align="center" label="检查命令" prop="command" width="140px">
             <template slot-scope="{row}">
-              <template v-if="row.edit">
-                <el-input v-model="row.command" class="edit-input" size="small" />
-                <el-button
-                  class="cancel-btn"
-                  size="small"
-                  type="text"
-                  @click="cancelEdit(row, 'Command')"
-                >
-                  取消
-                </el-button>
-              </template>
-              <span v-else>{{ row.command }}</span>
+              <el-button
+                size="small"
+                type="text"
+                @click="viewCommand(row.item2[1], row)"
+              >
+                查看命令
+              </el-button>
             </template>
           </el-table-column>
-          <el-table-column align="left" label="检查是否通过" prop="isPass" width="140px">
+          <el-table-column align="center" label="检查是否通过" prop="isPass" width="140px">
             <template slot-scope="{row}">
-              <template v-if="row.edit">
-                <el-input v-model="row.isPass" class="edit-input" size="small" />
-                <el-button
-                  class="cancel-btn"
-                  size="small"
-                  type="text"
-                  @click="cancelEdit(row, 'IsPass')"
-                >
-                  取消
-                </el-button>
-              </template>
-              <span v-else>{{ row.isPass }}</span>
+              <el-switch
+                v-model="row.isPass"
+                @change="confirmEdit(row)"
+                active-color="#13ce66"
+                inactive-color="#ff4949">
+              </el-switch>
             </template>
           </el-table-column>
           <el-table-column align="left" label="备注" prop="remark" width="140px">
@@ -214,10 +203,40 @@
     </el-drawer>
 
     <polling-dialog ref="pollingDialog" @confirm="confirm" />
+
+    <el-dialog title="命令详情" :visible.sync="dialogTableVisible" custom-class="command-dialog"	>
+      <el-form label-position="left" style="border: 1px solid #999">
+        <el-form-item label="执行编号：">
+          <span>{{ gridData.chkid }}</span>
+        </el-form-item>
+        <el-form-item label="检查项：">
+          <span>{{ gridData.keynm }}</span>
+        </el-form-item>
+        <el-form-item label="检查描述：">
+          <span>{{ gridData.keydesc }}</span>
+        </el-form-item>
+        <el-form-item label="最小范围：">
+          <span>{{ gridData.minval }}</span>
+        </el-form-item>
+        <el-form-item label="最大范围：">
+          <span>{{ gridData.maxval }}</span>
+        </el-form-item>
+        <el-form-item label="备注：">
+          <span>{{ gridData.remarks }}</span>
+        </el-form-item>
+        <el-form-item label="基线收集：">
+          <span>{{ gridData.chktype === 1 ? '基线收集' : '交付检查' }}</span>
+        </el-form-item>
+        <el-form-item label="检查命令：">
+          <span>{{ gridData.chkcmd }}</span>
+        </el-form-item>
+      </el-form>
+    </el-dialog>
   </el-card>
 </template>
 <script>
 import { collectionList, updateCollectionList } from '@/api/resource'
+import { fetchCmdDetail } from '@/api/handler'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 import PollingDialog from './pollingDialog'
 
@@ -233,6 +252,7 @@ export default {
   },
   data() {
     return {
+      dialogTableVisible: false,
       result: [],
       drawer: false,
       direction: 'btt',
@@ -260,12 +280,22 @@ export default {
         }
       ],
       id: '',
+      gridData: []
     }
   },
   created() {
     this.search()
   },
   methods: {
+    viewCommand(id) {
+      fetchCmdDetail({ chkid: id })
+        .then(res => {
+          console.log(res)
+          // this.$confirm()
+          this.gridData = res.results
+          this.dialogTableVisible = true
+        })
+    },
     cancelEdit(row, key) {
       row[key] = row['original' + key]
       row.edit = false
@@ -441,13 +471,26 @@ export default {
     font-size: 18px;
   }
 </style>
-<style scoped>
+<style scoped lang="scss">
   .edit-input {
     padding-right: 40px;
   }
   .cancel-btn {
     position: absolute;
     right: 15px;
-    top: 10px;
   }
+
+  .command-dialog {
+    padding: 0 30px;
+    .el-form-item {
+      margin-bottom: 0;
+      border-bottom: 1px solid #999;
+      padding: 7px 30px;
+    }
+
+    .el-form-item:last-child{
+      border-bottom: 0;
+    }
+  }
+
 </style>

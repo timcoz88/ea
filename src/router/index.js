@@ -178,7 +178,7 @@ export const constantRoutes = [
         component: () => import('@/views/handler/record/collection'),
         name: 'handlerRecord',
         hidden: true,
-        meta: { title: '基线收集', affix: false }
+        meta: { title: '交付历史', affix: false }
       }, {
         path: 'recordResult',
         component: () => import('@/views/handler/record/result'),
@@ -190,8 +190,20 @@ export const constantRoutes = [
         path: 'taskManager',
         component: () => import('@/views/resource/task/taskManager'),
         name: 'taskManager',
-        meta: { title: '脚本调度', affix: false }
-      }
+        meta: { title: '交付检查', affix: false }
+      },
+      {
+        path: 'record1',
+        component: () => import('@/views/resource/whitePage'),
+        name: 'record1',
+        meta: { title: '基线收集', affix: false }
+      },
+      {
+        path: 'record2',
+        component: () => import('@/views/resource/whitePage'),
+        name: 'record2',
+        meta: { title: '基线收集', affix: false }
+      },
     ]
   }
 /*  {

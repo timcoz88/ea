@@ -65,7 +65,7 @@
       <el-table-column align="center" label="操作" width="200">
         <template slot-scope="{ row, $index}">
           <el-button type="primary" size="mini" @click="$refs.pollingDialog.show(row, $index)">调度</el-button>
-          <el-button type="primary" size="mini" @click.native.prevent="goHandleRecord(row)">调度记录</el-button>
+          <el-button type="primary" size="mini" @click.native.prevent="goHandleRecord(row)">交付历史</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -198,6 +198,7 @@ export default {
             type: 'success',
             message: '删除成功!'
           })
+          this.$refs.pollingDialog.hide()
           this.getList()
         })
         .catch(() => {
