@@ -2,9 +2,9 @@
   <div>
     <input ref="excel-upload-input" class="excel-upload-input" type="file" accept=".xlsx, .xls" @change="handleClick">
     <div class="drop" @drop="handleDrop" @dragover="handleDragover" @dragenter="handleDragover">
-      Drop excel file here or
+      拖拽文件或
       <el-button :loading="loading" style="margin-left:16px;" size="mini" type="primary" @click="handleUpload">
-        Browse
+        选取文件
       </el-button>
     </div>
   </div>
@@ -83,14 +83,19 @@ export default {
       return new Promise((resolve, reject) => {
         const reader = new FileReader()
         reader.onload = e => {
-          const data = e.target.result
-          const workbook = XLSX.read(data, { type: 'array' })
-          const firstSheetName = workbook.SheetNames[0]
-          const worksheet = workbook.Sheets[firstSheetName]
-          const header = this.getHeaderRow(worksheet)
-          const results = XLSX.utils.sheet_to_json(worksheet)
-          this.generateData({ header, results })
-          this.loading = false
+          try {
+            const data = e.target.result
+            const workbook = XLSX.read(data, { type: 'array' })
+            const firstSheetName = workbook.SheetNames[0]
+            const worksheet = workbook.Sheets[firstSheetName]
+            const header = this.getHeaderRow(worksheet)
+            const results = XLSX.utils.sheet_to_json(worksheet)
+            this.generateData({ header, results })
+            this.loading = false
+          } catch (e) {
+            this.loading = false
+            this.$message('解析失败，请检查文件重试')
+          }
           resolve()
         }
         reader.readAsArrayBuffer(rawFile)

@@ -187,6 +187,12 @@ export const constantRoutes = [
         hidden: true
       },
       {
+        path: 'updateHost',
+        component: () => import('@/views/resource/updateHost'),
+        name: 'updateHost',
+        meta: { title: '批量修改', affix: false }
+      },
+      {
         path: 'taskManager',
         component: () => import('@/views/resource/task/taskManager'),
         name: 'taskManager',

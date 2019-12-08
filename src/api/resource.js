@@ -227,3 +227,27 @@ export function updateWarningSql(id, data) {
   })
 }
 
+export function ExcelPingHost(id, data) {
+  return request({
+    url: `v1/service/ping`,
+    method: 'post',
+    data
+  })
+}
+
+export function ExcelUpdateHost(id, data) {
+  return request({
+    url: `v1/service/update`,
+    method: 'post',
+    data
+  })
+}
+
+export function ExcelSaveHost(id, data) {
+  return request({
+    url: `v1/service/save`,
+    method: 'post',
+    data
+  })
+}
+
