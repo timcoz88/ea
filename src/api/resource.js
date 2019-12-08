@@ -227,7 +227,7 @@ export function updateWarningSql(id, data) {
   })
 }
 
-export function ExcelPingHost(id, data) {
+export function ExcelPingHost(data) {
   return request({
     url: `v1/service/ping`,
     method: 'post',
@@ -235,7 +235,7 @@ export function ExcelPingHost(id, data) {
   })
 }
 
-export function ExcelUpdateHost(id, data) {
+export function ExcelUpdateHost(data) {
   return request({
     url: `v1/service/update`,
     method: 'post',
@@ -243,7 +243,7 @@ export function ExcelUpdateHost(id, data) {
   })
 }
 
-export function ExcelSaveHost(id, data) {
+export function ExcelSaveHost(data) {
   return request({
     url: `v1/service/save`,
     method: 'post',

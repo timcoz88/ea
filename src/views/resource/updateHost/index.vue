@@ -29,7 +29,7 @@
           ><i class="el-icon-s-promotion" />
             PING
           </el-button>
-          <el-button
+          <!--<el-button
             type="primary"
             size="small"
             @click="showEdit(row)"
@@ -37,24 +37,24 @@
           >
             <i class="el-icon-edit" />
             修改
-          </el-button>
+          </el-button>-->
           <el-button
-            type="primary"
+            type="success"
             size="small"
+            :disabled="row.success"
             @click="rowUpdate(row)"
-            v-else
           >
             <i class="el-icon-edit" />
             更新
           </el-button>
-          <el-button
+          <!--<el-button
             type="success"
             size="small"
             @click="rowSave(row)"
           >
             <i class="el-icon-check" />
             保存
-          </el-button>
+          </el-button>-->
         </template>
       </el-table-column>
     </el-table>
@@ -123,6 +123,8 @@ export default {
       console.log(row, params)
       ExcelPingHost(params)
         .then(res => {
+          row.success = true
+          this.tableData.splice()
           this.$message.success('操作成功')
         })
     },
@@ -135,9 +137,22 @@ export default {
           }
         })
       console.log(row, params)
-      ExcelUpdateHost(params)
-        .then(res => {
-          this.$message.success('操作成功')
+      this.$confirm('此操作将更新并保存账号密码, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      })
+        .then(() => {
+          ExcelUpdateHost(params)
+            .then(res => {
+              this.$message.success('操作成功')
+            })
+        })
+        .catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消操作'
+          })
         })
     },
     rowSave(row) {
