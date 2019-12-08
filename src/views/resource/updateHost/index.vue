@@ -41,7 +41,7 @@
           <el-button
             type="success"
             size="small"
-            :disabled="row.success"
+            :disabled="!row.success"
             @click="rowUpdate(row)"
           >
             <i class="el-icon-edit" />
@@ -125,7 +125,7 @@ export default {
         .then(res => {
           row.success = true
           this.tableData.splice()
-          this.$message.success('操作成功')
+          this.$message.success(res.data.message)
         })
     },
     rowUpdate(row) {
