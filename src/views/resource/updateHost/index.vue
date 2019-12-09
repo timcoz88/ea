@@ -20,11 +20,12 @@
           <span v-else>{{ row[item.prop] }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="操作" v-if="!!tableHeader.length">
+      <el-table-column label="操作" v-if="!!tableHeader.length" width="210px">
         <template slot-scope="{row}">
           <el-button
             type="danger"
             size="small"
+            :loading="row.loading"
             @click="rowPing(row)"
           ><i class="el-icon-s-promotion" />
             PING
@@ -58,6 +59,15 @@
         </template>
       </el-table-column>
     </el-table>
+
+    <el-dialog
+      title="详情"
+      :visible.sync="isShowDialog">
+      <span v-if="isResultLoading">请求中<i class="el-icon-loading"></i></span>
+      <div>
+        <pre v-html="result"></pre>
+      </div>
+    </el-dialog>
   </el-card>
 </template>
 <script>
@@ -65,11 +75,11 @@ import UploadExcelComponent from '@/components/UploadExcel/index.vue'
 import { ExcelPingHost, ExcelUpdateHost, ExcelSaveHost } from '@/api/resource'
 const headerKey = [
   'hostip',
-  'type',
-  'user',
-  'pwd',
-  'user1',
-  'pwd1'
+  'os_user',
+  'os_pwd',
+  'name',
+  'db_user',
+  'db_pwd'
 ]
 
 export default {
@@ -79,7 +89,10 @@ export default {
     return {
       tableData: [],
       tableHeader: [],
-      isCanEditList: ['pwd', 'pwd1']
+      isCanEditList: ['pwd', 'pwd1'],
+      isShowDialog: false,
+      isResultLoading: false,
+      result: ''
     }
   },
   methods: {
@@ -121,11 +134,15 @@ export default {
           }
         })
       console.log(row, params)
+      row.loading = true
+      this.tableData.splice()
       ExcelPingHost(params)
         .then(res => {
           row.success = true
+          this.$message.success(res.message)
+        }).finally(() => {
+          row.loading = false
           this.tableData.splice()
-          this.$message.success(res.data.message)
         })
     },
     rowUpdate(row) {
@@ -137,23 +154,29 @@ export default {
           }
         })
       console.log(row, params)
-      this.$confirm('此操作将更新并保存账号密码, 是否继续?', '提示', {
+      this.isShowDialog = true
+      this.isResultLoading = true
+      ExcelUpdateHost(params)
+        .then(res => {
+          this.result = res.results
+        })
+        .finally(() => {
+          this.isResultLoading = false
+        })
+      /* this.$confirm('此操作将更新并保存账号密码, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       })
         .then(() => {
-          ExcelUpdateHost(params)
-            .then(res => {
-              this.$message.success('操作成功')
-            })
+
         })
         .catch(() => {
           this.$message({
             type: 'info',
             message: '已取消操作'
           })
-        })
+        }) */
     },
     rowSave(row) {
       const params = {}
@@ -188,6 +211,15 @@ export default {
 }
 </script>
 <style scoped>
+  pre {outline: 1px solid #ccc; padding: 5px; margin: 5px;text-align: left;
+    white-space: pre-wrap!important;
+    word-wrap: break-word!important;
+    *white-space: normal!important;}
+  .string { color: green; }
+  .number { color: darkorange; }
+  .boolean { color: blue; }
+  .null { color: magenta; }
+  .key { color: red; }
   .edit-input {
     padding-right: 100px;
   }
