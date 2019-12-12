@@ -40,10 +40,24 @@
       </el-col>-->
       <el-col :span="6">
         <el-button type="primary" :disabled="!searchType" @click="search">查询</el-button>
+        <el-button type="primary" :disabled="multipleSelection.length !== 2" @click="diffRow">对比</el-button>
       </el-col>
     </el-row>
 
-    <el-table v-loading="isLoading" :data="tableData" border style="width: 100%">
+    <el-table v-loading="isLoading"
+              :data="tableData"
+              ref="multipleTable"
+              border style="width: 100%">
+      <el-table-column
+        align="center"
+        label="选择"
+        width="55">
+        <template slot-scope="scope">
+          <el-checkbox :disabled="scope.row.disabled"
+                       v-model="scope.row.selection"
+                       @change="(val) => {selectMethod(val, scope.row, scope.$index)}" ></el-checkbox>
+        </template>
+      </el-table-column>
       <el-table-column align="center" label="hostip" prop="host_ip" />
       <el-table-column align="center" label="系统登录用户" prop="login_name" />
       <el-table-column align="center" label="执行shell用户" prop="whoami" />
@@ -232,6 +246,86 @@
         </el-form-item>
       </el-form>
     </el-dialog>
+
+    <!-- 对比 -->
+    <el-drawer
+      title="结果详情"
+      :visible.sync="diffDrawer"
+      :direction="direction"
+      size="100%"
+      :before-close="handleClose"
+    >
+      <div style="overflow-y: scroll;height: 85vh;padding-left: 25px">
+        <el-table :data="diffResult" border>
+          <el-table-column align="center" label="检查项" prop="item1" width="200px"></el-table-column>
+          <el-table-column align="left" label="检查结果1" prop="item2" >
+            <template slot-scope="{ row }">
+              <div class="pre content-td">{{ row.item2[0] }}</div>
+            </template>
+          </el-table-column>
+          <el-table-column align="left" label="检查结果2" prop="item3" >
+            <template slot-scope="{ row }">
+              <div class="pre content-td">{{ row.item3[0] }}</div>
+            </template>
+          </el-table-column>
+          <el-table-column align="center" label="检查命令" prop="command" width="140px">
+            <template slot-scope="{row}">
+              <el-button
+                size="small"
+                type="text"
+                @click="viewCommand(row.item2[1], row)"
+              >
+                查看命令
+              </el-button>
+            </template>
+          </el-table-column>
+          <el-table-column align="center" label="检查是否通过" prop="isPass" width="140px">
+            <template slot-scope="{row}">
+              <el-switch
+                v-model="row.isPass"
+                :disabled="true"
+                @change="confirmEdit(row)"
+                active-color="#13ce66"
+                inactive-color="#ff4949">
+              </el-switch>
+            </template>
+          </el-table-column>
+          <el-table-column align="left" label="备注" prop="remark" width="140px">
+            <template slot-scope="{row}">
+              <template v-if="row.edit">
+                <el-input v-model="row.remark" class="edit-input" size="small" />
+                <el-button
+                  class="cancel-btn"
+                  size="small"
+                  type="text"
+                  @click="cancelEdit(row, 'Remark')"
+                >
+                  取消
+                </el-button>
+              </template>
+              <span v-else>{{ row.remark }}</span>
+            </template>
+          </el-table-column>
+        </el-table>
+        <!--<div class="">
+          <div class="content" style="position: relative">
+            <div class="content-th">
+              <div class="content-td content-title" style="position: absolute;width: 200px;padding: 15px 10px">检查项</div>
+              <div style="margin-left: 200px;padding: 15px 10px" class="content-td content-title">检查结果</div>
+            </div>
+            <div
+              v-for="(code, key) in result"
+              :key="key"
+              class="content-th"
+            >
+              <div class="content-td" style="position: absolute;width: 200px;padding: 15px 10px">{{ key }}</div>
+              <div style="margin-left: 200px;padding: 15px 10px" class="pre content-td">{{ code }}</div>
+            </div>
+          </div>
+        </div>-->
+      </div>
+
+    </el-drawer>
   </el-card>
 </template>
 <script>
@@ -254,7 +348,9 @@ export default {
     return {
       dialogTableVisible: false,
       result: [],
+      diffResult: [],
       drawer: false,
+      diffDrawer: false,
       direction: 'btt',
       formLabelWidth: '120px',
       editShow: false,
@@ -280,13 +376,71 @@ export default {
         }
       ],
       id: '',
-      gridData: []
+      gridData: [],
+      multipleSelection: []
     }
   },
   created() {
     this.search()
   },
   methods: {
+    diffRow() {
+      this.diffDrawer = true
+      let result1 = []
+      let result2 = []
+      this.multipleSelection.forEach((v, i) => {
+        if (i === 0) {
+          if (Array.isArray(v.response)) {
+            result1 = v.response
+          } else {
+            Object.entries(v.response).forEach(([key, val]) => {
+              result1.push({ item1: key, item2: val, command: '', isPass: '', remark: '' })
+            })
+          }
+        } else if (i === 1) {
+          if (Array.isArray(v.response)) {
+            result2 = v.response
+          } else {
+            Object.entries(v.response).forEach(([key, val]) => {
+              result2.push({ item1: key, item2: val, command: '', isPass: '', remark: '' })
+            })
+          }
+        }
+      })
+
+      console.log(result1, result2)
+      this.diffResult = result1.map((v, i) => {
+        v.item3 = result2[i].item2
+        return v
+      })
+      console.log(result1, result2, this.diffResult)
+    },
+    selectMethod(val, row, index) {
+      row.selection = val
+      if (val) {
+        this.multipleSelection.push(row)
+      } else {
+        this.multipleSelection = this.multipleSelection.filter(v => v.id !== row.id)
+      }
+
+      if (this.multipleSelection.length > 1) {
+        this.tableData.map(v => {
+          const hasSelection = this.multipleSelection.findIndex(val => v.id === val.id) > -1
+          if (!hasSelection) {
+            v.disabled = true
+          }
+          return v
+        })
+      } else {
+        this.tableData.map(v => {
+          v.disabled = false
+          return v
+        })
+      }
+
+      this.tableData.splice()
+      this.multipleSelection.splice()
+    },
     viewCommand(id) {
       fetchCmdDetail({ chkid: id })
         .then(res => {
@@ -319,8 +473,8 @@ export default {
       const {check_type, host_ip} = this.$route.query
       return Object.assign({}, {
         page: this.pagination.page,
-        host_ip,
         check_type,
+        host_ip,
         pageSize: this.pagination.pageSize
       }, arg, params)
     },

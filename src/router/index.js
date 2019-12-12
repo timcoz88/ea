@@ -199,16 +199,30 @@ export const constantRoutes = [
         meta: { title: '交付检查', affix: false }
       },
       {
-        path: 'record1',
-        component: () => import('@/views/resource/whitePage'),
-        name: 'record1',
+        path: 'jx-collect',
+        component: () => import('@/views/handler/jx-collect/taskManager'),
+        name: 'jxCollect',
         meta: { title: '基线收集', affix: false }
       },
       {
-        path: 'record2',
-        component: () => import('@/views/resource/whitePage'),
-        name: 'record2',
-        meta: { title: '基线收集', affix: false }
+        path: 'jx-record',
+        component: () => import('@/views/handler/jx-record/collection'),
+        name: 'handlerJxRecord',
+        hidden: true,
+        meta: { title: '基线历史', affix: false }
+      },
+      {
+        path: 'warning-collect',
+        component: () => import('@/views/handler/warning-collect/taskManager'),
+        name: 'warningCollect',
+        meta: { title: '故障收集', affix: false }
+      },
+      {
+        path: 'warning-record',
+        component: () => import('@/views/handler/warning-record/collection'),
+        name: 'handlerWarningRecord',
+        hidden: true,
+        meta: { title: '故障历史', affix: false }
       },
     ]
   }

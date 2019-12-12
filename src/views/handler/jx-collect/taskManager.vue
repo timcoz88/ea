@@ -65,7 +65,7 @@
       <el-table-column align="center" label="操作" width="200">
         <template slot-scope="{ row, $index}">
           <el-button type="primary" size="mini" @click="$refs.pollingDialog.show(row, $index)">调度</el-button>
-          <el-button type="primary" size="mini" @click.native.prevent="goHandleRecord(row)">交付历史</el-button>
+          <el-button type="primary" size="mini" @click.native.prevent="goHandleRecord(row)">基线历史</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -238,7 +238,7 @@ export default {
     },
     goHandleRecord(row) {
       console.log(row)
-      this.$router.push({ name: 'handlerRecord', query: { host_ip: row.hostip, check_type: 2  }})
+      this.$router.push({ name: 'handlerJxRecord', query: { host_ip: row.hostip, check_type: 1 }})
     }
   }
 }

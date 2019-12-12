@@ -43,7 +43,10 @@
       </el-col>
     </el-row>
 
-    <el-table v-loading="isLoading" :data="tableData" border style="width: 100%">
+    <el-table v-loading="isLoading"
+              :data="tableData"
+              ref="multipleTable"
+              border style="width: 100%">
       <el-table-column align="center" label="hostip" prop="host_ip" />
       <el-table-column align="center" label="系统登录用户" prop="login_name" />
       <el-table-column align="center" label="执行shell用户" prop="whoami" />
@@ -280,13 +283,17 @@ export default {
         }
       ],
       id: '',
-      gridData: []
+      gridData: [],
+      multipleSelection: []
     }
   },
   created() {
     this.search()
   },
   methods: {
+    handleSelectionChange(val) {
+      this.multipleSelection = val
+    },
     viewCommand(id) {
       fetchCmdDetail({ chkid: id })
         .then(res => {
@@ -319,8 +326,8 @@ export default {
       const {check_type, host_ip} = this.$route.query
       return Object.assign({}, {
         page: this.pagination.page,
-        host_ip,
         check_type,
+        host_ip,
         pageSize: this.pagination.pageSize
       }, arg, params)
     },
