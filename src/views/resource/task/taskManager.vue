@@ -212,7 +212,7 @@ export default {
     polling(row) {
       row.loading = true
       this.tableData.splice()
-      fetchDetail({ shell_id: 19, hostip: row.hostip })
+      fetchDetail({ shell_id: 19,check_type:2 ,hostip: row.hostip })
         .then(res => {
           this.$message.success(res.msg)
           this.getList()
