@@ -260,12 +260,12 @@
           <el-table-column align="center" label="检查项" prop="item1" width="200px"></el-table-column>
           <el-table-column align="left" label="检查结果1" prop="item2" >
             <template slot-scope="{ row }">
-              <div class="pre content-td">{{ row.item2[0] }}</div>
+              <div class="pre content-td" :class="row.different ? 'red-text' : ''">{{ row.item2[0] }}</div>
             </template>
           </el-table-column>
           <el-table-column align="left" label="检查结果2" prop="item3" >
             <template slot-scope="{ row }">
-              <div class="pre content-td">{{ row.item3[0] }}</div>
+              <div class="pre content-td" :class="row.different ? 'red-text' : ''">{{ row.item3[0] }}</div>
             </template>
           </el-table-column>
           <el-table-column align="center" label="检查命令" prop="command" width="140px">
@@ -279,7 +279,7 @@
               </el-button>
             </template>
           </el-table-column>
-          <el-table-column align="center" label="检查是否通过" prop="isPass" width="140px">
+          <!--<el-table-column align="center" label="检查是否通过" prop="isPass" width="140px">
             <template slot-scope="{row}">
               <el-switch
                 v-model="row.isPass"
@@ -305,7 +305,7 @@
               </template>
               <span v-else>{{ row.remark }}</span>
             </template>
-          </el-table-column>
+          </el-table-column>-->
         </el-table>
         <!--<div class="">
           <div class="content" style="position: relative">
@@ -411,6 +411,7 @@ export default {
       console.log(result1, result2)
       this.diffResult = result1.map((v, i) => {
         v.item3 = result2[i].item2
+        v.different = result2[i].item2 === v.item2
         return v
       })
       console.log(result1, result2, this.diffResult)
@@ -648,6 +649,11 @@ export default {
     .el-form-item:last-child{
       border-bottom: 0;
     }
+  }
+
+  .red-text{
+    color: #e64242;
+    font-weight: 600;
   }
 
 </style>

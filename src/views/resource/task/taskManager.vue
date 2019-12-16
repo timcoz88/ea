@@ -64,7 +64,7 @@
       </el-table-column>
       <el-table-column align="center" label="操作" width="200">
         <template slot-scope="{ row, $index}">
-          <el-button type="primary" size="mini" @click="$refs.pollingDialog.show(row, $index)">调度</el-button>
+          <el-button type="primary" size="mini" @click="polling(row)" :loading="row.loading">调度</el-button>
           <el-button type="primary" size="mini" @click.native.prevent="goHandleRecord(row)">交付历史</el-button>
         </template>
       </el-table-column>
@@ -101,6 +101,7 @@
 </template>
 <script>
 import { getServiceHost, deleteHost, updateHost } from '@/api/resource'
+import { fetchDetail } from '@/api/handler.js'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 import PollingDialog from './pollingDialog'
 
@@ -206,6 +207,19 @@ export default {
             type: 'info',
             message: '已取消删除'
           })
+        })
+    },
+    polling(row) {
+      row.loading = true
+      this.tableData.splice()
+      fetchDetail({ shell_id: 19, hostip: row.hostip })
+        .then(res => {
+          this.$message.success(res.msg)
+          this.getList()
+        })
+        .finally(() => {
+          row.loading = false
+          this.tableData.splice()
         })
     },
     confirm() {
