@@ -276,6 +276,7 @@ export default {
           postServiceHost(params)
             .then(res => {
               this.$message.success('添加成功')
+              this.hide()
               this.$emit('confirm')
             })
         }
