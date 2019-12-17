@@ -265,6 +265,7 @@ export default {
             })
             this.addShow = false
             this.$refs[formName].resetFields()
+            this.getList()
           })
         } else {
           return false
