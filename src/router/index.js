@@ -11,7 +11,7 @@ import Layout from '@/layout'
 import chartsRouter from './modules/charts'
 
 import nestedRouter from './modules/nested'*/
-// import tableRouter from './modules/table'
+import mysqlRouter from './modules/mysql'
 
 /**
  * Note: sub-menu only appear when route children.length >= 1
@@ -225,7 +225,8 @@ export const constantRoutes = [
         meta: { title: '故障历史', affix: false }
       },
     ]
-  }
+  },
+  mysqlRouter
 /*  {
     path: '/guide',
     component: Layout,

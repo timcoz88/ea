@@ -412,6 +412,7 @@ export default {
       this.diffResult = result1.map((v, i) => {
         v.item3 = result2[i].item2
         v.different = result2[i].item2[0] !== v.item2[0]
+
         return v
       })
       console.log(result1, result2, this.diffResult)
