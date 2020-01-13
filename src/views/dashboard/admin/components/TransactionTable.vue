@@ -1,27 +1,77 @@
 <template>
-  <el-table :data="list" style="width: 100%;padding-top: 15px;">
-    <el-table-column label="Order_No" min-width="200">
+  <el-table :data="list" v-loading="isLoading" style="width: 100%;padding-top: 15px;">
+    <el-table-column
+      label="系统级别"
+      prop="dblvl"
+      width="90"
+    />
+    <el-table-column
+      prop="dsn"
+      label="数据库名"
+    />
+    <el-table-column
+      prop="dbinfo"
+      label="数据库说明"
+    />
+    <el-table-column
+      prop="clflag"
+      label="数据库架构"
+    />
+    <el-table-column
+      prop="hostip"
+      label="主机地址"
+      width="160"
+    />
+    <el-table-column
+      label="紧急事件"
+      width="100"
+    >
       <template slot-scope="scope">
-        {{ scope.row.order_no | orderNoFilter }}
+        <div
+          :class="{'pointer': scope.row.hcnt}"
+          class="text-red"
+          @click="redirectToWaring('紧急', scope.row)">
+          {{ scope.row.hcnt }}
+        </div>
       </template>
     </el-table-column>
-    <el-table-column label="Price" width="195" align="center">
+    <el-table-column
+      label="重要事件"
+      width="100"
+    >
       <template slot-scope="scope">
-        ¥{{ scope.row.price | toThousandFilter }}
+        <div
+          :class="{'pointer': scope.row.mcnt}"
+          class="text-blue"
+          @click="redirectToWaring('重要', scope.row)">
+          {{ scope.row.mcnt }}
+        </div>
       </template>
     </el-table-column>
-    <el-table-column label="Status" width="100" align="center">
-      <template slot-scope="{row}">
-        <el-tag :type="row.status | statusFilter">
-          {{ row.status }}
-        </el-tag>
+    <el-table-column
+      label="关注事件"
+      width="100"
+    >
+      <template slot-scope="scope">
+        <div
+          :class="{'pointer': scope.row.lcnt}"
+          class="text-yellow"
+          @click="redirectToWaring('关注', scope.row)">
+          {{ scope.row.lcnt }}
+        </div>
       </template>
     </el-table-column>
+    <el-table-column
+      :formatter="filterData"
+      prop="lasttm"
+      label="最后采集时间"
+      width="160"
+    />
   </el-table>
 </template>
 
 <script>
-import { transactionList } from '@/api/remote-search'
+import { getDashboard5 } from '@/api/home'
 
 export default {
   filters: {
@@ -38,17 +88,26 @@ export default {
   },
   data() {
     return {
-      list: null
+      list: null,
+      isLoading: false
     }
   },
   created() {
-    // this.fetchData()
+    this.fetchData()
   },
   methods: {
+    filterData(row, column, cellValue) {
+      return cellValue || '-'
+    },
     fetchData() {
-      transactionList().then(response => {
-        this.list = response.data.items.slice(0, 8)
+      this.isLoading = true
+      getDashboard5().then(({results}) => {
+        this.isLoading = false
+        this.list = results.results
       })
+        .finally(() => {
+          this.isLoading = false
+        })
     }
   }
 }
