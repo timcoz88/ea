@@ -163,6 +163,55 @@ export const constantRoutes = [
     ]
   },
   {
+    path: '/dispatch',
+    component: Layout,
+    redirect: '/dispatch/shell',
+    name: 'dispatch',
+    meta: {
+      title: '调度管理',
+      icon: 'skill'
+    },
+    children: [
+      {
+        path: 'shell',
+        component: () => import('@/views/dispatch/shell/index'),
+        name: 'dispatchShell',
+        meta: { title: '脚本调度', affix: false }
+      },
+      {
+        path: 'history',
+        component: () => import('@/views/dispatch/shell/history'),
+        name: 'dispatchHistory',
+        hidden: true,
+        meta: { title: '调度历史', affix: false }
+      }
+    ]
+  },
+  {
+    path: '/db',
+    component: Layout,
+    redirect: '/db/oracle',
+    name: 'dispatch',
+    meta: {
+      title: '数据库管理',
+      icon: 'skill'
+    },
+    children: [
+      {
+        path: 'oracle',
+        component: () => import('@/views/db/oracle/index'),
+        name: 'dbOracle',
+        meta: { title: 'ORACLE', affix: false }
+      },
+      {
+        path: 'oracle-detail',
+        component: () => import('@/views/db/db-manage-detail/index'),
+        name: 'dbOracleDetail',
+        meta: { title: '数据库管理详情', affix: false }
+      }
+    ]
+  },
+  {
     path: '/handler',
     component: Layout,
     redirect: '/handler/record',
