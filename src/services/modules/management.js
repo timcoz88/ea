@@ -69,7 +69,7 @@ class ManagementService {
   }
   // 用户锁定
   sqlAnalyze(data, urlParams) {
-    return request.post(`/table/analyse/sql?${urlParams}`, data)
+    return request.post(`/dbs/table/analyse/sql?${urlParams}`, data)
   }
   // 用户解锁
   userUnLock(data) {
@@ -110,7 +110,7 @@ class ManagementService {
   }
   // 事务处理
   killSessions(data) {
-    return request.post(`/db/focus/kill/sessions`, data)
+    return request.post(`/dbs/focus/kill/sessions`, data)
   }
   // 运行事件
   getEventList(sid) {

@@ -76,7 +76,7 @@ function urlChannel(url) {
   if (baseUrl === 'api') {
     return url
   }
-  return path.join('/v1/admin', url)
+  return path.join('/v1', url)
 }
 
 export default {
