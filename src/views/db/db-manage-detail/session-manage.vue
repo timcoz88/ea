@@ -56,7 +56,7 @@
     </div>
     <div class="filter-container" style="margin-top: 20px">
       <el-row :gutter="10">
-        <el-col :span="12" style="display: flex">
+        <el-col :span="18" style="display: flex">
           <el-button-group style="flex: 0 0 280px">
             <el-button :disabled="!multipleSelection.length" type="primary" @click="immediateStop('immediate')">立即终止会话</el-button>
             <el-button :disabled="!multipleSelection.length" type="primary" @click="immediateStop">事务处理后终止</el-button>
@@ -203,11 +203,12 @@
         </el-table>
       </div>
       <div class="page-box">
-        <Pagination
-          v-if="total > 0"
-          :current-page="page"
-          :total="total"
-          @page="handlePage"
+        <pagination
+          v-show="pagination.total > 0"
+          :total="pagination.total"
+          :page.sync="pagination.page"
+          :limit.sync="pagination.pageSize"
+          @pagination="handlePage"
         />
       </div>
     </div>
@@ -216,8 +217,7 @@
 <script>
 import Pagination from '@/components/Pagination'
 import ManagementService from '@/services/modules/management'
-import qs from 'qs'
-import {fetchDbInfo, fetchDbSessionList} from '@/api/sql'
+import { fetchDbInfo, fetchDbSessionList } from '@/api/sql'
 
 export default {
   components: {
@@ -235,8 +235,11 @@ export default {
       eventList: [
         { time: '', msg: '连接成功' }
       ],
-      page: 1,
-      total: 0,
+      pagination: {
+        page: 1,
+        pageSize: 20,
+        total: 0
+      },
       loading: false,
       options: [{
         value: 'SID',
@@ -284,7 +287,7 @@ export default {
   },
 
   created() {
-    this.handleList()
+    // this.handleList()
     this.getInfo()
   },
   methods: {
@@ -310,8 +313,9 @@ export default {
       this.multipleSelection = val
     },
     // pagination
-    handlePage(page) {
-      this.page = page
+    handlePage({ page, limit }) {
+      this.pagination.page = page
+      this.pagination.pageSize = limit
       this.handleList()
     },
     getFilter() {
@@ -325,8 +329,8 @@ export default {
       const { hostip, dsn } = this.$route.query
 
       return Object.assign({}, params, {
-        page: this.page,
-        pageSize: 10,
+        page: this.pagination.page,
+        pageSize: this.pagination.pageSize,
         background: this.filter.background,
         hostip,
         dsn
@@ -338,8 +342,10 @@ export default {
         sidList = [...sidList, ...[{ sid: item.sid.toString(), serial: item.serial_id.toString() }]]
       })
       const hostip = this.$route.query.hostip
+      const dsn = this.$route.query.dsn
       const params = {
         hostip,
+        dsn,
         type: type || '',
         kill_ids: sidList
       }
@@ -381,11 +387,11 @@ export default {
       fetchDbSessionList(this.getFilter())
         .then(({ results: data }) => {
           this.tableData = data.results
-          this.total = data.totalCount
+          this.pagination.total = data.totalCount
         })
         .catch((err) => {
           this.tableData = []
-          this.total = 0
+          this.pagination.total = 0
           this.$message.error(err.message)
         }).then(() => {
           this.loading = false
@@ -393,7 +399,7 @@ export default {
     },
     // search
     handleSearch() {
-      this.page = 1
+      this.pagination.page = 1
       this.handleList()
     },
     // clear search
@@ -403,7 +409,7 @@ export default {
           searchType: 'SID'
         }
       }
-      this.page = 1
+      this.pagination.page = 1
       this.handleList()
     },
     getNowFormatDate() {

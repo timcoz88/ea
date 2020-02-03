@@ -207,8 +207,92 @@ export const constantRoutes = [
         path: 'oracle-detail',
         component: () => import('@/views/db/db-manage-detail/index'),
         name: 'dbOracleDetail',
+        hidden: true,
         meta: { title: '数据库管理详情', affix: false }
-      }
+      },
+      {
+        path: 'auto',
+        component: () => import('@/views/polling/auto-polling/index'),
+        name: 'polling-auto',
+        meta: {
+          title: '自动化巡检',
+          key: 'polling-auto',
+          noCache: false
+        }
+      },
+      {
+        path: 'polling-report',
+        component: () => import('@/views/polling/polling-report/index'),
+        name: 'polling-report',
+        hidden: true,
+        meta: {
+          title: '巡检报告',
+          key: 'polling-report',
+          noCache: false
+        }
+      },
+      {
+        path: 'polling-report-detail',
+        component: () => import('@/views/polling/polling-report/report-detail'),
+        name: 'polling-report-detail',
+        hidden: true,
+        meta: {
+          title: '详细巡检报告',
+          key: 'polling-report',
+          noCache: false
+        }
+      },
+      {
+        path: 'sql-manage-detail',
+        component: () => import('@/views/db/sql-manage-detail/index'),
+        name: 'sqlManageDetail',
+        hidden: true,
+        meta: {
+          title: '表管理详情',
+          key: 'sql-manage-detail',
+          noCache: false
+        }
+      }, {
+        path: 'table-analyze-detail',
+        component: () => import('@/views/db/table-analyze/index'),
+        name: 'tableAnalyzeDetail',
+        hidden: true,
+        meta: {
+          title: '表分析详情',
+          key: 'table-analyze-detail',
+          noCache: false
+        }
+      }, {
+        path: 'user-admin-edit',
+        component: () => import('@/views/db/user-admin-edit'),
+        name: 'userAdminEdit',
+        hidden: true,
+        meta: {
+          title: '权限修改',
+          key: 'user-admin-edit',
+          noCache: false
+        }
+      }, {
+        path: 'sql-plan-detail',
+        component: () => import('@/views/db/sql-plan-detail'),
+        name: 'sqlPlanDetail',
+        hidden: true,
+        meta: {
+          title: 'sql计划',
+          key: 'user-admin-edit',
+          noCache: false
+        }
+      }, {
+        path: 'fix-plan-detail',
+        component: () => import('@/views/db/fix-plan-detail'),
+        name: 'fixPlanDetail',
+        hidden: true,
+        meta: {
+          title: '固定执行计划',
+          key: 'user-admin-edit',
+          noCache: false
+        }
+      },
     ]
   },
   {

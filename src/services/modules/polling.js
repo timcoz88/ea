@@ -35,7 +35,10 @@ class PollingService {
     }
     return data
   }
-
+  // 自动化巡检查看日志
+  viewLogDetail(params) {
+    return request.get('proxy/v1/dbs/execute/rpt/new/status', params)
+  }
   // 自动巡检列表
   // getReportList(params = {}) {
   //   return request.post('/health/job', params).then(handleResponse).then(data => {

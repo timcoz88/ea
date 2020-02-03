@@ -74,7 +74,7 @@
 </template>
 <script>
 import Pagination from '@/components/Pagination'
-import ManagementService from 'service/management'
+import ManagementService from '@/services/modules/management'
 import AnalyzeSetting from './analyze-setting.vue'
 
 export default {

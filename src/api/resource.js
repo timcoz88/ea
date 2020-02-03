@@ -251,3 +251,11 @@ export function ExcelSaveHost(data) {
   })
 }
 
+export function killSession(data) {
+  return request({
+    url: `/v1/dbs/focus/kill/sessions`,
+    method: 'post',
+    data
+  })
+}
+

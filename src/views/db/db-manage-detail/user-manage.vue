@@ -1,9 +1,6 @@
 <template>
   <div class="history-page">
     <div class="filter-container">
-      <div class="common-page-title mb-20">
-        数据查询
-      </div>
       <div class="filter-box">
         <el-row :gutter="10">
           <el-col :span="12" style="display: flex">
@@ -58,7 +55,8 @@
                 type="primary"
                 @click="$router.push({name: 'userAdminEdit', query: {
                   hostip: $route.query.hostip,
-                  username: currentRow.USERNAME
+                  username: currentRow.USERNAME,
+                  dsn: $route.query.dsn
                 }})"
               >
                 权限修改
@@ -67,6 +65,7 @@
                 :disabled="radio === ''"
                 type="primary"
                 @click="userLock({hostip: $route.query.hostip,
+                                  dsn: $route.query.dsn,
                                   username: currentRow.USERNAME})"
               >
                 锁定用户
@@ -75,6 +74,7 @@
                 :disabled="radio === ''"
                 type="primary"
                 @click="userUnLock({hostip: $route.query.hostip,
+                                    dsn: $route.query.dsn,
                                     username: currentRow.USERNAME})"
               >
                 用户解锁
@@ -137,11 +137,12 @@
           </el-table>
         </div>
         <div class="page-box">
-          <Pagination
-            v-if="total > 0"
-            :current-page.sync="page"
-            :total="total"
-            @page="handlePage"
+          <pagination
+            v-show="pagination.total > 0"
+            :total="pagination.total"
+            :page.sync="pagination.page"
+            :limit.sync="pagination.pageSize"
+            @pagination="handlePage"
           />
         </div>
       </div>
@@ -166,8 +167,11 @@ export default {
     return {
       tableData: [],
       radio: '',
-      page: 1,
-      total: 0,
+      pagination: {
+        page: 1,
+        total: 0,
+        pageSize: 20
+      },
       selectList: [],
       resid: '', // 执行程序的id
       procedureList: [],
@@ -214,8 +218,9 @@ export default {
     },
 
     // pagination
-    handlePage(page) {
-      this.page = page
+    handlePage({ page, limit }) {
+      this.pagination.page = page
+      this.pagination.pageSize = limit
       this.handleList(this.getFilter())
     },
     getFilter() {
@@ -227,16 +232,16 @@ export default {
       }
 
       return Object.assign({}, params, {
-        page: this.page,
-        pageSize: 10
+        page: this.pagination.page,
+        pageSize: this.pagination.pageSize
       })
     },
     // load data
     handleList() {
       this.loading = true
-      const { hostip } = this.$route.query
+      const { hostip, dsn } = this.$route.query
       const urlParams = qs.stringify(this.getFilter())
-      ManagementService.getUserManageList({ hostip }, urlParams)
+      ManagementService.getUserManageList({ hostip, dsn }, urlParams)
         .then(({ results: data }) => {
           this.tableData = data.results
           this.total = data.totalCount
@@ -273,7 +278,7 @@ export default {
       this.filter = {
         searchType: 'username'
       }
-      this.page = 1
+      this.pagination.page = 1
     },
     getRunParams() {
       if (this.selectList.length < 1) {
@@ -287,8 +292,8 @@ export default {
     },
     handleReload() {
       this.handleClear()
-      this.page = 1
-      this.total = 0
+      this.pagination.page = 1
+      this.pagination.total = 0
       this.handleList()
     }
   }

@@ -1,82 +1,77 @@
 <template>
   <div class="history-page">
     <div class="filter-container">
-      <div class="common-page-title mb-20">
-        数据查询
-      </div>
-      <div class="filter-box">
-        <el-row :gutter="10">
-          <el-col :span="5" style="display: flex">
-            <el-input
-              v-model.trim="filter.searchVal"
-              style="max-width: 500px"
-              type="text"
-              class="filter-input"
-              placeholder="请输入搜索内容"
-              @keyup.enter.native="handleSearch"
-            >
-              <el-select
-                slot="prepend"
-                v-model="filter.searchType"
-                class="filter-select"
-                style="width: 120px;"
-                placeholder="请选择查询类型">
-                <el-option
-                  v-for="item in options"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"/>
-              </el-select>
-            </el-input>
-          </el-col>
-          <el-col :span="4">
+      <el-row :gutter="10">
+        <el-col :span="5" style="display: flex">
+          <el-input
+            v-model.trim="filter.searchVal"
+            style="max-width: 500px"
+            type="text"
+            class="filter-input"
+            placeholder="请输入搜索内容"
+            @keyup.enter.native="handleSearch"
+          >
             <el-select
-              v-model="orderByLabel"
-              style="margin-left: 20px;width: 100%"
+              slot="prepend"
+              v-model="filter.searchType"
               class="filter-select"
+              style="width: 120px;"
               placeholder="请选择查询类型">
               <el-option
-                v-for="item in options1"
+                v-for="item in options"
                 :key="item.value"
                 :label="item.label"
                 :value="item.value"/>
             </el-select>
-          </el-col>
-          <el-col :span="9">
-            <el-radio-group v-model="orderByType" style="margin-left: 20px;">
-              <el-radio label="DESC">倒序</el-radio>
-              <el-radio label="ASC">顺序</el-radio>
-            </el-radio-group>
-            <el-button
-              type="primary"
-              style="margin-left: 20px"
-              @click="handleSearch"
-            >
-              搜索
-            </el-button>
-            <el-button @click="handleReload">重置</el-button>
-          </el-col>
+          </el-input>
+        </el-col>
+        <el-col :span="4">
+          <el-select
+            v-model="orderByLabel"
+            style="margin-left: 20px;width: 100%"
+            class="filter-select"
+            placeholder="请选择查询类型">
+            <el-option
+              v-for="item in options1"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"/>
+          </el-select>
+        </el-col>
+        <el-col :span="8">
+          <el-radio-group v-model="orderByType" style="margin-left: 20px;">
+            <el-radio label="DESC">倒序</el-radio>
+            <el-radio label="ASC">顺序</el-radio>
+          </el-radio-group>
+          <el-button
+            type="primary"
+            style="margin-left: 20px"
+            @click="handleSearch"
+          >
+            搜索
+          </el-button>
+          <el-button @click="handleReload">重置</el-button>
+        </el-col>
 
-          <el-col :span="5" class="text-right">
-            <el-button-group>
-              <el-button
-                :disabled="radio === ''"
-                type="primary"
-                @click="$router.push({name: 'sqlPlanDetail', query: { hostip : $route.query.hostip, sql_id: currentRow.SQL_ID }})"
-              >
-                查询计划
-              </el-button>
-              <el-button
-                :disabled="radio === ''"
-                type="primary"
-                @click="$router.push({name: 'fixPlanDetail', query: { hostip : $route.query.hostip, sql_id: currentRow.SQL_ID }})"
-              >
-                固定执行计划
-              </el-button>
-            </el-button-group>
-          </el-col>
-        </el-row>
-      </div>
+        <el-col :span="6" class="text-right">
+          <el-button-group>
+            <el-button
+              :disabled="radio === ''"
+              type="primary"
+              @click="$router.push({name: 'sqlPlanDetail', query: { hostip : $route.query.hostip, sql_id: currentRow.SQL_ID }})"
+            >
+              查询计划
+            </el-button>
+            <el-button
+              :disabled="radio === ''"
+              type="primary"
+              @click="$router.push({name: 'fixPlanDetail', query: { hostip : $route.query.hostip, sql_id: currentRow.SQL_ID }})"
+            >
+              固定执行计划
+            </el-button>
+          </el-button-group>
+        </el-col>
+      </el-row>
     </div>
     <div class="table-content">
       <div class="table-content">
@@ -150,11 +145,12 @@
           </el-table>
         </div>
         <div class="page-box">
-          <Pagination
-            v-if="total > 0"
-            :current-page.sync="page"
-            :total="total"
-            @page="handlePage"
+          <pagination
+            v-show="pagination.total > 0"
+            :total="pagination.total"
+            :page.sync="pagination.page"
+            :limit.sync="pagination.pageSize"
+            @pagination="handlePage"
           />
         </div>
       </div>
@@ -179,8 +175,11 @@ export default {
     return {
       tableData: [],
       radio: '',
-      page: 1,
-      total: 0,
+      pagination: {
+        page: 1,
+        total: 0,
+        pageSize: 20
+      },
       selectList: [],
       resid: '', // 执行程序的id
       procedureList: [],
@@ -261,31 +260,32 @@ export default {
     },
 
     // pagination
-    handlePage(page) {
-      this.page = page
+    handlePage({ page, limit }) {
+      this.pagination.page = page
+      this.pagination.pageSize = limit
       this.handleList(this.getFilter())
     },
     getFilter() {
       return Object.assign({}, this.params, {
-        page: this.page,
-        pageSize: 10
+        page: this.pagination.page,
+        pageSize: this.pagination.pageSize
       })
     },
     // load data
     handleList() {
       this.loading = true
-      const { hostip } = this.$route.query
+      const { hostip, dsn } = this.$route.query
       const urlParams = qs.stringify(this.getFilter())
-      ManagementService.sqlAnalyze({ hostip }, urlParams)
+      ManagementService.sqlAnalyze({ hostip, dsn }, urlParams)
         .then(({ results: data }) => {
           this.tableData = data.results
-          this.total = data.totalCount
+          this.pagination.total = data.totalCount
           this.currentRow = {}
           this.radio = ''
         })
         .catch((err) => {
           // this.tableData = []
-          this.total = 0
+          this.pagination.total = 0
 
           this.$message.error(err.message)
         }).then(() => {
@@ -306,8 +306,8 @@ export default {
     },
     // search
     handleSearch() {
-      this.page = 1
-      this.total = -1
+      this.pagination.page = 1
+      this.pagination.total = 0
       if (this.filter.searchVal) {
         this.params = {
           actor: this.filter.searchType,
@@ -324,7 +324,7 @@ export default {
       this.filter = {
         searchType: 'username'
       }
-      this.page = 1
+      this.pagination.page = 1
     },
     getRunParams() {
       if (this.selectList.length < 1) {
@@ -338,8 +338,8 @@ export default {
     },
     handleReload() {
       this.handleClear()
-      this.page = 1
-      this.total = 0
+      this.pagination.page = 1
+      this.pagination.total = 0
       this.handleList()
     }
   }

@@ -2,28 +2,24 @@
 <template>
   <div class="page page-session-manage">
     <div class="filter-container">
-      <div class="common-page-title mt-10 mb-20">
-        数据查询
-      </div>
-      <div class="filter-box">
-        <el-row :gutter="10">
-          <el-col :span="12">
-            <el-button-group>
-              <el-button :disabled="radio === ''" type="primary" @click="immediateStop('immediate')">立即终止会话</el-button>
-              <el-button :disabled="radio === ''" type="primary" @click="immediateStop">事务处理后终止</el-button>
-            </el-button-group>
-          </el-col>
-          <el-col :span="12" class="text-right">
+      <el-row :gutter="10">
+        <el-col :span="12">
+          <el-button-group>
+            <el-button :disabled="radio === ''" type="primary" @click="immediateStop('immediate')">立即终止会话</el-button>
+            <el-button :disabled="radio === ''" type="primary" @click="immediateStop">事务处理后终止</el-button>
+          </el-button-group>
+        </el-col>
+        <el-col :span="12" class="text-right">
 
-            <el-button
-              type="primary"
-              @click="handleSearch"
-            >
-              搜索
-            </el-button>
-            <el-button @click="handleClear">重置</el-button>
-          </el-col>
-      </el-row></div>
+          <el-button
+            type="primary"
+            @click="handleSearch"
+          >
+            搜索
+          </el-button>
+          <el-button @click="handleClear">重置</el-button>
+        </el-col>
+      </el-row>
     </div>
     <div class="table-content">
 

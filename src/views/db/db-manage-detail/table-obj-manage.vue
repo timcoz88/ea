@@ -1,49 +1,44 @@
 <template>
   <div class="history-page">
     <div class="filter-container">
-      <div class="common-page-title mb-20">
-        数据查询
-      </div>
-      <div class="filter-box">
-        <el-row :gutter="10">
-          <el-col :span="12" style="display: flex">
-            <el-input
-              v-model.trim="filter.searchVal"
-              type="text"
-              class="filter-input"
-              style="margin-right: 50px"
-              placeholder="请输入搜索内容"
-              @keyup.enter.native="handleSearch"
-            >
-              <el-select
-                slot="prepend"
-                v-model="filter.searchType"
-                class="filter-select"
-                style="width: 160px;"
-                placeholder="请选择查询类型">
-                <el-option
-                  v-for="item in options"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"/>
-              </el-select>
-            </el-input>
-            <el-button
-              type="primary"
-              @click="handleSearch"
-            >
-              搜索
-            </el-button>
-            <el-button
-              @click="handleClear">重置</el-button>
-          </el-col>
-          <el-col :span="12" class="text-right">
-            <el-button-group style="flex: 0 0 140px">
-              <el-button :disabled="radio === ''" type="primary" @click="getSqlManageDetail(currentRow)">表分析</el-button>
-            </el-button-group>
-          </el-col>
-        </el-row>
-      </div>
+      <el-row :gutter="10">
+        <el-col :span="12" style="display: flex">
+          <el-input
+            v-model.trim="filter.searchVal"
+            type="text"
+            class="filter-input"
+            style="margin-right: 50px"
+            placeholder="请输入搜索内容"
+            @keyup.enter.native="handleSearch"
+          >
+            <el-select
+              slot="prepend"
+              v-model="filter.searchType"
+              class="filter-select"
+              style="width: 160px;"
+              placeholder="请选择查询类型">
+              <el-option
+                v-for="item in options"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"/>
+            </el-select>
+          </el-input>
+          <el-button
+            type="primary"
+            @click="handleSearch"
+          >
+            搜索
+          </el-button>
+          <el-button
+            @click="handleClear">重置</el-button>
+        </el-col>
+        <el-col :span="12" class="text-right">
+          <el-button-group style="flex: 0 0 140px">
+            <el-button :disabled="radio === ''" type="primary" @click="getSqlManageDetail(currentRow)">表分析</el-button>
+          </el-button-group>
+        </el-col>
+      </el-row>
     </div>
     <div class="table-content">
       <div class="table-content">
@@ -102,11 +97,12 @@
           </el-table>
         </div>
         <div class="page-box">
-          <Pagination
-            v-if="total > 0"
-            :current-page="page"
-            :total="total"
-            @page="handlePage"
+          <pagination
+            v-show="pagination.total > 0"
+            :total="pagination.total"
+            :page.sync="pagination.page"
+            :limit.sync="pagination.pageSize"
+            @pagination="handlePage"
           />
         </div>
       </div>
@@ -135,8 +131,11 @@ export default {
     return {
       tableData: [],
       radio: '',
-      page: 1,
-      total: 0,
+      pagination: {
+        page: 1,
+        total: 0,
+        pageSize: 20
+      },
       selectList: [],
       resid: '', // 执行程序的id
       procedureList: [],
@@ -215,8 +214,9 @@ export default {
     },
 
     // pagination
-    handlePage(page) {
-      this.page = page
+    handlePage({ page, limit }) {
+      this.pagination.page = page
+      this.pagination.pageSize = limit
       this.handleList(this.getFilter())
     },
     getFilter() {
@@ -229,23 +229,23 @@ export default {
       }
 
       return Object.assign({}, params, {
-        page: this.page,
-        pageSize: 10
+        page: this.pagination.page,
+        pageSize: this.pagination.pageSize
       })
     },
     // load data
     handleList() {
       this.loading = true
-      const { hostip } = this.$route.query
+      const { hostip, dsn } = this.$route.query
       const urlParams = qs.stringify(this.getFilter())
-      ManagementService.getTableAnalyzeList({ hostip }, urlParams)
+      ManagementService.getTableAnalyzeList({ hostip, dsn }, urlParams)
         .then(({ results: data }) => {
           this.tableData = data.results
-          this.total = data.totalCount
+          this.pagination.total = data.totalCount
         })
         .catch((err) => {
           // this.tableData = []
-          this.total = 0
+          this.pagination.total = 0
           this.$message.error(err.message)
         }).then(() => {
           this.loading = false
@@ -253,8 +253,8 @@ export default {
     },
     // search
     handleSearch() {
-      this.page = 1
-      this.total = 0
+      this.pagination.page = 1
+      this.pagination.total = 0
       this.handleList(this.getFilter())
     },
     // clear search

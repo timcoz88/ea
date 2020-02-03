@@ -187,19 +187,19 @@ export default {
   },
   methods: {
     getProfile() {
-      ManagementService.getProfile({ 'hostip': this.$route.query.hostip })
+      ManagementService.getProfile({ 'hostip': this.$route.query.hostip, dsn: this.$route.query.dsn })
         .then(({ results: data }) => {
           this.profileList = data || []
         })
     },
     getTablespace() {
-      ManagementService.getTablespace({ 'hostip': this.$route.query.hostip })
+      ManagementService.getTablespace({ 'hostip': this.$route.query.hostip, dsn: this.$route.query.dsn  })
         .then(({ results: data }) => {
           this.tablespaceList = data || []
         })
     },
     getOnece() {
-      ManagementService.getOnece({ 'hostip': this.$route.query.hostip })
+      ManagementService.getOnece({ 'hostip': this.$route.query.hostip, dsn: this.$route.query.dsn  })
         .then(({ results: data }) => {
           this.tablespace_onceList = data || []
         })
@@ -211,7 +211,7 @@ export default {
     addUser() {
       this.$refs.form.validate((valid) => {
         if (valid) {
-          const params = Object.assign({ 'hostip': this.$route.query.hostip }, this.form)
+          const params = Object.assign({ 'hostip': this.$route.query.hostip, dsn: this.$route.query.dsn  }, this.form)
           ManagementService.addUser(params)
             .then(({ results: data }) => {
               this.$message.success('添加成功')
@@ -225,7 +225,7 @@ export default {
     editorUser() {
       this.$refs.form.validate((valid) => {
         if (valid) {
-          const params = Object.assign({ 'hostip': this.$route.query.hostip }, this.form)
+          const params = Object.assign({ 'hostip': this.$route.query.hostip,  dsn: this.$route.query.dsn  }, this.form)
           ManagementService.editorUser(params)
             .then(({ results: data }) => {
               this.$message.success('修改成功')

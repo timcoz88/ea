@@ -10,7 +10,7 @@ const statusMap = {
 class ManagementService {
   // 远程调度-搜索
   getManagementList(params = {}) {
-    return request.get('/hostinfo', params).then((data) => {
+    return request.get('proxy/v1/dbs/execute/rpt', params).then((data) => {
       console.log(data)
       data.results.results = data.results.results.map(v => {
         return Object.assign({}, v, {
@@ -19,6 +19,18 @@ class ManagementService {
       })
       return data
     })
+  }
+  // 自动化巡检查看报告
+  viewReportDetail(params) {
+    return request.get('proxy/v1/dbs/execute/rpt/new', params)
+  }
+  // 自动化巡检查看日志
+  viewLogDetail(params) {
+    return request.get('proxy/v1/dbs/execute/rpt/new/status', params)
+  }
+
+  getPollingList(params) {
+    return request.get('proxy/v1/dbs/rpts', params)
   }
   // 远程调度-获得作业程序
   getManagementProject(params) {
@@ -37,23 +49,23 @@ class ManagementService {
   }
   // sql执行计划
   getSqlPlanDetail(data) {
-    return request.post('/table/analyse/sql/tp', data)
+    return request.post('proxy/v1/dbs/table/analyse/sql/tp', data)
   }
   // sql 固定执行计划
   getFixPlanDetail(data) {
-    return request.post('table/analyse/sql/tp/sl', data)
+    return request.post('proxy/v1/dbs/table/analyse/sql/tp/sl', data)
   }
   // sql 固定执行计划
   getFixCuringPlanDetail(data) {
-    return request.post('/table/analyse/sql/tp/curing', data)
+    return request.post('proxy/v1/dbs/table/analyse/sql/tp/curing', data)
   }
   // sql 固定执行计划
   cancelSqlPlan(data) {
-    return request.post('/table/analyse/sql/tp/curing/delete', data)
+    return request.post('proxy/v1/dbs/table/analyse/sql/tp/curing/delete', data)
   }
   // sql 固定执行计划
   confirmSqlPlan(data) {
-    return request.post('/table/analyse/sql/tp/join', data)
+    return request.post('proxy/v1/dbs/table/analyse/sql/tp/join', data)
   }
   // 远程调度-执行程序2
   handleManagementTwoProject(data) {
@@ -65,15 +77,15 @@ class ManagementService {
   }
   // 用户锁定
   userLock(data) {
-    return request.post(`/table/analyse/lock/user`, data)
+    return request.post(`proxy/v1/dbs/table/analyse/lock/user`, data)
   }
   // 用户锁定
   sqlAnalyze(data, urlParams) {
-    return request.post(`/dbs/table/analyse/sql?${urlParams}`, data)
+    return request.post(`proxy/v1/dbs/table/analyse/sql?${urlParams}`, data)
   }
   // 用户解锁
   userUnLock(data) {
-    return request.post(`/table/analyse/unlock/user`, data)
+    return request.post(`proxy/v1/dbs/table/analyse/unlock/user`, data)
   }
 
   getMessagesList() {
@@ -110,7 +122,7 @@ class ManagementService {
   }
   // 事务处理
   killSessions(data) {
-    return request.post(`/dbs/focus/kill/sessions`, data)
+    return request.post(`/db/focus/kill/sessions`, data)
   }
   // 运行事件
   getEventList(sid) {
@@ -118,26 +130,26 @@ class ManagementService {
   }
   // 锁等待
   getLockWait(data, urlParams) {
-    return request.post(`/db/focus/lock?${urlParams}`, data)
+    return request.post(`proxy/v1/dbs/focus/lock?${urlParams}`, data)
   }// 锁等待 事务处理
   killLockWait(data, urlParams) {
-    return request.post(`/db/focus/lock/kill`, data)
+    return request.post(`proxy/v1/dbs/focus/lock/kill`, data)
   }
   // 详情
   getLockWaitItemDetail(id, data) {
-    return request.post(`/db/focus/lock/${id}`, data)
+    return request.post(`proxy/v1/dbs/focus/lock/${id}`, data)
   }
   // 阻塞树分析
   getTreeAnalyze(data, urlParams) {
-    return request.post(`db/focus/lock/tree?${urlParams}`, data)
+    return request.post(`proxy/v1/dbs/focus/lock/tree?${urlParams}`, data)
   }
   // 锁等待详情
   getDbSessionDetail(data) {
-    return request.post(`/db/focus/lock/detail`, data)
+    return request.post(`proxy/v1/dbs/focus/lock/detail`, data)
   }
   // 表对象分析
   getTableAnalyzeList(data, urlParams) {
-    return request.post(`/sql/manage?${urlParams}`, data)
+    return request.post(`proxy/v1/dbs/sql/manage?${urlParams}`, data)
   }
   // 表对象分析
   getSqlManageDetail(data) {
@@ -145,58 +157,58 @@ class ManagementService {
   }
   // 表分析统计信息
   getAnalyzeList(data) {
-    return request.post('/table/analyse/count', data)
+    return request.post('proxy/v1/dbs/table/analyse/count', data)
   }
   // 表分析统计信息
   executeAnalyzeList(data) {
-    return request.post('/table/analyse', data)
+    return request.post('proxy/v1/dbs/table/analyse', data)
   }
   // 表分析统计信息
   getUserManageList(data, urlParams) {
-    return request.post(`/table/analyse/users?${urlParams}`, data)
+    return request.post(`proxy/v1/dbs/table/analyse/users?${urlParams}`, data)
   }
   // 表分析统计信息
   getProfile(data) {
-    return request.post(`/table/analyse/create/profile`, data)
+    return request.post(`proxy/v1/dbs/table/analyse/create/profile`, data)
   }
   // 表分析统计信息
   getTablespace(data) {
-    return request.post(`/table/analyse/create/tablespace`, data)
+    return request.post(`proxy/v1/dbs/table/analyse/create/tablespace`, data)
   }
   // 表分析统计信息
   getOnece(data) {
-    return request.post(`/table/analyse/create/tablespace/onece`, data)
+    return request.post(`proxy/v1/dbs/table/analyse/create/tablespace/onece`, data)
   }
   // 表分析统计信息
   addUser(data) {
-    return request.post(`/table/analyse/create/users`, data)
+    return request.post(`proxy/v1/dbs/table/analyse/create/users`, data)
   }
   editorUser(data) {
-    return request.post(`table/analyse/update/users`, data)
+    return request.post(`proxy/v1/dbs/table/analyse/update/users`, data)
   }
   getUserAdminDetail(data) {
-    return request.post(`table/analyse/role/users`, data)
+    return request.post(`proxy/v1/dbs/table/analyse/role/users`, data)
   }
   getRolesList(data) {
-    return request.post(`table/analyse/role/names`, data)
+    return request.post(`proxy/v1/dbs/table/analyse/role/names`, data)
   }
   userGrant(data) {
-    return request.post(`table/analyse/role/name/grant`, data)
+    return request.post(`proxy/v1/dbs/table/analyse/role/name/grant`, data)
   }
   userRevoke(data) {
-    return request.post(`table/analyse/role/name/revoke`, data)
+    return request.post(`proxy/v1/dbs/table/analyse/role/name/revoke`, data)
   }
   getSystemAdmin(data) {
-    return request.post(`table/analyse/role/system`, data)
+    return request.post(`proxy/v1/dbs/table/analyse/role/system`, data)
   }
   getObject(data) {
-    return request.post(`/table/analyse/role/object`, data)
+    return request.post(`proxy/v1/dbs/table/analyse/role/object`, data)
   }
   objectGrant(data) {
-    return request.post(`/table/analyse/role/object/grant`, data)
+    return request.post(`proxy/v1/dbs/table/analyse/role/object/grant`, data)
   }
   objectRevoke(data) {
-    return request.post(`/table/analyse/role/object/revoke`, data)
+    return request.post(`proxy/v1/dbs/table/analyse/role/object/revoke`, data)
   }
 }
 

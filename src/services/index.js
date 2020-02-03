@@ -4,7 +4,7 @@ import { Message, MessageBox } from 'element-ui'
 import { getToken } from '@/utils/auth'
 
 const options = {
-  baseURL: process.env.BASE_API,
+  baseURL: process.env.VUE_APP_BASE_API,
   timeout: 30000,
   headers: {
     'Content-Type': 'application/json'
@@ -75,6 +75,8 @@ function urlChannel(url) {
   const baseUrl = pathArr[0] || pathArr[1]
   if (baseUrl === 'api') {
     return url
+  } else if (baseUrl === 'proxy') {
+    return url.replace('proxy', '')
   }
   return path.join('/v1', url)
 }
