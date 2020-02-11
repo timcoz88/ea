@@ -190,13 +190,46 @@ export const constantRoutes = [
   {
     path: '/db',
     component: Layout,
-    redirect: '/db/oracle',
+    redirect: '/db/overview',
     name: 'dispatch',
     meta: {
       title: '数据库管理',
       icon: 'skill'
     },
     children: [
+      {
+        path: 'aa',
+        component: () => import('@/views/db/aa/index'),
+        name: 'aa',
+        meta: { title: '11', affix: false }
+      },
+      {
+        path: 'overview',
+        component: () => import('@/views/db/overview/index'),
+        name: 'dbOverview',
+        meta: { title: '概览', affix: false }
+      },
+      {
+        path: 'database-monitor',
+        component: () => import('@/views/db/database-monitor/index'),
+        name: 'databaseMonitor',
+        hidden: true,
+        meta: { title: '数据库监控', affix: false }
+      },
+      {
+        path: 'top-sql',
+        component: () => import('@/views/db/top-sql/index'),
+        name: 'topSql',
+        hidden: true,
+        meta: { title: 'TOP SQL详情', affix: false }
+      },
+      {
+        path: 'session-detail',
+        component: () => import('@/views/db/session-detail/index'),
+        name: 'sessionDetail',
+        hidden: true,
+        meta: { title: '会话详情', affix: false }
+      },
       {
         path: 'oracle',
         component: () => import('@/views/db/oracle/index'),
@@ -357,6 +390,36 @@ export const constantRoutes = [
         hidden: true,
         meta: { title: '故障历史', affix: false }
       },
+    ]
+  },{
+    path:'/auto-task',
+    component:Layout,
+    redirect: '/auto-task/operation',
+    name: 'handler',
+    alwaysShow: true,
+    meta: {
+      title: '自动化任务',
+      icon: 'skill'
+    },
+    children: [
+      {
+        path:'operation',
+        component:() => import('@/views/auto/operation'),
+        name:'autoOperation',
+        meta:{title:'自动化运维',affix:false}
+      },{
+        path:'addOper',
+        component:() => import('@/views/auto/addOper'),
+        name:'addOper',
+        hidden: true,
+        meta:{title:'新增部署任务',affix:false}
+      },{
+        path:'deploymentLog',
+        component:() => import('@/views/auto/deploymentLog'),
+        name:'deploymentLog',
+        hidden: true,
+        meta:{title:'部署日志',affix:false}
+      }
     ]
   },
   mysqlRouter

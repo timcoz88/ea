@@ -7,7 +7,7 @@ const options = {
   baseURL: process.env.VUE_APP_BASE_API,
   timeout: 30000,
   headers: {
-    'Content-Type': 'application/json'
+    'Content-Type': 'application/json;charset=UTF-8'
   }
 }
 

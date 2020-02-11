@@ -1,0 +1,208 @@
+<template>
+    <el-card style="margin: 20px">
+        <div class="df">
+            <div>
+                <el-button type="primary" @click="addOper">新增</el-button>
+                <el-button @click="operationRun">运行</el-button>
+                <el-button @click="edit">配置</el-button>
+                <el-button @click="logBtn">日志</el-button>
+                <el-button @click="delBtn">删除</el-button>
+            </div>
+            <div class="df2">
+                <div class="df2">
+                    <label for="ts" style="width:80px;line-height:36px;">任务状态</label>
+                    <el-select name="ts" v-model="taskStatus" @change="statusChange">
+                        <el-option
+                            v-for="item in statusList"
+                            :key="item.value"
+                            :label="item.label"
+                            :value="item.value"
+                        ></el-option>
+                    </el-select>
+                </div>
+                <el-input placeholder="请输入内容" v-model="content" style="width:50%;margin-left:10px;"> <el-button slot="append" icon="el-icon-search" @click="selectID"></el-button></el-input>
+            </div>
+        </div>
+        <div style="margin-top:20px;">
+            <el-table
+                :data="opterationList"
+                style="width: 100%"
+                >
+                <el-table-column
+                    width="50"
+                    align="center">
+                    <template slot-scope="scope">
+                        <el-radio v-model="radio"  :label="scope.$index" @change="selectDbchange">&nbsp;</el-radio>
+                    </template>
+                </el-table-column>
+                <el-table-column
+                    prop="taskid"
+                    label="任务ID"
+                    >
+                </el-table-column>
+                <el-table-column
+                    prop="node_ip"
+                    label="分配IP"
+                    >
+                </el-table-column>
+                <el-table-column
+                    prop="status"
+                    label="部署状态">
+                    <template slot-scope="scope">
+                        <span v-if="scope.row.status == 'fail'">失败</span>
+                        <span v-else-if="scope.row.status == 'success'">成功</span>
+                        <span v-else-if="scope.row.status == 'deploy'">部署中</span>
+                        <span v-else-if="scope.row.status == 'new'">已创建</span>
+                        <span v-else>{{scope.row.status}}</span>
+                    </template>
+                </el-table-column>
+            </el-table>
+            <div class="page-box">
+                <Pagination
+                v-if="total > 0"
+                :current-page="page"
+                :total="total"
+                @page="handlePage"
+                />
+            </div>
+        </div>
+    </el-card>
+</template>
+<script>
+import {operationList,operationDel,operationRun} from '@/api/operation'
+export default {
+    name:'autoOperation',
+    data(){
+        return{
+            radio:0,
+            statusList:[{
+                label:'失败',
+                value:'fail'
+            },
+            {
+                label:'部署中',
+                value:'deploy'
+            },{
+                label:'已创建',
+                value:'new'
+            },{
+                label:'成功',
+                value:'success'
+            }],
+            taskStatus:'',
+            content:'',
+            opterationList:[],
+            total:0,
+            page:1,
+            multipleSelection:{}
+        }
+    },
+    created(){
+        this.opterList()
+    },
+    methods:{
+        operationRun(){
+            this.operationRun({
+                taskid:this.multipleSelection.taskid
+            }).then(({results: data}) => {
+                this.$message.success(data.message)
+                this.opterList()
+            }).catch(() => {
+                this.$message.error(data.message)
+            })
+        },
+        handlePage(page){
+            this.page = page
+            this.opterList()
+        },
+        addOper(){
+            this.$router.push({name:'addOper'})
+        },
+        edit(){
+            this.$router.push({name:'addOper',query:{taskid:this.multipleSelection.taskid}})
+        },
+        logBtn(){
+            this.$router.push({name:'deploymentLog',query:{taskid:this.multipleSelection.taskid}})
+        },
+        selectDbchange(index){
+            this.multipleSelection = this.opterationList[index]
+        },
+        selectID(){
+            operationList({
+                page: this.page,
+                pageSize:10,
+                taskid:this.content,
+                for_select:true
+            }).then(({results: data}) => {
+                this.opterationList = data.results
+                this.total = 0
+                if(this.opterationList.length > 0){
+                    this.multipleSelection = this.opterationList[0]
+                }
+            }).catch(err => {
+                this.opterationList = []
+                this.total = 0
+                this.$message.error(err.message)
+            })
+        },
+        statusChange(val){
+            operationList({
+                page: this.page,
+                pageSize:10,
+                status:val,
+                for_select:true
+            }).then(({results: data}) => {
+                this.opterationList = data.results
+                this.total = 0
+                if(this.opterationList.length > 0){
+                    this.multipleSelection = this.opterationList[0]
+                }
+            }).catch(err => {
+                this.opterationList = []
+                this.total = 0
+                this.$message.error(err.message)
+            })
+        },
+        opterList(){
+            operationList({
+                page: this.page,
+                pageSize:10
+            }).then(({results: data}) => {
+                this.opterationList = data.results
+                this.total = data.total
+                if(this.opterationList.length > 0){
+                    this.multipleSelection = this.opterationList[0]
+                }
+            }).catch(err => {
+                this.opterationList = []
+                this.total = 0
+                this.$message.error(err.message)
+            } )
+        },
+        delBtn(){
+            this.$confirm(`此操作将永久删除${this.multipleSelection.taskid}, 是否继续?`, '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+            }).then(() => {
+                operationDel({
+                    taskid:[this.multipleSelection.taskid]
+                }).then(({ results: data }) => {
+                    this.$message.success(data.message)
+                    this.opterList()
+                }).catch((err) => {
+                    this.$message.error(err.message)
+                })
+            }).catch(() => {})
+        }
+    }
+}
+</script>
+<style lang="sass" scoped>
+.df
+    display: flex
+    justify-content: space-between
+    .df2
+        display: flex
+        flex-direction:row
+</style>
