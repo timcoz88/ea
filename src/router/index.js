@@ -40,7 +40,7 @@ import mysqlRouter from './modules/mysql'
  * all roles can be accessed
  */
 export const constantRoutes = [
-    {
+  {
     path: '/',
     component: Layout,
     redirect: '/overview',
@@ -51,12 +51,12 @@ export const constantRoutes = [
         name: 'dbOverview',
         meta: { title: '概览', icon: 'dashboard', affix: true }
       },
-      {
-        path: 'aa',
-        component: () => import('@/views/db/aa/index'),
-        name: 'aa',
-        meta: { title: '11', affix: false }
-      },
+      // {
+      //   path: 'aa',
+      //   component: () => import('@/views/db/aa/index'),
+      //   name: 'aa',
+      //   meta: { title: '11', affix: false }
+      // },
       {
         path: 'database-monitor',
         component: () => import('@/views/db/database-monitor/index'),
@@ -81,8 +81,8 @@ export const constantRoutes = [
     ]
   },
   {
-    path:'/auto-task',
-    component:Layout,
+    path: '/auto-task',
+    component: Layout,
     redirect: '/auto-task/operation',
     name: 'handler',
     alwaysShow: true,
@@ -92,26 +92,26 @@ export const constantRoutes = [
     },
     children: [
       {
-        path:'operation',
-        component:() => import('@/views/auto/operation'),
-        name:'autoOperation',
-        meta:{title:'自动化运维',affix:false}
-      },{
-        path:'addOper',
-        component:() => import('@/views/auto/addOper'),
-        name:'addOper',
+        path: 'operation',
+        component: () => import('@/views/auto/operation'),
+        name: 'autoOperation',
+        meta: { title: '自动化运维', affix: false }
+      }, {
+        path: 'addOper',
+        component: () => import('@/views/auto/addOper'),
+        name: 'addOper',
         hidden: true,
-        meta:{title:'新增部署任务',affix:false}
-      },{
-        path:'deploymentLog',
-        component:() => import('@/views/auto/deploymentLog'),
-        name:'deploymentLog',
+        meta: { title: '新增部署任务', affix: false }
+      }, {
+        path: 'deploymentLog',
+        component: () => import('@/views/auto/deploymentLog'),
+        name: 'deploymentLog',
         hidden: true,
-        meta:{title:'部署日志',affix:false}
+        meta: { title: '部署日志', affix: false }
       }
     ]
   },
-    {
+  {
     path: '/404',
     component: () => import('@/views/error-page/404'),
     hidden: true
@@ -121,7 +121,7 @@ export const constantRoutes = [
     component: () => import('@/views/error-page/401'),
     hidden: true
   },
-    {
+  {
     path: '/login',
     component: () => import('@/views/login/index'),
     hidden: true
@@ -130,7 +130,7 @@ export const constantRoutes = [
     path: '/auth-redirect',
     component: () => import('@/views/login/auth-redirect'),
     hidden: true
-  },
+  }
 ]
 // export const constantRoutes = [
 //   {
@@ -593,7 +593,7 @@ export const asyncRoutes = [
   },
 
   ,*/
- /* {
+  /* {
     path: '/icon',
     component: Layout,
     children: [

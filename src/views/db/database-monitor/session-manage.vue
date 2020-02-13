@@ -2,12 +2,12 @@
   <div v-loading="loading" class="page page-session-manage">
     <div>
       <h4>会话管理</h4>
-       <el-row class="card-content">
-          <el-col :span="4"  class="card-content-item">最大会话数：{{ dbInfo.db_res && dbInfo.db_res.hostnm }}</el-col>
-          <el-col :span="4" class="card-content-item">当前会话数：{{ dbInfo.hostip }}</el-col>
-          <el-col :span="4" class="card-content-item">活动会话数：{{ dbInfo.dbnm }}</el-col>
-          <el-col :span="4" class="card-content-item">阻塞会话数：{{ dbInfo.db_res && dbInfo.db_res.status }}</el-col>
-       </el-row>
+      <el-row class="card-content">
+        <el-col :span="4" class="card-content-item">最大会话数：{{ dbInfo.db_res && dbInfo.db_res.hostnm }}</el-col>
+        <el-col :span="4" class="card-content-item">当前会话数：{{ dbInfo.hostip }}</el-col>
+        <el-col :span="4" class="card-content-item">活动会话数：{{ dbInfo.dbnm }}</el-col>
+        <el-col :span="4" class="card-content-item">阻塞会话数：{{ dbInfo.db_res && dbInfo.db_res.status }}</el-col>
+      </el-row>
     </div>
     <div class="filter-container" style="margin-top: 20px">
       <el-row :gutter="10">
@@ -31,12 +31,14 @@
               slot="prepend"
               v-model="filter.searchType"
               style="width: 160px;"
-              placeholder="请选择查询类型">
+              placeholder="请选择查询类型"
+            >
               <el-option
                 v-for="item in options"
                 :key="item.value"
                 :label="item.label"
-                :value="item.value"/>
+                :value="item.value"
+              />
             </el-select>
           </el-input>
         </el-col>
@@ -57,8 +59,8 @@
 
       <div class="table-box">
         <el-table
-          v-loading="loading"
           ref="remoteData"
+          v-loading="loading"
           :data="tableData"
           :row-class-name="tableRowClassName"
           border
@@ -74,9 +76,9 @@
             prop="sid"
             label="会话ID"
           >
-            <template slot-scope="scope">
+            <!-- <template slot-scope="scope">
               <el-button type="text" @click="getDbSessionDetail(scope.row)">{{ scope.row.sid }}</el-button>
-            </template>
+            </template> -->
           </el-table-column>
           <el-table-column
             prop="serial_id"
@@ -107,19 +109,16 @@
             prop="terminal"
             label="终端"
             width="120"
-
           />
           <el-table-column
             prop="program"
             label="应用程序"
             width="240"
-
           />
           <el-table-column
             prop="type"
             label="类型"
             width="140"
-
           />
           <!---<el-table-column
             prop="sql_hash_value"
@@ -182,7 +181,7 @@ export default {
 
   data() {
     return {
-      dbInfo:{},
+      dbInfo: {},
       filter: {
         searchType: 'SID'
       },
@@ -254,23 +253,29 @@ export default {
       }
       return ''
     },
-    getDbSessionDetail({ sid, serial_id, inst_id }) {
-      const { hostip } = this.$route.query
-      this.$router.push({
-        name: 'ManagementDbSessionDetail',
-        query: {
-          hostip,
-          sid,
-          serial_id,
-          inst_id
-        }
-      })
-    },
+    // getDbSessionDetail({ sid, serial_id, inst_id }) {
+    //   const { hostip } = this.$route.query
+    //   this.$router.push({
+    //     name: 'ManagementDbSessionDetail',
+    //     query: {
+    //       hostip,
+    //       sid,
+    //       serial_id,
+    //       inst_id
+    //     }
+    //   })
+    // },
     handleSelectionChange(val) {
       this.multipleSelection = val
     },
-    getDetail(){
-      this.$router.push({name:"sessionDetail"})
+    getDetail({ sid, serial_id, inst_id }) {
+      this.$router.push({ name: 'sessionDetail', query: {
+        hostip: this.$route.query.hostip,
+        dsn: this.$route.query.dsn,
+        sid,
+        serial_id,
+        inst_id
+      }})
     },
     // pagination
     handlePage({ page, limit }) {

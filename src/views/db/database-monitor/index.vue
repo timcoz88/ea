@@ -1,45 +1,44 @@
 <template>
   <div style="margin:20px;">
     <el-row type="flex">
-        <el-col :span="24">
-          <el-card class="box-card">
-            <div slot="header" class="clearfix">
-              <span class="common-page-title">基本信息</span>
-            </div>
-            <el-row class="card-content">
-              <el-col :span="4"  class="card-content-item">主机名：{{ dbInfo.db_res && dbInfo.db_res.hostnm }}</el-col>
-              <el-col :span="4" class="card-content-item">主机IP：{{ dbInfo.hostip }}</el-col>
-              <el-col :span="4" class="card-content-item">数据库名：{{ dbInfo.dbnm }}</el-col>
-              <el-col :span="4" class="card-content-item">数据库状态：{{ dbInfo.db_res && dbInfo.db_res.status }}</el-col>
-              <el-col :span="4" class="card-content-item">数据库归档：{{ dbInfo.db_res && dbInfo.db_res.archiver }}</el-col>
-              <el-col :span="4" class="card-content-item">实例名：{{ dbInfo.db_res && dbInfo.db_res.instance_nm}}</el-col>
-              <el-col :span="4" class="card-content-item">实例ID：{{ dbInfo.db_res && dbInfo.db_res.inst_id }}</el-col>
-              <el-col :span="4" class="card-content-item">数据库类型：{{ dbInfo.dbtype }}</el-col>
-              <el-col :span="4" class="card-content-item">数据库说明：{{ dbInfo.dbinfo }}</el-col>
-              <el-col :span="4" class="card-content-item">数据库版本：{{ dbInfo.db_res && dbInfo.db_res.version }}</el-col>
-              <el-col :span="4" class="card-content-item">启动时间：{{ dbInfo.db_res && dbInfo.db_res.startup_tm }}</el-col>
-              <el-col :span="4" class="card-content-item">当前会话数：{{ dbInfo.session_res && dbInfo.session_res.ACTIVE +dbInfo.session_res.INACTIVE }}</el-col>
-              <el-col :span="4" class="card-content-item">活动会话数：{{ dbInfo.session_res && dbInfo.session_res.INACTIVE }}</el-col>
-            </el-row>
-          </el-card>
-        </el-col>
-      </el-row>
-      <div class="db-manage-detail-page">
-        <el-tabs v-model="componentName" type="card" @tab-click="handleClick">
-          <el-tab-pane label="监控图表" name="moniorEchar"/>
-          <el-tab-pane label="会话管理" name="sessionManage"/>
-          <el-tab-pane label="TOP SQL" name="topSql"/>
-          <!-- <el-tab-pane label="SQL分析" name="sqlAnalyze"/>
+      <el-col :span="24">
+        <el-card class="box-card">
+          <div slot="header" class="clearfix">
+            <span class="common-page-title">基本信息</span>
+          </div>
+          <el-row class="card-content">
+            <el-col :span="4" class="card-content-item">主机名：{{ dbInfo.db_res && dbInfo.db_res.hostnm }}</el-col>
+            <el-col :span="4" class="card-content-item">主机IP：{{ dbInfo.hostip }}</el-col>
+            <el-col :span="4" class="card-content-item">数据库名：{{ dbInfo.dbnm }}</el-col>
+            <el-col :span="4" class="card-content-item">数据库状态：{{ dbInfo.db_res && dbInfo.db_res.status }}</el-col>
+            <el-col :span="4" class="card-content-item">数据库归档：{{ dbInfo.db_res && dbInfo.db_res.archiver }}</el-col>
+            <el-col :span="4" class="card-content-item">实例名：{{ dbInfo.db_res && dbInfo.db_res.instance_nm }}</el-col>
+            <el-col :span="4" class="card-content-item">实例ID：{{ dbInfo.db_res && dbInfo.db_res.inst_id }}</el-col>
+            <el-col :span="4" class="card-content-item">数据库类型：{{ dbInfo.dbtype }}</el-col>
+            <el-col :span="4" class="card-content-item">数据库说明：{{ dbInfo.dbinfo }}</el-col>
+            <el-col :span="4" class="card-content-item">数据库版本：{{ dbInfo.db_res && dbInfo.db_res.version }}</el-col>
+            <el-col :span="4" class="card-content-item">启动时间：{{ dbInfo.db_res && dbInfo.db_res.startup_tm }}</el-col>
+            <el-col :span="4" class="card-content-item">当前会话数：{{ dbInfo.session_res && dbInfo.session_res.ACTIVE +dbInfo.session_res.INACTIVE }}</el-col>
+            <el-col :span="4" class="card-content-item">活动会话数：{{ dbInfo.session_res && dbInfo.session_res.INACTIVE }}</el-col>
+          </el-row>
+        </el-card>
+      </el-col>
+    </el-row>
+    <div class="db-manage-detail-page">
+      <el-tabs v-model="componentName" type="card" @tab-click="handleClick">
+        <el-tab-pane label="监控图表" name="moniorEchar" />
+        <el-tab-pane label="会话管理" name="sessionManage" />
+        <el-tab-pane label="TOP SQL" name="topSql" />
+        <!-- <el-tab-pane label="SQL分析" name="sqlAnalyze"/>
           <el-tab-pane label="表对象管理" name="TableObjManage"/>
           <el-tab-pane label="用户管理" name="userManage"/>
           <el-tab-pane label="锁等待" name="lockWait"/> -->
-          <el-tab-pane label="阻塞树分析" name="treeAnalyze"/>
-        </el-tabs>
+        <el-tab-pane label="阻塞树分析" name="treeAnalyze" />
+      </el-tabs>
 
-        <component :is="componentName"/>
-      </div>
+      <component :is="componentName" />
+    </div>
   </div>
-  
 
 </template>
 <script>
@@ -66,11 +65,14 @@ export default {
   data() {
     return {
       componentName: 'moniorEchar',
-      dbInfo:{}
+      dbInfo: {}
     }
   },
-  created(){
+  created() {
     this.getInfo()
+    if (this.$route.query.componentName) {
+      this.componentName = this.$route.query.componentName
+    }
   },
   methods: {
     handleClick(tab, event) {
@@ -86,7 +88,7 @@ export default {
           this.$message.error(err.message)
         }).then(() => {
         })
-    },
+    }
   }
 }
 </script>
