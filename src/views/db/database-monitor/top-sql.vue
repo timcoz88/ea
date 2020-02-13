@@ -36,12 +36,12 @@
         @row-dblclick="getDetail"
         style="width: 100%"
       >
-        <el-table-column prop="INST_ID" label="SQL ID" />
+        <el-table-column prop="INST_ID" label="SQL ID" width="160" />
         <el-table-column prop="SQL_TEXT" label="SQL文本" />
-        <el-table-column prop="PARRSING_SCHEMA_NAME" label="执行用户"/>
-        <el-table-column prop="ELAPSED_TIME" label="执行时间(s)" />
-        <el-table-column prop="BUFFER_GETS" label="逻辑读"/>
-        <el-table-column prop="DISK_CALLS" label="磁盘读" />
+        <el-table-column prop="PARRSING_SCHEMA_NAME" label="执行用户" width="160"/>
+        <el-table-column prop="ELAPSED_TIME" label="执行时间(s)"  width="120"/>
+        <el-table-column prop="BUFFER_GETS" label="逻辑读"  width="80"/>
+        <el-table-column prop="DISK_CALLS" label="磁盘读" width="80" />
       </el-table>
     </div>
     <div class="page-box">
@@ -51,7 +51,11 @@
 </template>
 <script>
 import {tpsSqlList} from '@/api/overview'
+import Pagination from '@/components/Pagination'
 export default {
+  components: {
+        Pagination
+    },
   data() {
     return {
       loading:true,
@@ -103,7 +107,7 @@ export default {
   methods: {
     handlePage(value){
       this.page = value.page
-      this.pageSize = value.pageSize
+      this.pageSize = value.limit
       if(this.filter.searchType == 'NAME'){
         this.getList({
           "NAME":this.filter.searchVal
@@ -128,19 +132,34 @@ export default {
         ORDER_TYPE:this.order
       },data)).then(({results:data}) => {
         this.tableData = data.results
-      }).catch(err => this.$message.error(err.message))
+        this.total = data.totalCount
+      }).catch(err => {
+         this.tableData = []
+         this.total = 0
+         this.page = 1
+         this.pageSize = 10
+        this.$message.error(err.message)
+      })
       .then(() => this.loading = false)
     },
     handleSearch(){
+      let param = {}
+      this.page = 1
+      this.pageSize = 10
       if(this.filter.searchType == 'NAME'){
-        this.getList({
+        param = {
           "NAME":this.filter.searchVal
-        })
+        }
       }else if(this.filter.searchType == 'SQL_TEXT'){
-        this.getList({
-          "SQL_TEXT":this.filter.searchVal
-        })
+        param = {"SQL_TEXT":this.filter.searchVal}
       }
+
+        this.getList(Object.assign({},param,{
+          page:this.page,
+          pageSize:this.pageSize,
+          ORDER:this.radio,
+          ORDER_TYPE:this.order
+        }))
     },
     reset(){
       this.filter.searchVal = ''

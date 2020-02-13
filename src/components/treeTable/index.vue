@@ -2,8 +2,8 @@
  <el-table ref="multipleTable" :data="formatData" :row-style="showRow" v-bind="$attrs">   <!--  @header-click="chooseall" -->
     <el-table-column :render-header="renderHeader" width="50" align="center">
       <template slot-scope="scope">
-          <el-radio v-model="scope.row.checks" :label="scope.$index" class="radio"  @change="toselect(scope.row)">&nbsp;</el-radio>
-        <!-- <el-checkbox v-model="scope.row.checks" @change="toselect(scope.row)"></el-checkbox> -->
+          <!-- <el-radio v-model="scope.row.checks" :label="scope.$index" class="radio"  @change="toselect(scope.row)">&nbsp;</el-radio> -->
+        <el-checkbox v-model="scope.row.checks" @change="toselect(scope.row)"></el-checkbox>
       </template>
     </el-table-column>
     <el-table-column v-if="columns.length===0" width="150">

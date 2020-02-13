@@ -2,8 +2,13 @@
   <div class="navbar">
     <hamburger id="hamburger-container" :is-active="sidebar.opened" class="hamburger-container" @toggleClick="toggleSideBar" />
 
-    <breadcrumb id="breadcrumb-container" class="breadcrumb-container" />
-
+    <!-- <breadcrumb id="breadcrumb-container" class="breadcrumb-container" /> -->
+    <el-select v-model="selectProject" style="margin-top: 6px;">
+      <el-option v-for="item in projectList" 
+        :key="item.value"
+        :label="item.label"
+        :value="item.value"></el-option>
+    </el-select>
     <div class="right-menu">
       <template v-if="device!=='mobile'">
         <!--<search id="header-search" class="right-menu-item" />-->
@@ -11,12 +16,13 @@
 <!--
         <error-log class="errLog-container right-menu-item hover-effect" />
 -->
-
-        <screenfull id="screenfull" class="right-menu-item hover-effect" />
+        <svg-icon class-name="data-source-icon" icon-class="data-source" style="width: 26px;height: 48px;;"/>
+        <i class="el-icon-user-solid" style="width: 28px;font-size: 25px;height: 60px;vertical-align: middle;"></i>
+        <!-- <screenfull id="screenfull" class="right-menu-item hover-effect" />
 
         <el-tooltip content="Global Size" effect="dark" placement="bottom">
           <size-select id="size-select" class="right-menu-item hover-effect" />
-        </el-tooltip>
+        </el-tooltip> -->
 
       </template>
 
@@ -29,9 +35,9 @@
           <!--<router-link to="/profile/index">
             <el-dropdown-item>Profile</el-dropdown-item>
           </router-link>-->
-          <router-link to="/">
+          <!-- <router-link to="/">
             <el-dropdown-item>工作台</el-dropdown-item>
-          </router-link>
+          </router-link> -->
           <el-dropdown-item divided>
             <span style="display:block;" @click="logout">注销</span>
           </el-dropdown-item>
@@ -65,6 +71,22 @@ export default {
       'avatar',
       'device'
     ])
+  },
+  data(){
+    return{
+      projectList:[{
+        label:'智能监控',
+        value:'1'
+      },
+      {
+        label:'自动化运维',
+        value:'2'
+      },{
+        label:'质量审核',
+        value:'3'
+      }],
+      selectProject:'1'
+    }
   },
   methods: {
     toggleSideBar() {

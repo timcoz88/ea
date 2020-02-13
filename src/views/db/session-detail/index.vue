@@ -1,8 +1,13 @@
 <template>
     <el-card style="margin:20px;">
-        <div>
-            <el-button>立即终止会话</el-button>
-            <el-button>事务处理后会话</el-button>
+        <div class="df">
+            <div>
+                <el-button>立即终止会话</el-button>
+                <el-button>事务处理后会话</el-button>
+            </div>
+            <div>
+                <el-button @click="callback">返回</el-button>
+            </div>
         </div>
         <el-row :gutter="20" type="flex" style="margin-top:20px;">
             <el-col :span="8">
@@ -88,7 +93,7 @@ export default {
         }
     },
     methods:{
-
+        callback(){}
     }
 }
 </script>
@@ -103,4 +108,7 @@ export default {
        .card-content-item
          line-height: 30px
          height: 30px
+.df
+    display: flex;
+    justify-content: space-between;
 </style>

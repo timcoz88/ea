@@ -1,5 +1,8 @@
 <template>
   <el-card style="margin: 20px">
+    <div style="text-align: right;">
+      <el-button @click="callback">返回</el-button>
+    </div>
     <div class="page p20">
       <div class="page-title">
         <p>SQLID：111</p>
@@ -183,6 +186,9 @@ export default {
   },
 
   methods: {
+    callback(){
+
+    },
     // 切换说明时标红对应的违规处
     commentChange(val) {
       const regExpArr = this.apiResult.comments[val].reg

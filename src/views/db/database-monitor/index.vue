@@ -29,10 +29,10 @@
           <el-tab-pane label="监控图表" name="moniorEchar"/>
           <el-tab-pane label="会话管理" name="sessionManage"/>
           <el-tab-pane label="TOP SQL" name="topSql"/>
-          <el-tab-pane label="SQL分析" name="sqlAnalyze"/>
+          <!-- <el-tab-pane label="SQL分析" name="sqlAnalyze"/>
           <el-tab-pane label="表对象管理" name="TableObjManage"/>
           <el-tab-pane label="用户管理" name="userManage"/>
-          <el-tab-pane label="锁等待" name="lockWait"/>
+          <el-tab-pane label="锁等待" name="lockWait"/> -->
           <el-tab-pane label="阻塞树分析" name="treeAnalyze"/>
         </el-tabs>
 

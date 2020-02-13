@@ -26,45 +26,57 @@
         <div style="margin-top:20px;">
             <el-row>
                 <div v-for="(item,key) in databaseList" :key="key">
-                    <el-col :span="6">
-                        <div class="box" :class="item.error_num>0?'lineR':'lineB'" @click="dataBase(item.hostip,item.dsn)">
-                            <div class="df" style="line-height:20px;height:20px;">
-                                <span>{{item.mysql_type}}</span>
-                                <div>
-                                    <img src="@/assets/notice.png" class="notice-img">
-                                    <span style="vertical-align: middle;">{{item.error_num}}</span>
+                    <el-col :span="6" style="padding-left: 10px; padding-right: 10px;">
+                        <el-card class="box-card">
+                            <div  @click="dataBase(item.hostip,item.dsn)">
+                                <div class="df">
+                                    <span class="vn">
+                                        <img src="@/assets/oracle.png" style="width: 42px;height: 42px;" class="vn" v-if="item.mysql_type == 'ORACLE'">
+                                        <img src="@/assets/mysql.png" style="width: 42px;height: 42px;" class="vn" v-else>
+                                        {{item.mysql_type}}</span>
+                                    <div>
+                                        <img src="@/assets/notice.png" class="notice-img" v-if="item.error_num == 0">
+                                        <img src="@/assets/warnRed.png" class="notice-img" v-if="item.error_num > 0">
+                                        <!-- <span style="vertical-align: middle;">{{item.error_num}}</span> -->
+                                    </div>
+                                </div>
+                                <div class="df2 icol">
+                                    <div>
+                                        <img src="@/assets/dataBaseStatus.png" class="notice-img vn">
+                                        <span class="vn">数据库状态：</span>
+                                        <span class="vn" v-if="item.sql_status== 0">连接正常</span>
+                                        <span class="vn" style="color:red;" v-else>连接异常</span>
+                                    </div>
+                                    <div>
+                                        <img src="@/assets/sessionNum.png" class="notice-img vn">
+                                        <span class="vn">阻塞会话数：</span>
+                                        <span class="vn">{{item.block_num}}</span>
+                                    </div>
+                                </div>
+                                <div class="df2 icol">
+                                    <div>
+                                        <img src="@/assets/TPS.png" class="notice-img vn">
+                                        <span class="vn">TPS：</span>
+                                        <span class="vn">{{item.qps_num}}</span>
+                                    </div>
+                                    <div>
+                                        <img src="@/assets/sessionNum.png" class="notice-img vn">
+                                        <span class="vn">活跃会话数：</span>
+                                        <span class="vn">{{item.active_num}}</span>
+                                    </div>
+                                </div>
+                                <!-- <div class="df2 icol">
+                                    <div>
+                                        <img src="@/assets/TPS.png" class="notice-img vn">
+                                        <span class="vn">实时QPS：</span>
+                                        <span class="vn">{{item.qps_time_num}}</span>
+                                    </div>
+                                </div> -->
+                                <div style="border-top: 1px solid #e6ebf5;padding:10px 0;">
+                                    <p>{{item.error_msg}}</p>
                                 </div>
                             </div>
-                            <div class="df2 icol">
-                                <div>
-                                    <span>数据库状态：</span>
-                                    <span>{{item.sql_status?'连接正常':'连接异常'}}</span>
-                                </div>
-                                <div>
-                                    <span>阻塞会话数：</span>
-                                    <span>{{item.block_num}}</span>
-                                </div>
-                            </div>
-                            <div class="df2 icol">
-                                <div>
-                                    <span>活跃会话数：</span>
-                                    <span>{{item.active_num}}</span>
-                                </div>
-                                <div>
-                                    <span>总QPS：</span>
-                                    <span>{{item.qps_num}}</span>
-                                </div>
-                            </div>
-                            <div class="df2 icol">
-                                <div>
-                                    <span>实时QPS：</span>
-                                    <span>{{item.qps_time_num}}</span>
-                                </div>
-                            </div>
-                            <div style="border-top: 1px solid;padding:10px 0;">
-                                <p>{{item.error_msg}}</p>
-                            </div>
-                        </div>
+                        </el-card>
                     </el-col>
                 </div>
             </el-row>
@@ -187,6 +199,9 @@ export default {
 }
 </script>
 <style  scoped>
+.vn{
+    vertical-align: middle;
+}
 .df2{
     display:flex;
     flex-direction:row;
