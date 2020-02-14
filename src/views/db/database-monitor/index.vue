@@ -7,19 +7,21 @@
             <span class="common-page-title">基本信息</span>
           </div>
           <el-row class="card-content">
-            <el-col :span="4" class="card-content-item">主机名：{{ dbInfo.db_res && dbInfo.db_res.hostnm }}</el-col>
+            <!-- <el-col :span="4" class="card-content-item">主机名：{{ dbInfo.db_res && dbInfo.db_res.hostnm }}</el-col> -->
             <el-col :span="4" class="card-content-item">主机IP：{{ dbInfo.hostip }}</el-col>
+            <el-col :span="4" class="card-content-item">端口：{{ dbInfo.db_res&&dbInfo.db_res.db_port }}</el-col>
             <el-col :span="4" class="card-content-item">数据库名：{{ dbInfo.dbnm }}</el-col>
+            <el-col :span="4" class="card-content-item">数据库类型：{{ dbInfo.dbtype }}</el-col>
             <el-col :span="4" class="card-content-item">数据库状态：{{ dbInfo.db_res && dbInfo.db_res.status }}</el-col>
             <el-col :span="4" class="card-content-item">数据库归档：{{ dbInfo.db_res && dbInfo.db_res.archiver }}</el-col>
-            <el-col :span="4" class="card-content-item">实例名：{{ dbInfo.db_res && dbInfo.db_res.instance_nm }}</el-col>
-            <el-col :span="4" class="card-content-item">实例ID：{{ dbInfo.db_res && dbInfo.db_res.inst_id }}</el-col>
-            <el-col :span="4" class="card-content-item">数据库类型：{{ dbInfo.dbtype }}</el-col>
-            <el-col :span="4" class="card-content-item">数据库说明：{{ dbInfo.dbinfo }}</el-col>
+            <!-- <el-col :span="4" class="card-content-item">实例名：{{ dbInfo.db_res && dbInfo.db_res.instance_nm }}</el-col>
+            <el-col :span="4" class="card-content-item">实例ID：{{ dbInfo.db_res && dbInfo.db_res.inst_id }}</el-col> -->
+            
+            <!-- <el-col :span="4" class="card-content-item">数据库说明：{{ dbInfo.dbinfo }}</el-col> -->
             <el-col :span="4" class="card-content-item">数据库版本：{{ dbInfo.db_res && dbInfo.db_res.version }}</el-col>
             <el-col :span="4" class="card-content-item">启动时间：{{ dbInfo.db_res && dbInfo.db_res.startup_tm }}</el-col>
-            <el-col :span="4" class="card-content-item">当前会话数：{{ dbInfo.session_res && dbInfo.session_res.ACTIVE +dbInfo.session_res.INACTIVE }}</el-col>
-            <el-col :span="4" class="card-content-item">活动会话数：{{ dbInfo.session_res && dbInfo.session_res.INACTIVE }}</el-col>
+            <!-- <el-col :span="4" class="card-content-item">当前会话数：{{ dbInfo.session_res && dbInfo.session_res.cur_cnt }}</el-col>
+            <el-col :span="4" class="card-content-item">活动会话数：{{ dbInfo.session_res && dbInfo.session_res.act_cnt }}</el-col> -->
           </el-row>
         </el-card>
       </el-col>

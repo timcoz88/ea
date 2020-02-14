@@ -113,8 +113,8 @@ export default {
       }).then(({ results: data }) => {
         this.$message.success(data.message)
         this.opterList()
-      }).catch(() => {
-        this.$message.error(data.message)
+      }).catch((err) => {
+        this.$message.error(err.message)
       }).then(() => {
         this.loading = false
       })

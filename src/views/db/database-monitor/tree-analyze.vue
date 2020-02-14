@@ -26,20 +26,15 @@
         <el-table
           v-loading="loading"
           ref="remoteData"
+          row-key="sid"
           :data="tableData"
           border
           default-expand-all
-          highlight-current-row
           :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
           style="width: 100%"
-          @row-click = "showRow"
-          @selection-change="handleSelectionChange"
+         
         >
-          <el-table-column label="选择" width="70" header-align="center" align="center">
-            <template slot-scope="scope">
-              <el-radio v-model="radio" :label="scope.$index" class="radio">&nbsp;</el-radio>
-            </template>
-          </el-table-column>
+         <!-- @row-click = "showRow" -->
           <el-table-column
             prop="level"
             label="树级别"
@@ -100,6 +95,11 @@
             prop="ctime"
             label="等待时间秒"
           />
+          <el-table-column label="选择" width="70" header-align="center" align="center">
+            <template slot-scope="scope">
+              <el-radio v-model="radio" :label="scope.$index" class="radio">&nbsp;</el-radio>
+            </template>
+          </el-table-column>
         </el-table>
       </div>
       <div class="page-box">
@@ -141,7 +141,7 @@ export default {
       loading: false,
       currentData: {},
       currentRow: {},
-      radio: ''
+      radio:0
     }
   },
   computed: {
@@ -169,10 +169,10 @@ export default {
     this.handleList()
   },
   methods: {
-    showRow(row) {
-      this.radio = this.tableData.indexOf(row)
-      this.currentRow = row
-    },
+    // showRow(row) {
+    //   this.radio = this.tableData.indexOf(row)
+    //   this.currentRow = row
+    // },
     handleSelectionChange(val) {
       this.multipleSelection = val
     },
@@ -237,9 +237,9 @@ export default {
     // load data
     handleList() {
       this.loading = true
-      const { hostip } = this.$route.query
+      const { hostip,dsn } = this.$route.query
       const urlParams = qs.stringify(this.getFilter())
-      ManagementService.getTreeAnalyze({ hostip }, urlParams)
+      ManagementService.getTreeAnalyze({ hostip,dsn }, urlParams)
         .then(({ results: data }) => {
           this.tableData = data.results
           this.total = data.totalCount

@@ -48,7 +48,11 @@ export default {
   },
   methods: {
     getEchars(){
-      tps()
+      const {hostip,dsn} = this.$route.query
+      tps({
+        hostip,
+        dsn
+      })
         .then(({results:data}) => {
             this.chart = echarts.init(document.getElementById('tps'));
             this.chart.setOption(this.options(data.time,data.value))
@@ -56,9 +60,12 @@ export default {
         .catch(err => this.$message.error(err.message));
     },
     timeChange(val) {
+      const {hostip,dsn} = this.$route.query
         tps({
             start_tm:val[0],
-            end_time:val[1]
+            end_time:val[1],
+            hostip,
+            dsn
         })
         .then(({results:data}) => {
             this.chart = echarts.init(document.getElementById('tps'));

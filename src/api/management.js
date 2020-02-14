@@ -14,3 +14,11 @@ export function killLockWait(params) {
     data: params
   })
 }
+export function topsqlDetail(params) {
+  return request({
+    url: '/v1/dbs/oracle/topsql/detail',
+    method: 'post',
+    data: params
+  })
+}
+

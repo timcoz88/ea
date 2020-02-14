@@ -71,10 +71,9 @@
         <el-upload
           class="upload-demo"
           :limit="1"
-          :file-list="fileList"
-          :auto-upload="false"
-          :http-request="uploadform"
           action
+          :http-request="uploadform"
+          :on-remove="uploadMove"
         >
           <el-button size="small" type="primary">点击上传</el-button>
         </el-upload>
@@ -111,7 +110,6 @@ export default {
         password: '',
         dbrootpwd: ''
       },
-      fileList: []
     }
   },
   created() {
@@ -120,10 +118,15 @@ export default {
     }
   },
   methods: {
-
+    uploadMove(){
+      this.form.dbconfigfile = ''
+    },
     uploadform(file) {
       const formData = new FormData()
-      formData.append('file', file)
+      formData.append('file', file.file),
+      upLoad(formData).then(({results:data}) => {
+        this.form.dbconfigfile = data.url
+      })
     },
     getDetail() {
       operationDetail({
@@ -153,7 +156,6 @@ export default {
       } else {
         isnew = true
       }
-      this.form.dbconfigfile = ''
       operationSave({
         isnew,
         ...this.form

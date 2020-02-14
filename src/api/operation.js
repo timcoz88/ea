@@ -4,8 +4,9 @@ export function upLoad(query) {
     url: '/v1/autodeploy/deploytask/upload',
     method: 'put',
     headers: {
-      'Content-Type': 'x-www-form-urlencoded'
-    }
+      'Content-Type': 'multipart/form-data'
+    },
+    data:query
   })
 }
 export function operationList(query) {

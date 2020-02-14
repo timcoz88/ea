@@ -123,6 +123,7 @@
   </el-card>
 </template>
 <script>
+import { topsqlDetail } from '@/api/management'
 export default {
   data() {
     return {

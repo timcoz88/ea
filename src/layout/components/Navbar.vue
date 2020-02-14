@@ -3,7 +3,7 @@
     <hamburger id="hamburger-container" :is-active="sidebar.opened" class="hamburger-container" @toggleClick="toggleSideBar" />
 
     <!-- <breadcrumb id="breadcrumb-container" class="breadcrumb-container" /> -->
-    <el-select v-model="selectProject" style="margin-top: 6px;">
+    <el-select v-model="selectProject" style="margin-top: 6px;" @change="selectProjectChange">
       <el-option v-for="item in projectList" 
         :key="item.value"
         :label="item.label"
@@ -76,16 +76,28 @@ export default {
     return{
       projectList:[{
         label:'智能监控',
-        value:'1'
+        value:'智能监控'
       },
       {
         label:'自动化运维',
-        value:'2'
+        value:'自动化运维'
       },{
         label:'质量审核',
-        value:'3'
+        value:'质量审核'
       }],
-      selectProject:'1'
+      selectProject:'智能监控'
+    }
+  },
+  created(){
+    console.log()
+    if(this.$router.history.current.path.includes('auto-task')){
+        this.selectProject = '自动化运维'
+        this.$router.options.routes[1].hidden = false
+        this.$router.options.routes[0].hidden = true
+    }else if(this.$router.history.current.path.includes('overview')){
+        this.selectProject='智能监控'
+        this.$router.options.routes[1].hidden = true
+        this.$router.options.routes[0].hidden = false
     }
   },
   methods: {
@@ -95,6 +107,13 @@ export default {
     async logout() {
       await this.$store.dispatch('user/logout')
       this.$router.push(`/login?redirect=${this.$route.fullPath}`)
+    },
+    selectProjectChange(value){
+      if(value == '质量审核'){
+        location.href="http://atlasdata.f3322.net:8088/#/login"
+      }else{
+        this.$store.commit('SET_PROJECTVALUE',value)
+      }
     }
   }
 }

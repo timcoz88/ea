@@ -1,6 +1,5 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-
 Vue.use(Router)
 
 /* Layout */
@@ -44,6 +43,7 @@ export const constantRoutes = [
     path: '/',
     component: Layout,
     redirect: '/overview',
+    hidden:false,
     children: [
       {
         path: 'overview',
@@ -51,12 +51,12 @@ export const constantRoutes = [
         name: 'dbOverview',
         meta: { title: '概览', icon: 'dashboard', affix: true }
       },
-      // {
-      //   path: 'aa',
-      //   component: () => import('@/views/db/aa/index'),
-      //   name: 'aa',
-      //   meta: { title: '11', affix: false }
-      // },
+      {
+        path: 'aa',
+        component: () => import('@/views/db/aa/index'),
+        name: 'aa',
+        meta: { title: '11', affix: false }
+      },
       {
         path: 'database-monitor',
         component: () => import('@/views/db/database-monitor/index'),
@@ -85,7 +85,7 @@ export const constantRoutes = [
     component: Layout,
     redirect: '/auto-task/operation',
     name: 'handler',
-    alwaysShow: true,
+    hidden:true,
     meta: {
       title: '自动化任务',
       icon: 'skill'
@@ -95,6 +95,7 @@ export const constantRoutes = [
         path: 'operation',
         component: () => import('@/views/auto/operation'),
         name: 'autoOperation',
+        hidden:false,
         meta: { title: '自动化运维', affix: false }
       }, {
         path: 'addOper',
@@ -822,5 +823,11 @@ export function resetRouter() {
   const newRouter = createRouter()
   router.matcher = newRouter.matcher // reset router
 }
-
+export function resetRouter2() {
+  const newRouter = () => new Router({
+    scrollBehavior: () => ({ y: 0 }),
+    routes: constantRoutes2
+  })
+  router.matcher = newRouter.matcher // reset router
+}
 export default router

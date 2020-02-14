@@ -2,8 +2,8 @@
   <el-card style="margin:20px;">
     <div class="df">
       <div>
-        <el-button>立即终止会话</el-button>
-        <el-button>事务处理后会话</el-button>
+        <el-button @click="immediateStop('immediate')">立即终止会话</el-button>
+        <el-button @click="immediateStop">事务处理后会话</el-button>
       </div>
       <div>
         <el-button @click="callback">返回</el-button>
@@ -89,7 +89,7 @@
             <span class="common-page-title">SQL明细</span>
           </div>
           <div class="card-content">
-            <span>{{}}</span>
+            <span>{{sql_text}}</span>
           </div>
         </el-card>
       </el-col>
@@ -98,6 +98,7 @@
 </template>
 <script>
 import { getDbSessionDetail, killLockWait } from '@/api/management'
+import ManagementService from '@/services/modules/management'
 export default {
   data() {
     return {
@@ -136,6 +137,50 @@ export default {
         }).catch(err => {
           this.$message.error(err.message)
         })
+    },
+    immediateStop(type) {
+      const { hostip, dsn, sid, serial_id, inst_id } = this.$route.query
+      const params = {
+        hostip,
+        dsn,
+        type: type || '',
+        kill_ids: [{ sid: sid.toString(), serial: serial_id.toString() }]
+      }
+
+      this.$confirm(`是否终止进程，该操作不可返回`, '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      })
+        .then(() => {
+          this.eventList.push({ time: this.getNowFormatDate(), msg: `当前执行事件${sidList.length}个` })
+          ManagementService.killSessions(params)
+            .then(({ results: data }) => {
+              this.$message.success('执行成功')
+              this.eventList = [...this.eventList, ...data]
+            })
+            .catch(() => {
+              this.eventList.push({ time: this.getNowFormatDate(), msg: `执行失败` })
+            })
+        })
+        .catch(() => {})
+    },
+    getNowFormatDate() {
+      const date = new Date()
+      const seperator1 = '-'
+      const seperator2 = ':'
+      let month = date.getMonth() + 1
+      let strDate = date.getDate()
+      if (month >= 1 && month <= 9) {
+        month = '0' + month
+      }
+      if (strDate >= 0 && strDate <= 9) {
+        strDate = '0' + strDate
+      }
+      const currentdate = date.getFullYear() + seperator1 + month + seperator1 + strDate +
+        ' ' + date.getHours() + seperator2 + date.getMinutes() +
+        seperator2 + date.getSeconds()
+      return currentdate
     }
   }
 }

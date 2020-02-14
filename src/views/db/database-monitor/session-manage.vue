@@ -3,10 +3,10 @@
     <div>
       <h4>会话管理</h4>
       <el-row class="card-content">
-        <el-col :span="4" class="card-content-item">最大会话数：{{ dbInfo.db_res && dbInfo.db_res.hostnm }}</el-col>
-        <el-col :span="4" class="card-content-item">当前会话数：{{ dbInfo.hostip }}</el-col>
-        <el-col :span="4" class="card-content-item">活动会话数：{{ dbInfo.dbnm }}</el-col>
-        <el-col :span="4" class="card-content-item">阻塞会话数：{{ dbInfo.db_res && dbInfo.db_res.status }}</el-col>
+        <el-col :span="4" class="card-content-item">最大会话数：{{ dbInfo.session_res && dbInfo.session_res.max_cnt }}</el-col>
+        <el-col :span="4" class="card-content-item">当前会话数：{{ dbInfo.session_res && dbInfo.session_res.cur_cnt }}</el-col>
+        <el-col :span="4" class="card-content-item">活动会话数：{{ dbInfo.session_res && dbInfo.session_res.act_cnt }}</el-col>
+        <el-col :span="4" class="card-content-item">阻塞会话数：{{ dbInfo.session_res && dbInfo.session_res.block_cnt }}</el-col>
       </el-row>
     </div>
     <div class="filter-container" style="margin-top: 20px">
@@ -114,12 +114,23 @@
             prop="program"
             label="应用程序"
             width="240"
-          />
-          <el-table-column
+          >
+            <template slot-scope="scope">
+              <el-popover
+                placement="top-start"
+                width="200"
+                trigger="hover"
+                :content="scope.row.sql_text"
+                >
+                <span>{{scope.row.sql_text}}</span>
+              </el-popover>
+            </template>
+          </el-table-column>
+          <!-- <el-table-column
             prop="type"
             label="类型"
             width="140"
-          />
+          /> -->
           <!---<el-table-column
             prop="sql_hash_value"
             label="SQL_HASH_VALUE"
@@ -136,6 +147,10 @@
             width="140"
           />
           <el-table-column
+            prop="sql_text"
+            label="SQL明细"
+          />
+          <!-- <el-table-column
             prop="final_blocking_session_status"
             label="阻塞会话状态"
             width="140"
@@ -144,8 +159,8 @@
             prop="final_blocking_instance"
             label="阻塞会话实例"
             width="140"
-          />
-          <el-table-column
+          /> -->
+          <!-- <el-table-column
             prop="final_blocking_session"
             label="阻塞会话"
             width="140"
@@ -154,7 +169,7 @@
             prop="logon_time"
             label="登录时间"
             width="170"
-          />
+          /> -->
         </el-table>
       </div>
       <div class="page-box">
@@ -173,7 +188,6 @@
 import Pagination from '@/components/Pagination'
 import ManagementService from '@/services/modules/management'
 import { fetchDbInfo, fetchDbSessionList } from '@/api/sql'
-
 export default {
   components: {
     Pagination
@@ -237,7 +251,6 @@ export default {
       const currentdate = date.getFullYear() + seperator1 + month + seperator1 + strDate +
         ' ' + date.getHours() + seperator2 + date.getMinutes() +
         seperator2 + date.getSeconds()
-      console.log(currentdate)
       return currentdate
     }
   },
