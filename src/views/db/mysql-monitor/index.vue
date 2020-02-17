@@ -1,12 +1,9 @@
 <template>
   <div style="margin:20px;">
-    <div style="text-align: right;margin-bottom:20px;">
-      <el-button @click="callback">返回</el-button>
-    </div>
     <el-row type="flex">
       <el-col :span="24">
         <el-card class="box-card">
-          <div slot="header" class="clearfix ">
+          <div slot="header" class="clearfix">
             <span class="common-page-title">基本信息</span>
           </div>
           <el-row class="card-content">
@@ -30,7 +27,7 @@
       </el-col>
     </el-row>
     <div class="db-manage-detail-page">
-      <el-tabs v-model="componentName" type="card">
+      <el-tabs v-model="componentName" type="card" @tab-click="handleClick">
         <el-tab-pane label="监控图表" name="moniorEchar" />
         <el-tab-pane label="会话管理" name="sessionManage" />
         <el-tab-pane label="TOP SQL" name="topSql" />
@@ -80,8 +77,8 @@ export default {
     }
   },
   methods: {
-    callback(){
-      this.$router.push({name:'dbOverview'})
+    handleClick(tab, event) {
+      console.log(tab, event)
     },
     getInfo() {
       const { hostip, dsn } = this.$route.query

@@ -16,8 +16,8 @@
 <!--
         <error-log class="errLog-container right-menu-item hover-effect" />
 -->
-        <svg-icon class-name="data-source-icon" icon-class="data-source" style="width: 26px;height: 48px;;"/>
-        <i class="el-icon-user-solid" style="width: 28px;font-size: 25px;height: 60px;vertical-align: middle;"></i>
+        <svg-icon class-name="data-source-icon" icon-class="data-source" style="width: 26px;height: 48px;cursor: pointer;" @click="linkTo('svg')"/>
+        <i class="el-icon-user-solid" style="width: 28px;font-size: 25px;height: 60px;vertical-align: middle;cursor: pointer;" @click="linkTo('i')"></i>
         <!-- <screenfull id="screenfull" class="right-menu-item hover-effect" />
 
         <el-tooltip content="Global Size" effect="dark" placement="bottom">
@@ -89,7 +89,6 @@ export default {
     }
   },
   created(){
-    console.log()
     if(this.$router.history.current.path.includes('auto-task')){
         this.selectProject = '自动化运维'
         this.$router.options.routes[1].hidden = false
@@ -101,6 +100,13 @@ export default {
     }
   },
   methods: {
+    linkTo(val){
+      if(val == 'svg'){
+        window.location.href = window.location.protocol+'//'+window.location.hostname+':8088/#/data-source'
+      }else if(val == 'i'){
+        window.location.href = window.location.protocol+'//'+window.location.hostname+':8088/#/auth'
+      }
+    },
     toggleSideBar() {
       this.$store.dispatch('app/toggleSideBar')
     },
@@ -110,7 +116,7 @@ export default {
     },
     selectProjectChange(value){
       if(value == '质量审核'){
-        location.href="http://atlasdata.f3322.net:8088/#/login"
+        location.href=window.location.protocol+'//'+window.location.hostname+':8088/'
       }else{
         this.$store.commit('SET_PROJECTVALUE',value)
       }

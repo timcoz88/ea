@@ -73,7 +73,7 @@
             width="40"
           />
           <el-table-column
-            prop="sid"
+            prop="id"
             label="会话ID"
           >
             <!-- <template slot-scope="scope">
@@ -81,31 +81,30 @@
             </template> -->
           </el-table-column>
           <el-table-column
-            prop="serial_id"
-            label="序列ID"
+            prop="user"
+            label="执行会话的用户"
           />
           <el-table-column
-            prop="username"
-            label="用户名"
+            prop="state"
+            label="会话正在执行的操作"
           />
           <el-table-column
-            prop="status"
-            label="状态"
+            prop="info"
+            label="会话执行的SQL详情"
           />
           <el-table-column
-            prop="event"
-            label="事件"
-            width="240"
+            prop="time"
+            label="会话处于当前状态的时间（单位S）"
           />
           <el-table-column
-            prop="process"
-            label="系统进程"
+            prop="host"
+            label="当前会话客户端的主机"
           />
           <el-table-column
-            prop="machine"
-            label="主机"
+            prop="command"
+            label="会话状态"
           />
-          <el-table-column
+          <!-- <el-table-column
             prop="terminal"
             label="终端"
             width="120"
@@ -125,7 +124,7 @@
                 <span>{{scope.row.sql_text}}</span>
               </el-popover>
             </template>
-          </el-table-column>
+          </el-table-column> -->
           <!-- <el-table-column
             prop="type"
             label="类型"
@@ -136,7 +135,7 @@
             label="SQL_HASH_VALUE"
             width="140"
           />--->
-          <el-table-column
+          <!-- <el-table-column
             prop="sql_id"
             label="SQL_ID"
             width="140"
@@ -149,7 +148,7 @@
           <el-table-column
             prop="sql_text"
             label="SQL明细"
-          />
+          /> -->
           <!-- <el-table-column
             prop="final_blocking_session_status"
             label="阻塞会话状态"
@@ -186,8 +185,9 @@
 </template>
 <script>
 import Pagination from '@/components/Pagination'
-import ManagementService from '@/services/modules/management'
-import { fetchDbInfo, fetchDbSessionList } from '@/api/sql'
+// import ManagementService from '@/services/modules/management'
+import {mysqlSessionList} from '@/api/management'
+// import { fetchDbInfo, fetchDbSessionList } from '@/api/sql'
 export default {
   components: {
     Pagination
@@ -257,7 +257,7 @@ export default {
 
   created() {
     this.handleList()
-    this.getInfo()
+    // this.getInfo()
   },
   methods: {
     tableRowClassName({ row, rowIndex }) {
@@ -281,13 +281,11 @@ export default {
     handleSelectionChange(val) {
       this.multipleSelection = val
     },
-    getDetail({ sid, serial_id, inst_id }) {
-      this.$router.push({ name: 'sessionDetail', query: {
+    getDetail({ id }) {
+      this.$router.push({ name: 'mysqlSessionDetail', query: {
         hostip: this.$route.query.hostip,
         dsn: this.$route.query.dsn,
-        sid,
-        serial_id,
-        inst_id
+        session_id:id
       }})
     },
     // pagination
@@ -362,7 +360,7 @@ export default {
     // load data
     handleList() {
       this.loading = true
-      fetchDbSessionList(this.getFilter())
+      mysqlSessionList(this.getFilter())
         .then(({ results: data }) => {
           this.tableData = data.results
           this.pagination.total = data.totalCount

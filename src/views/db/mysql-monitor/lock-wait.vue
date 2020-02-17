@@ -1,15 +1,15 @@
-<!-- 阻塞树分析 -->
 <template>
   <div class="page page-session-manage">
     <div class="filter-container">
       <el-row :gutter="10">
         <el-col :span="12">
           <el-button-group>
-            <el-button type="primary" :disabled="JSON.stringify(currentRow) == '{}'?true:false" @click="immediateStop('immediate')">立即终止会话</el-button>
-            <el-button type="primary" :disabled="JSON.stringify(currentRow) == '{}'?true:false" @click="immediateStop">事务处理后终止</el-button>
+            <el-button :disabled="radio === ''" type="primary" @click="immediateStop('immediate')">立即终止会话</el-button>
+            <el-button :disabled="radio === ''" type="primary" @click="immediateStop">事务处理后终止</el-button>
           </el-button-group>
         </el-col>
         <el-col :span="12" class="text-right">
+
           <el-button
             type="primary"
             @click="handleSearch"
@@ -21,26 +21,25 @@
       </el-row>
     </div>
     <div class="table-content">
+
       <div class="table-box">
         <el-table
           v-loading="loading"
           ref="remoteData"
-          row-key="sid"
           :data="tableData"
-          border
-          default-expand-all
           highlight-current-row
-          :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
-          @current-change="handleCurrentChange"
+          border
           style="width: 100%"
+          @row-click = "showRow"
         >
-          <el-table-column
-            prop="level"
-            label="树级别"
-          />
+          <el-table-column label="选择" width="70" header-align="center" align="center">
+            <template slot-scope="scope">
+              <el-radio v-model="radio" :label="scope.$index" class="radio">&nbsp;</el-radio>
+            </template>
+          </el-table-column>
           <el-table-column
             prop="username"
-            label="会话用户"
+            label="用户名"
           />
           <el-table-column
             prop="sid"
@@ -59,46 +58,37 @@
             label="实例"
           />
           <el-table-column
-            prop="wait_class"
-            label="等待类型"
-          />
-          <el-table-column
-            prop="event"
-            label="等待事件"
-          />
-          <el-table-column
-            prop="P1"
-            label="p1"
-          />
-          <el-table-column
-            prop="P2"
-            label="p2"
-          />
-          <el-table-column
             prop="sql_id"
-            label="SQLID"
+            label="SQL_ID"
           />
           <el-table-column
-            prop="status"
-            label="会话状态"
+            prop="type"
+            label="锁类型"
           />
           <el-table-column
-            prop="program"
-            label="程序名"
+            prop="lmode"
+            label="持有的模式"
           />
           <el-table-column
-            prop="machine"
-            label="服务器"
+            prop="request"
+            label="请求的模式"
+          />
+          <el-table-column
+            prop="object_type"
+            label="对象类型"
+          />
+          <el-table-column
+            prop="owner"
+            label="对象所有者"
+          />
+          <el-table-column
+            prop="object_name"
+            label="对象名"
           />
           <el-table-column
             prop="ctime"
-            label="等待时间秒"
+            label="请求时间秒"
           />
-          <!-- <el-table-column label="选择" width="70" header-align="center" align="center">
-            <template slot-scope="scope">
-              <el-radio v-model="radio" :label="scope.$index" class="radio">&nbsp;</el-radio>
-            </template>
-          </el-table-column> -->
         </el-table>
       </div>
       <div class="page-box">
@@ -110,22 +100,16 @@
         />
       </div>
     </div>
-    <lock-wait-detail
-      ref="lockWaitDetail"
-      :data="currentData"
-      @refresh="handleList"/>
   </div>
 </template>
 <script>
 import Pagination from '@/components/Pagination'
 import ManagementService from '@/services/modules/management'
-import LockWaitDetail from './lock-wait-detail.vue'
 import qs from 'qs'
 
 export default {
   components: {
-    Pagination,
-    LockWaitDetail
+    Pagination
   },
 
   data() {
@@ -133,11 +117,13 @@ export default {
       filter: {
       },
       tableData: [],
+      multipleSelection: [],
       dbInfo: {},
       page: 1,
       total: 0,
       loading: false,
       currentData: {},
+      radio: '',
       currentRow: {}
     }
   },
@@ -157,7 +143,7 @@ export default {
       const currentdate = date.getFullYear() + seperator1 + month + seperator1 + strDate +
         ' ' + date.getHours() + seperator2 + date.getMinutes() +
         seperator2 + date.getSeconds()
-      // console.log(currentdate)
+      console.log(currentdate)
       return currentdate
     }
   },
@@ -166,9 +152,23 @@ export default {
     this.handleList()
   },
   methods: {
-    handleCurrentChange(val) {
-      this.currentRow = val;
+    showRow(row) {
+      this.radio = this.tableData.indexOf(row)
+      this.currentRow = row
     },
+    getDbSessionDetail({ sid, serial_id, inst_id }) {
+      const { hostip } = this.$route.query
+      this.$router.push({
+        name: 'ManagementDbSessionDetail',
+        query: {
+          hostip,
+          sid,
+          serial_id,
+          inst_id
+        }
+      })
+    },
+    // pagination
     handlePage(page) {
       this.page = page
       this.handleList()
@@ -190,54 +190,33 @@ export default {
     immediateStop(type) {
       const { sid, serial_id, inst_id } = this.currentRow
       const hostip = this.$route.query.hostip
+      const params = {
+        hostip,
+        type: type || '',
+        ids: [`${sid}`, `${serial_id}`, `@${inst_id}`]
+      }
 
-      this.$confirm(`是否终止进程，该操作不可返回`, '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        const params = {
-          hostip,
-          type: type || '',
-          ids: [`${sid}`, `${serial_id}`, `@${inst_id}`]
-        }
-
-        ManagementService.killLockWait(params)
-          .then(({ results: data }) => {
-            //
-            this.$message.success(data.msg)
-            this.handleList()
-          })
-          .catch(() => {
-          })
-      }).catch(() => {
-
-      })
-    },
-    getDbSessionDetail({ sid, serial_id, inst_id }) {
-      const { hostip } = this.$route.query
-      this.$router.push({
-        name: 'ManagementDbSessionDetail',
-        query: {
-          hostip,
-          sid,
-          serial_id,
-          inst_id
-        }
-      })
+      ManagementService.killLockWait(params)
+        .then(({ results: data }) => {
+          this.handleList()
+          this.radio = ''
+          this.currentRow = {}
+        })
+        .catch(() => {
+        })
     },
     // load data
     handleList() {
       this.loading = true
-      const { hostip,dsn } = this.$route.query
+      const { hostip } = this.$route.query
       const urlParams = qs.stringify(this.getFilter())
-      ManagementService.getTreeAnalyze({ hostip,dsn }, urlParams)
+      ManagementService.getLockWait({ hostip }, urlParams)
         .then(({ results: data }) => {
           this.tableData = data.results
           this.total = data.totalCount
         })
         .catch((err) => {
-          this.tableData = []
+          // this.tableData = []
           this.total = 0
           this.$message.error(err.message)
         }).then(() => {
@@ -274,7 +253,7 @@ export default {
       const currentdate = date.getFullYear() + seperator1 + month + seperator1 + strDate +
         ' ' + date.getHours() + seperator2 + date.getMinutes() +
         seperator2 + date.getSeconds()
-      // console.log(currentdate)
+      console.log(currentdate)
       return currentdate
     }
   }

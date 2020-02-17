@@ -51,9 +51,7 @@ export default {
       const {hostip,dsn} = this.$route.query
       tps({
         hostip,
-        dsn,
-        start_tm:'',
-        end_time:''
+        dsn
       })
         .then(({results:data}) => {
             this.chart = echarts.init(document.getElementById('tps'));

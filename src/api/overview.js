@@ -15,8 +15,8 @@ export function groupList() {
 export function tps(query) {
   return request({
     url: '/v1/dbs/oracle/tps',
-    method: 'get',
-    params: query
+    method: 'post',
+    data: query
   })
 }
 

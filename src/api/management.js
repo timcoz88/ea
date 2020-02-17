@@ -22,3 +22,27 @@ export function topsqlDetail(params) {
   })
 }
 
+// mysql
+export function mysqlSessionList(params) {
+  return request({
+    url: '/v1/dbs/mysql/session',
+    method: 'post',
+    data: params
+  })
+}
+export function mysqlSessionDetail(params) {
+  return request({
+    url: '/v1/dbs/mysql/session/detail',
+    method: 'post',
+    data: params
+  })
+}
+export function mysqlTopSqlList(params) {
+  return request({
+    url: '/v1/dbs/mysql/topsql',
+    method: 'post',
+    data: params
+  })
+}
+
+

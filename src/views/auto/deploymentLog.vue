@@ -1,6 +1,9 @@
 <template>
   <el-card style="margin:20px;">
-    <p>部署配置</p>
+    <div class="df">
+      <h4>部署配置</h4>
+      <el-button @click="callback">返回</el-button>
+    </div>
     <el-form ref="form" :model="form" label-position="left" :inline="true">
       <el-row>
         <el-col :span="12">
@@ -50,6 +53,9 @@ export default {
     this.getLog()
   },
   methods: {
+    callback(){
+      this.$route.push({name:'autoOperation'})
+    },
     getLog() {
       operationRunLog({
         taskid: this.$route.query.taskid
@@ -64,5 +70,7 @@ export default {
 }
 </script>
 <style lang="sass" scoped>
-
+.df
+  display: flex
+  justify-content: space-between
 </style>

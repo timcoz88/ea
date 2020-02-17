@@ -36,12 +36,12 @@
         @row-dblclick="getDetail"
         style="width: 100%"
       >
-        <el-table-column prop="INST_ID" label="实例ID" width="160" />
-        <el-table-column prop="SQL_TEXT" label="SQL文本" />
-        <el-table-column prop="PARRSING_SCHEMA_NAME" label="执行用户" width="160"/>
-        <el-table-column prop="ELAPSED_TIME" label="执行时间(s)"  width="120"/>
-        <el-table-column prop="BUFFER_GETS" label="逻辑读"  width="80"/>
-        <el-table-column prop="DISK_CALLS" label="磁盘读" width="80" />
+        <el-table-column prop="schema_name" label="数据库名" width="160" />
+        <el-table-column prop="query" label="SQL详情" />
+        <el-table-column prop="count" label="执行次数" width="160"/>
+        <el-table-column prop="avg_latency(s)" label="执行时间（单位s）"  width="120"/>
+        <el-table-column prop="cnt_no_index" label="未使用索引次数"  width="80"/>
+        <el-table-column prop="cnt_tmp_table" label="使用临时表次数" width="80" />
       </el-table>
     </div>
     <div class="page-box">
@@ -50,7 +50,7 @@
   </div>
 </template>
 <script>
-import {tpsSqlList} from '@/api/overview'
+import {mysqlTopSqlList} from '@/api/management'
 import Pagination from '@/components/Pagination'
 export default {
   components: {
@@ -68,27 +68,23 @@ export default {
       radio: "desc",
       sortOrder: [
         {
-          label: "按执行时间排序",
-          value: "ELAPSED_TIME"
+          label: "按执行次数",
+          value: "count"
         },
         {
-          label: "按CPU时间排序",
-          value: "CPU_TIME"
+          label: "按平均响应时间",
+          value: "avg_latency(s)"
         },
         {
-          label: "按执行次数排序",
-          value: "EXECUTIONS"
+          label: "按全表扫次数",
+          value: "cnt_no_index"
         },
         {
-          label: "按逻辑读排序",
-          value: "BUFFER_GETS"
-        },
-        {
-          label: "按磁盘读排序",
-          value: "DISK_READS"
+          label: "按使用临时表次数",
+          value: "cnt_tmp_table"
         }
       ],
-      order:'ELAPSED_TIME',
+      order:'count',
       options: [{
         value: 'NAME',
         label: 'SQL执行用户'
@@ -123,7 +119,7 @@ export default {
     getList(data){
       this.loading = true
       const { hostip, dsn } = this.$route.query
-      tpsSqlList(Object.assign({},{
+      mysqlTopSqlList(Object.assign({},{
         hostip,
         dsn,
         page:this.page,
@@ -168,9 +164,7 @@ export default {
       this.order = 'ELAPSED_TIME'
     },
     getDetail(row, column, event){
-      let {hostip,dsn} = this.$route.query
-      this.$router.push({name:'topSql',query:{hostip,dsn}})
-      localStorage.setItem('selectTopSql',JSON.stringify(row))
+      this.$router.push({name:'topSql',query:{}})
     }
   }
 };

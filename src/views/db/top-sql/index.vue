@@ -151,6 +151,7 @@ export default {
     }
   },
   created() {
+    this.getDetail()
     this.dbtype = 'Oracle' // 根据数据库类型显示不同的执行计划表头
   },
   mounted() {
@@ -187,8 +188,21 @@ export default {
   },
 
   methods: {
+    getDetail(){
+      let {hostip,dsn} = this.$route.query
+      let { SQL_ID,SQL_TEXT} = JSON.parse(localStorage.getItem('selectTopSql'))
+      topsqlDetail({
+        hostip,
+        dsn,
+        sql_id:SQL_ID,
+        sql_text:SQL_TEXT
+      }).then(({Result:data}) => {
+        console.log(data)
+      }).catch(err => this.$message.error(err.message))
+    },
     callback(){
-
+      let {hostip,dsn} = this.$route.query
+      this.$router.push({name:'databaseMonitor',query:{hostip,dsn,componentName:"topSql"}})
     },
     // 切换说明时标红对应的违规处
     commentChange(val) {

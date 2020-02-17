@@ -52,10 +52,11 @@ export const constantRoutes = [
         meta: { title: '概览', icon: 'dashboard', affix: true }
       },
       {
-        path: 'aa',
-        component: () => import('@/views/db/aa/index'),
-        name: 'aa',
-        meta: { title: '11', affix: false }
+        path: 'mysql-monitor',
+        component: () => import('@/views/db/mysql-monitor/index'),
+        name: 'mysqlMonitor',
+        hidden: true,
+        meta: { title: '数据库监控', affix: false }
       },
       {
         path: 'database-monitor',
@@ -75,6 +76,13 @@ export const constantRoutes = [
         path: 'session-detail',
         component: () => import('@/views/db/session-detail/index'),
         name: 'sessionDetail',
+        hidden: true,
+        meta: { title: '会话详情', affix: false }
+      },
+      {
+        path: 'mysql-session-detail',
+        component: () => import('@/views/db/mysql-session-detail/index'),
+        name: 'mysqlSessionDetail',
         hidden: true,
         meta: { title: '会话详情', affix: false }
       }

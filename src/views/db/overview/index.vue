@@ -1,5 +1,5 @@
 <template>
-  <el-card v-loading="loading" style="margin:20px;">
+  <el-card v-loading="loading" style="margin:20px;font-size:14px;">
     <el-row>
       <el-col>
         <label for="grouping">分组</label>
@@ -26,54 +26,55 @@
     <div style="margin-top:20px;">
       <el-row>
         <div v-for="(item,key) in databaseList" :key="key">
-          <el-col :span="6" style="padding-left: 10px; padding-right: 10px;">
-            <el-card class="box-card" :class="{isErrorActive:item.error_status}">
-              <div @click="dataBase(item.hostip,item.dsn)">
+          <el-col :span="8" style="padding: 10px;">
+            <el-card class="box-card" :class="{isErrorActive:!item.sql_status}">
+              <div @click="dataBase(item.hostip,item.dsn,item.sql_status,item.mysql_type)">
                 <div class="df">
                   <span class="vn">
                     <img v-if="item.mysql_type == 'ORACLE'" src="@/assets/oracle.png" style="width: 42px;height: 42px;" class="vn">
                     <img v-else src="@/assets/mysql.png" style="width: 42px;height: 42px;" class="vn">
-                    {{ item.mysql_type }}</span>
+                    {{ item.dbnm }}</span>
                   <div>
-                    <img v-if="!item.error_status" src="@/assets/notice.png" class="notice-img">
+                    <img v-if="item.sql_status" src="@/assets/notice.png" class="notice-img">
                     <img v-else src="@/assets/warnRed.png" class="notice-img">
                     <!-- <span style="vertical-align: middle;">{{item.error_num}}</span> -->
                   </div>
                 </div>
                 <div class="df2 icol">
-                  <div>
+                  <div class="one">
                     <img src="@/assets/dataBaseStatus.png" class="notice-img vn">
                     <span class="vn">数据库状态：</span>
-                    <span v-if="!item.error_status" class="vn">连接正常</span>
+                    <span v-if="item.sql_status" class="vn">连接正常</span>
                     <span v-else class="vn" style="color:red;">连接异常</span>
                   </div>
-                  <div>
+                  <div class="two">
                     <img src="@/assets/sessionNum.png" class="notice-img vn">
                     <span class="vn">阻塞会话数：</span>
                     <span class="vn">{{ item.block_num }}</span>
                   </div>
                 </div>
                 <div class="df2 icol">
-                  <div>
+                  <div class="one">
                     <img src="@/assets/TPS.png" class="notice-img vn">
                     <span class="vn">TPS：</span>
                     <span class="vn">{{ item.qps_num }}</span>
                   </div>
-                  <div>
+                  <div class="two">
                     <img src="@/assets/sessionNum.png" class="notice-img vn">
                     <span class="vn">活跃会话数：</span>
                     <span class="vn">{{ item.active_num }}</span>
                   </div>
                 </div>
-                <!-- <div class="df2 icol">
-                                    <div>
-                                        <img src="@/assets/TPS.png" class="notice-img vn">
-                                        <span class="vn">实时QPS：</span>
-                                        <span class="vn">{{item.qps_time_num}}</span>
-                                    </div>
-                                </div> -->
-                <div style="border-top: 1px solid #e6ebf5;padding:10px 0;">
-                  <p>{{ item.error_msg }}</p>
+                <div style="border-top: 1px solid #e6ebf5;padding:10px 0;height: 37px;">
+                   <el-tooltip class="item" effect="dark" placement="bottom">
+                     <div slot="content"> <p>{{ item.error_msg }}</p></div>
+                        <p style="display: inline-block;
+          white-space: nowrap;
+          width: 100%;
+          overflow: hidden;
+          text-overflow: ellipsis;">{{ item.error_msg }}</p>
+                </el-tooltip>
+                  
                 </div>
               </div>
             </el-card>
@@ -94,6 +95,7 @@
 <script>
 import { databaseOverview, groupList } from '@/api/overview'
 import Pagination from '@/components/Pagination'
+let timer = null
 export default {
   components: {
     Pagination
@@ -120,8 +122,15 @@ export default {
     this.getList()
   },
   methods: {
-    dataBase(hostip, dsn) {
-      this.$router.push({ name: 'databaseMonitor', query: { hostip: hostip, dsn: dsn }})
+    dataBase(hostip, dsn,status,type) {
+      if(!status){
+        return false
+      }
+      if(type == 'MYSQL'){
+        this.$router.push({ name: 'mysqlMonitor', query: { hostip: hostip, dsn: dsn }})
+      }else if(type == 'ORACLE'){
+        this.$router.push({ name: 'databaseMonitor', query: { hostip: hostip, dsn: dsn }})
+      }
     },
     getGroup() {
       groupList().then(({ results: data }) => {
@@ -134,11 +143,7 @@ export default {
       this.group = ''
       this.pageSize = 10
       this.page = 1
-      this.getData({
-        page: this.page,
-        pageSize: this.pageSize,
-        mysql_type: this.content
-      })
+      this.getData()
     },
     groupChange(val) {
       this.loading = true
@@ -146,36 +151,18 @@ export default {
       this.content = ''
       this.pageSize = 10
       this.page = 1
-      if (val != '') {
-        this.getData({
-          page: this.page,
-          pageSize: this.pageSize,
-          groupid: val
-        })
-      } else {
-        this.getData({
-          page: this.page,
-          pageSize: this.pageSize
-        })
-      }
+      this.getData()
     },
-    orderChange(val) {
+    orderChange() {
       this.content = ''
       this.group = ''
       this.loading = true
       this.pageSize = 10
       this.page = 1
-      this.getData({
-        page: this.page,
-        pageSize: this.pageSize,
-        order: val
-      })
+      this.getData()
     },
     getList() {
-      this.getData({
-        page: this.page,
-        pageSize: this.pageSize
-      })
+      this.getData()
     },
     handlePage(val) {
       this.loading = true
@@ -183,10 +170,20 @@ export default {
       this.pageSize = val.limit
       this.getList()
     },
-    getData(param) {
-      databaseOverview(param).then(({ results: data }) => {
+    getData() {
+      databaseOverview(
+      { page: this.page,
+        pageSize: this.pageSize,
+        order:this.order,
+        groupid:this.group,
+        dbname:this.content
+      }).then(({ results: data }) => {
         this.databaseList = data.results
         this.total = data.totalCount
+        clearInterval(timer)
+        timer = setInterval(() => {
+          this.getList()
+        },10000)
       }).catch(err => {
         this.databaseList = []
         this.total = 0
@@ -195,10 +192,14 @@ export default {
         this.$message.error(err.message)
       }).then(_ => this.loading = false)
     }
+  },
+  destroyed(){
+    clearInterval(timer)
   }
 }
 </script>
 <style  scoped>
+
 .isErrorActive{
     border: 1px solid red;
 }
@@ -235,9 +236,17 @@ p{
     margin: 0;
     padding: 0;
 }
-.icol>div{
+.icol .one{
     height: 40px;
     line-height:40px;
-    width: 50%;
+    width: 58%;
 }
+.icol .two{
+    height: 40px;
+    line-height:40px;
+    width: 42%;
+}
+</style>
+<style>
+.el-tooltip__popper{font-size: 14px; width:24%; } 
 </style>

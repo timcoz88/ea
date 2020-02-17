@@ -122,7 +122,7 @@ class ManagementService {
   }
   // 事务处理
   killSessions(data) {
-    return request.post(`/db/focus/kill/sessions`, data)
+    return request.post(`/dbs/focus/kill/sessions`, data)
   }
   // 运行事件
   getEventList(sid) {

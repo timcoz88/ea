@@ -10,7 +10,7 @@
       </div>
     </div>
     <el-row :gutter="20" type="flex" style="margin-top:20px;">
-      <el-col :span="12">
+      <el-col :span="10">
         <el-card class="box-card">
           <div slot="header" class="clearfix">
             <span class="common-page-title">服务器</span>
@@ -28,7 +28,7 @@
           </el-row>
         </el-card>
       </el-col>
-      <el-col :span="12" class="module-container">
+      <el-col :span="10" class="module-container">
         <el-card class="box-card">
           <div slot="header" class="clearfix">
             <span class="common-page-title">客户机</span>
@@ -45,7 +45,7 @@
       </el-col>
     </el-row>
     <el-row :gutter="20" type="flex" style="margin-top:20px;">
-      <el-col :span="12">
+      <el-col :span="10">
         <el-card class="box-card">
           <div slot="header" class="clearfix">
             <span class="common-page-title">应用程序</span>
@@ -60,16 +60,13 @@
           </el-row>
         </el-card>
       </el-col>
-      <el-col :span="12" class="module-container">
+      <el-col :span="10" class="module-container">
         <el-card class="box-card">
           <div slot="header" class="clearfix">
             <span class="common-page-title">等待时间</span>
           </div>
           <div class="card-content">
-            <el-col :sm="24" :lg="12" class="card-content-item"><span style="vertical-align: middle;">当前等待事件：</span><span style="width: 60%;
-    display: inline-block;
-    word-wrap: break-word;
-    line-height: 16px;vertical-align: middle;">{{ wait.event }}</span>
+            <el-col :sm="24" :lg="12" class="card-content-item">当前等待事件：{{ wait.event }}
             </el-col>
             <el-col :sm="24" :lg="12" class="card-content-item">当前等待类：{{ wait.hostip }}</el-col>
             <el-col :sm="24" :lg="12" class="card-content-item">等待持续时间：{{ wait.wait_class }}</el-col>
@@ -100,7 +97,7 @@
   </el-card>
 </template>
 <script>
-import { getDbSessionDetail, killLockWait } from '@/api/management'
+import { mysqlSessionDetail, killLockWait } from '@/api/management'
 import ManagementService from '@/services/modules/management'
 export default {
   data() {
@@ -118,18 +115,16 @@ export default {
   methods: {
     callback() {
       const { hostip, dsn } = this.$route.query
-      this.$router.push({ name: 'databaseMonitor', query: { hostip: hostip, dsn: dsn, componentName: 'sessionManage' }})
+      this.$router.push({ name: 'mysqlMonitor', query: { hostip: hostip, dsn: dsn, componentName: 'sessionManage' }})
     },
     getSessionDetail() {
-      const { hostip, dsn, sid, serial_id, inst_id } = this.$route.query
+      const { hostip, dsn, session_id } = this.$route.query
       const params = {
         hostip,
         dsn,
-        SID: sid,
-        SERIAL_ID: serial_id,
-        INST_ID: inst_id
+        session_id
       }
-      getDbSessionDetail(params)
+      mysqlSessionDetail(params)
         .then(({ results: data }) => {
           const { wait, host, proaram, service, sql_text } = data
           this.service = service

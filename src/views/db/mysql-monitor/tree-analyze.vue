@@ -5,8 +5,8 @@
       <el-row :gutter="10">
         <el-col :span="12">
           <el-button-group>
-            <el-button type="primary" :disabled="JSON.stringify(currentRow) == '{}'?true:false" @click="immediateStop('immediate')">立即终止会话</el-button>
-            <el-button type="primary" :disabled="JSON.stringify(currentRow) == '{}'?true:false" @click="immediateStop">事务处理后终止</el-button>
+            <el-button :disabled="radio === ''" type="primary" @click="immediateStop('immediate')">立即终止会话</el-button>
+            <el-button :disabled="radio === ''" type="primary" @click="immediateStop">事务处理后终止</el-button>
           </el-button-group>
         </el-col>
         <el-col :span="12" class="text-right">
@@ -21,6 +21,7 @@
       </el-row>
     </div>
     <div class="table-content">
+
       <div class="table-box">
         <el-table
           v-loading="loading"
@@ -29,11 +30,11 @@
           :data="tableData"
           border
           default-expand-all
-          highlight-current-row
           :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
-          @current-change="handleCurrentChange"
           style="width: 100%"
+         
         >
+         <!-- @row-click = "showRow" -->
           <el-table-column
             prop="level"
             label="树级别"
@@ -94,11 +95,11 @@
             prop="ctime"
             label="等待时间秒"
           />
-          <!-- <el-table-column label="选择" width="70" header-align="center" align="center">
+          <el-table-column label="选择" width="70" header-align="center" align="center">
             <template slot-scope="scope">
               <el-radio v-model="radio" :label="scope.$index" class="radio">&nbsp;</el-radio>
             </template>
-          </el-table-column> -->
+          </el-table-column>
         </el-table>
       </div>
       <div class="page-box">
@@ -133,12 +134,14 @@ export default {
       filter: {
       },
       tableData: [],
+      multipleSelection: [],
       dbInfo: {},
       page: 1,
       total: 0,
       loading: false,
       currentData: {},
-      currentRow: {}
+      currentRow: {},
+      radio:0
     }
   },
   computed: {
@@ -157,7 +160,7 @@ export default {
       const currentdate = date.getFullYear() + seperator1 + month + seperator1 + strDate +
         ' ' + date.getHours() + seperator2 + date.getMinutes() +
         seperator2 + date.getSeconds()
-      // console.log(currentdate)
+      console.log(currentdate)
       return currentdate
     }
   },
@@ -166,9 +169,14 @@ export default {
     this.handleList()
   },
   methods: {
-    handleCurrentChange(val) {
-      this.currentRow = val;
+    // showRow(row) {
+    //   this.radio = this.tableData.indexOf(row)
+    //   this.currentRow = row
+    // },
+    handleSelectionChange(val) {
+      this.multipleSelection = val
     },
+    // pagination
     handlePage(page) {
       this.page = page
       this.handleList()
@@ -235,6 +243,8 @@ export default {
         .then(({ results: data }) => {
           this.tableData = data.results
           this.total = data.totalCount
+          this.radio = ''
+          this.currentRow = {}
         })
         .catch((err) => {
           this.tableData = []
@@ -274,7 +284,7 @@ export default {
       const currentdate = date.getFullYear() + seperator1 + month + seperator1 + strDate +
         ' ' + date.getHours() + seperator2 + date.getMinutes() +
         seperator2 + date.getSeconds()
-      // console.log(currentdate)
+      console.log(currentdate)
       return currentdate
     }
   }
