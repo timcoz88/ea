@@ -22,7 +22,7 @@
             
             <!-- <el-col :span="4" class="card-content-item">数据库说明：{{ dbInfo.dbinfo }}</el-col> -->
             <el-col :span="4" class="card-content-item">数据库版本：{{ dbInfo.db_res && dbInfo.db_res.version }}</el-col>
-            <el-col :span="4" class="card-content-item">启动时间：{{ dbInfo.db_res && dbInfo.db_res.startup_tm }}</el-col>
+            <el-col :span="6" class="card-content-item">启动时间：{{ dbInfo.db_res && dbInfo.db_res.startup_tm }}</el-col>
             <!-- <el-col :span="4" class="card-content-item">当前会话数：{{ dbInfo.session_res && dbInfo.session_res.cur_cnt }}</el-col>
             <el-col :span="4" class="card-content-item">活动会话数：{{ dbInfo.session_res && dbInfo.session_res.act_cnt }}</el-col> -->
           </el-row>

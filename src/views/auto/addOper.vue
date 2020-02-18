@@ -138,7 +138,7 @@ export default {
       const formData = new FormData()
       formData.append('file', file.file),
       upLoad(formData).then(({results:data}) => {
-        this.form.dbconfigfile = data.url
+        this.form.dbconfigfile = data.path
         // document.querySelector('.el-upload-list__item-name').href = data.url
       })
     },
@@ -154,12 +154,14 @@ export default {
     },
     numChange(value) {
       // this.form.slave_nodes = []
-      if(this.form.slave_nodes.length > (value-1)){
-        for (let i = 0; i <= ( this.form.slave_nodes.length - value + 1); i++) {
-          this.form.slave_nodes.splice(this.form.slave_nodes.length-1,1)
+      let nodeLen = this.form.slave_nodes.length
+      if(nodeLen > (value-1)){
+        console.log(nodeLen - value)
+        for (let i = 0; i < ( nodeLen - value + 1); i++) {
+          this.form.slave_nodes.splice(this.form.slave_nodes-1,1)
         }
-      }else if(this.form.slave_nodes.length < (value-1)){
-        for (let i = 0; i <= (value - this.form.slave_nodes.length); i++) {
+      }else if(nodeLen < (value-1)){
+        for (let i = 0; i < (value - nodeLen - 1); i++) {
           this.form.slave_nodes.push({
             host: '',
             data_directory: '/data/mysql'

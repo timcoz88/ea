@@ -148,6 +148,7 @@
           />
           <el-table-column
             prop="sql_text"
+            width="200"
             label="SQL明细"
           />
           <!-- <el-table-column

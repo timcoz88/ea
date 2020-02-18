@@ -110,8 +110,8 @@ export default {
       this.loading = true
       operationRun({
         taskid: this.multipleSelection.taskid
-      }).then(({ results: data }) => {
-        this.$message.success(data.message)
+      }).then((results) => {
+        this.$message.success(results.message)
         this.opterList()
       }).catch((err) => {
         this.$message.error(err.message)

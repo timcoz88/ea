@@ -69,10 +69,6 @@ export default {
       radio: "desc",
       sortOrder: [
         {
-          label:'全部',
-          value:''
-        },
-        {
           label: "按执行次数",
           value: "count"
         },
@@ -167,8 +163,10 @@ export default {
       this.handleSearch()
     },
     getDetail(row, column, event){
-      const { hostip, dsn } = this.$route.query
-      this.$router.push({name:'mysqlTopSql',query:{hostip, dsn,sql_id:row.sql_id}})
+      const { hostip, dsn ,dbid} = this.$route.query
+      // this.$router.push({name:'mysqlTopSql',query:{hostip, dsn,sql_id:row.sql_id}})
+      this.$router.push({name:'topSql',query:{hostip,dsn,dbid,'dbtype':'mysql'}})
+      localStorage.setItem('selectTopSql',JSON.stringify(row))
     }
   }
 };

@@ -28,7 +28,7 @@
         <div v-for="(item,key) in databaseList" :key="key">
           <el-col :span="8" style="padding: 10px;">
             <el-card class="box-card" :class="{isErrorActive:!item.sql_status}">
-              <div @click="dataBase(item.hostip,item.dsn,item.sql_status,item.mysql_type)">
+              <div @click="dataBase(item.hostip,item.dsn,item.sql_status,item.mysql_type,item.dbid)">
                 <div class="df">
                   <span class="vn">
                     <img v-if="item.mysql_type == 'ORACLE'" src="@/assets/oracle.png" style="width: 42px;height: 42px;" class="vn">
@@ -105,11 +105,8 @@ export default {
       loading: true,
       group: '全部',
       groupList: [],
-      order: '',
+      order: 'error',
       sortOrder: [{
-        label: '全部',
-        value: ''
-      },{
         label: '按警示级别',
         value: 'error'
       }],
@@ -125,14 +122,14 @@ export default {
     this.getList()
   },
   methods: {
-    dataBase(hostip, dsn,status,type) {
+    dataBase(hostip, dsn,status,type,dbid) {
       if(!status){
         return false
       }
       if(type == 'MYSQL'){
-        this.$router.push({ name: 'mysqlMonitor', query: { hostip: hostip, dsn: dsn }})
+        this.$router.push({ name: 'mysqlMonitor', query: { hostip, dsn,dbid }})
       }else if(type == 'ORACLE'){
-        this.$router.push({ name: 'databaseMonitor', query: { hostip: hostip, dsn: dsn }})
+        this.$router.push({ name: 'databaseMonitor', query: { hostip, dsn,dbid }})
       }
     },
     getGroup() {

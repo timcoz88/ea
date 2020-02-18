@@ -68,10 +68,6 @@ export default {
       radio: "desc",
       sortOrder: [
         {
-          label: "全部",
-          value: ""
-        },
-        {
           label: "按执行时间排序",
           value: "ELAPSED_TIME"
         },
@@ -176,8 +172,8 @@ export default {
       this.handleSearch()
     },
     getDetail(row, column, event){
-      let {hostip,dsn} = this.$route.query
-      this.$router.push({name:'topSql',query:{hostip,dsn}})
+      let {hostip,dsn,dbid} = this.$route.query
+      this.$router.push({name:'topSql',query:{hostip,dsn,dbid,'dbtype':'Oracle'}})
       localStorage.setItem('selectTopSql',JSON.stringify(row))
     }
   }

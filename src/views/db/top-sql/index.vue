@@ -4,12 +4,11 @@
       <el-button @click="callback">返回</el-button>
     </div>
     <div class="page p20">
-      <div class="page-title">
-        <p>SQLID：111</p>
+      <div class="page-title" v-if="dbtype == 'Oracle'">
+        <p>SQL ID：{{apiResult.sqlid}}</p>
         <p v-if="apiResult.showelapsedtime">执行时长：{{ apiResult.elapsedtime }} s</p>
-        <p>读IO：25</p>
-        <p>写IO：25</p>
-        <p>占CPU：0.4%</p>
+        <p>逻辑读：{{getLocalData.BUFFER_GETS}}</p>
+        <p>磁盘读：{{getLocalData.DISK_CALLS}}</p>
       </div>
       <div class="SQLDiv">
         <div class="comment-wrap">
@@ -22,7 +21,7 @@
         </div>
         <div class="sqltext-wrap">
           <span class="text-title">SQL语句</span>
-          <div ref="html-div" class="html-div" v-html="apiResult.sqlText" />
+          <div ref="html-div" class="html-div" v-html="apiResult.sqltext" />
         </div>
         <div class="sqlexplain-wrap">
           <span class="text-title">执行计划</span>
@@ -123,15 +122,19 @@
   </el-card>
 </template>
 <script>
-import { topsqlDetail } from '@/api/management'
+// import { topsqlDetail } from '@/api/management'
+import request from '@/utils/request'
+import { getOtherURL } from '@/api/home'
+import data from '../../pdf/content'
 export default {
   data() {
     return {
       loading: false,
       dbtype: '',
+      getLocalData:{},
       apiResult: {
         sqlid: 'c2ayd0t8raf3b',
-        showelapsedtime: false, // 是否显示执行时长
+        showelapsedtime: true, // 是否显示执行时长
         elapsedtime: 1, // 执行时长
         commentIndex: 0,
         comments: [
@@ -144,65 +147,94 @@ export default {
             comment: '查询时没有指明目标字段，容易因版本变更等原因导致返回数据异常'
           }
         ],
-        sqlText: '', // topsql标红处理后的语句
+        sqltext: '', // topsql标红处理后的语句
         sqlTextOrigin: '', // topsql原始语句
-        sqlexplain: [] // 执行计划表格数据
+        sqlexplain: [], // 执行计划表格数据
+        urlArr4:''
       }
     }
   },
   created() {
-    this.getDetail()
-    this.dbtype = 'Oracle' // 根据数据库类型显示不同的执行计划表头
+    this.dbtype = this.$route.query.dbtype
+    this.getLocalData = JSON.parse(localStorage.getItem('selectTopSql'))
+    this.getURL()
+    // this.getDetail()
+    // this.dbtype = 'Oracle' // 根据数据库类型显示不同的执行计划表头
   },
   mounted() {
     // 调用接口后的处理
-    this.apiResult.showelapsedtime = true
-    this.apiResult.sqlTextOrigin = 'select * from exsql.t_normal1_1 t1,exsql1.t_normal2 t2 where t1.id != :"SYS_B_0"'
-    this.commentChange(0)
-    if (this.dbtype === 'Oracle') {
-      this.apiResult.sqlexplain = [{
-        cost: '     2   (0)',
-        bytes: '   177 ',
-        name: '      ',
-        id: '   0 ',
-        time: ' 00:00:01 ',
-        rows: '     1 ',
-        operation: ' SELECT STATEMENT  '
-      }]
-    } else {
-      this.apiResult.sqlexplain = [{
-        partitions: null,
-        ref: null,
-        filtered: '100.00',
-        'Extra': null,
-        'select_type': 'DELETE',
-        'id': '1',
-        'type': 'ALL',
-        'rows': '1',
-        'possible_keys': null,
-        'table': 'bsp',
-        'key': null,
-        'key_len': null
-      }]
-    }
+    // this.apiResult.showelapsedtime = true
+    // 'select * from exsql.t_normal1_1 t1,exsql1.t_normal2 t2 where t1.id != :"SYS_B_0"'
+    
+    // if (this.dbtype === 'Oracle') {
+    //   this.apiResult.sqlexplain = [{
+    //     cost: '     2   (0)',
+    //     bytes: '   177 ',
+    //     name: '      ',
+    //     id: '   0 ',
+    //     time: ' 00:00:01 ',
+    //     rows: '     1 ',
+    //     operation: ' SELECT STATEMENT  '
+    //   }]
+    // } else {
+    //   this.apiResult.sqlexplain = [{
+    //     partitions: null,
+    //     ref: null,
+    //     filtered: '100.00',
+    //     'Extra': null,
+    //     'select_type': 'DELETE',
+    //     'id': '1',
+    //     'type': 'ALL',
+    //     'rows': '1',
+    //     'possible_keys': null,
+    //     'table': 'bsp',
+    //     'key': null,
+    //     'key_len': null
+    //   }]
+    // }
   },
 
   methods: {
+    getURL(){
+      getOtherURL().then(({results:data}) => {
+          data.results.forEach(ele => {
+            if(ele.url_type == 3){
+              this.urlArr4 = ele.url
+            }
+          });
+          if(this.urlArr4){
+              this.getDetail()
+          }
+      })
+      // .catch(err => this.$message.error(err.message))
+    },
     getDetail(){
-      let {hostip,dsn} = this.$route.query
+      let {dbid,hostip,dsn} = this.$route.query
       let { SQL_ID,SQL_TEXT} = JSON.parse(localStorage.getItem('selectTopSql'))
-      topsqlDetail({
-        hostip,
-        dsn,
-        sql_id:SQL_ID,
-        sql_text:SQL_TEXT
-      }).then(({Result:data}) => {
-        console.log(data)
-      }).catch(err => this.$message.error(err.message))
+      request({
+          url: this.urlArr4,
+          method: 'post',
+          data:{
+            hostip,
+            dsn,
+            dbid,
+            sqlid:SQL_ID,
+            sqltext:SQL_TEXT
+          }
+        }).then(({data}) => {
+          this.apiResult.sqlTextOrigin = SQL_TEXT
+          this.apiResult =  {...data}
+          this.commentChange(0)
+        })
+        // .catch(err => this.$message.error(err.message))
     },
     callback(){
       let {hostip,dsn} = this.$route.query
-      this.$router.push({name:'databaseMonitor',query:{hostip,dsn,componentName:"topSql"}})
+      if(this.dbtype == 'Oracle'){
+        this.$router.push({name:'databaseMonitor',query:{hostip,dsn,componentName:"topSql"}})
+      }else{
+        this.$router.push({name:'mysqlMonitor',query:{hostip,dsn,componentName:"topSql"}})
+      }
     },
     // 切换说明时标红对应的违规处
     commentChange(val) {

@@ -27,6 +27,14 @@ export function getDashboard5(params) {
   })
 }
 
+// 页面跳转
+export function getOtherURL() {
+  return request({
+    url: '/v1/dbs/url',
+    method: 'get'
+  })
+}
+
 
 // 开启关闭按钮
 

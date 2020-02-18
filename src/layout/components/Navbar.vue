@@ -55,7 +55,7 @@ import ErrorLog from '@/components/ErrorLog'
 import Screenfull from '@/components/Screenfull'
 import SizeSelect from '@/components/SizeSelect'
 import Search from '@/components/HeaderSearch'
-
+import { getOtherURL } from '@/api/home'
 export default {
   components: {
     Breadcrumb,
@@ -85,7 +85,10 @@ export default {
         label:'质量审核',
         value:'质量审核'
       }],
-      selectProject:'智能监控'
+      selectProject:'智能监控',
+      urlArr1:'',//用户管理
+      urlArr2:'',//数据源管理
+      urlArr3:'' //质量审核
     }
   },
   created(){
@@ -99,12 +102,28 @@ export default {
         this.$router.options.routes[0].hidden = false
     }
   },
+  mounted(){
+    this.getURL()
+  },
   methods: {
+    getURL(){
+      getOtherURL().then(({results:data}) => {
+          data.results.forEach(ele => {
+            if(ele.url_type == 1){
+              this.urlArr1 = ele.url
+            }else if(ele.url_type == 2){
+              this.urlArr2 = ele.url
+            }else if(ele.url_type == 4){
+              this.urlArr3 = ele.url
+            }
+          });
+      }).catch(err => this.$message.error(err.message))
+    },
     linkTo(val){
       if(val == 'svg'){
-        window.location.href ='https://'+window.location.hostname+':8088/#/data-source'
+        window.location.href = this.urlArr2
       }else if(val == 'i'){
-        window.location.href = 'https://'+window.location.hostname+':8088/#/auth'
+        window.location.href = this.urlArr1
       }
     },
     toggleSideBar() {
@@ -116,7 +135,7 @@ export default {
     },
     selectProjectChange(value){
       if(value == '质量审核'){
-        location.href='https://'+window.location.hostname+':8088/'
+        location.href=this.urlArr3
       }else{
         this.$store.commit('SET_PROJECTVALUE',value)
       }

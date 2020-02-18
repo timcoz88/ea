@@ -46,32 +46,31 @@ service.interceptors.response.use(
    */
   response => {
     const res = response.data
-
     // if the custom code is not 20000, it is judged as an error.
-    if (res.error_code !== 0) {
-      Message({
-        message: res.message || 'Error',
-        type: 'error',
-        duration: 5 * 1000
-      })
+    // if (res.error_code !== 0) {
+    //   Message({
+    //     message: res.message || 'Error',
+    //     type: 'error',
+    //     duration: 5 * 1000
+    //   })
 
-      // 50008: Illegal token; 50012: Other clients logged in; 50014: Token expired;
-      if (res.code === 4011) {
-        // to re-login
-        MessageBox.confirm('登录态时效，请重新登录', 'Confirm logout', {
-          confirmButtonText: '重新登录',
-          cancelButtonText: 'Cancel',
-          type: 'warning'
-        }).then(() => {
-          store.dispatch('user/resetToken').then(() => {
-            location.reload()
-          })
-        })
-      }
-      return Promise.reject(new Error(res.message || 'Error'))
-    } else {
+    //   // 50008: Illegal token; 50012: Other clients logged in; 50014: Token expired;
+    //   if (res.code === 4011) {
+    //     // to re-login
+    //     MessageBox.confirm('登录态时效，请重新登录', 'Confirm logout', {
+    //       confirmButtonText: '重新登录',
+    //       cancelButtonText: 'Cancel',
+    //       type: 'warning'
+    //     }).then(() => {
+    //       store.dispatch('user/resetToken').then(() => {
+    //         location.reload()
+    //       })
+    //     })
+    //   }
+    //   return Promise.reject(new Error(res.message || 'Error'))
+    // } else {
       return res
-    }
+    // }
   },
   error => {
     console.log('err' + error) // for debug
