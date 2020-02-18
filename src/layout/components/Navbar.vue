@@ -17,7 +17,7 @@
         <error-log class="errLog-container right-menu-item hover-effect" />
 -->
         <svg-icon class-name="data-source-icon" icon-class="data-source" style="width: 26px;height: 48px;cursor: pointer;" @click="linkTo('svg')"/>
-        <i class="el-icon-user-solid" style="width: 28px;font-size: 25px;height: 60px;vertical-align: middle;cursor: pointer;" @click="linkTo('i')"></i>
+        <i class="el-icon-user-solid" style="width: 28px;font-size: 25px;height: 60px;vertical-align: middle;cursor: pointer;margin-left:10px;" @click="linkTo('i')"></i>
         <!-- <screenfull id="screenfull" class="right-menu-item hover-effect" />
 
         <el-tooltip content="Global Size" effect="dark" placement="bottom">
@@ -26,23 +26,23 @@
 
       </template>
 
-      <el-dropdown class="avatar-container right-menu-item hover-effect" trigger="click">
+      <!-- <el-dropdown class="avatar-container right-menu-item hover-effect" trigger="click">
         <div class="avatar-wrapper">
           <img :src="avatar+'?imageView2/1/w/80/h/80'" class="user-avatar">
           <i class="el-icon-caret-bottom" />
         </div>
-        <el-dropdown-menu slot="dropdown">
+        <el-dropdown-menu slot="dropdown"> -->
           <!--<router-link to="/profile/index">
             <el-dropdown-item>Profile</el-dropdown-item>
           </router-link>-->
           <!-- <router-link to="/">
             <el-dropdown-item>工作台</el-dropdown-item>
           </router-link> -->
-          <el-dropdown-item divided>
+          <!-- <el-dropdown-item divided>
             <span style="display:block;" @click="logout">注销</span>
           </el-dropdown-item>
         </el-dropdown-menu>
-      </el-dropdown>
+      </el-dropdown> -->
     </div>
   </div>
 </template>
@@ -102,9 +102,9 @@ export default {
   methods: {
     linkTo(val){
       if(val == 'svg'){
-        window.location.href = window.location.protocol+'//'+window.location.hostname+':8088/#/data-source'
+        window.location.href ='https://'+window.location.hostname+':8088/#/data-source'
       }else if(val == 'i'){
-        window.location.href = window.location.protocol+'//'+window.location.hostname+':8088/#/auth'
+        window.location.href = 'https://'+window.location.hostname+':8088/#/auth'
       }
     },
     toggleSideBar() {
@@ -116,7 +116,7 @@ export default {
     },
     selectProjectChange(value){
       if(value == '质量审核'){
-        location.href=window.location.protocol+'//'+window.location.hostname+':8088/'
+        location.href='https://'+window.location.hostname+':8088/'
       }else{
         this.$store.commit('SET_PROJECTVALUE',value)
       }

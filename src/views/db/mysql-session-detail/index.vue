@@ -1,86 +1,15 @@
 <template>
   <el-card style="margin:20px;">
     <div class="df">
-      <div>
         <el-button @click="immediateStop('immediate')">立即终止会话</el-button>
-        <el-button @click="immediateStop">事务处理后会话</el-button>
-      </div>
-      <div>
         <el-button @click="callback">返回</el-button>
-      </div>
     </div>
-    <el-row :gutter="20" type="flex" style="margin-top:20px;">
-      <el-col :span="10">
-        <el-card class="box-card">
-          <div slot="header" class="clearfix">
-            <span class="common-page-title">服务器</span>
-          </div>
-          <el-row class="card-content">
-            <el-col :sm="24" :lg="12" class="card-content-item">当前状态：{{ service.status }}
-            </el-col>
-            <el-col :sm="24" :lg="12" class="card-content-item">ID：{{ service.hostip }}</el-col>
-            <el-col :sm="24" :lg="12" class="card-content-item">序列号：{{ service.serial_id }}</el-col>
-            <el-col :sm="24" :lg="12" class="card-content-item">登录时间：{{ service.logon_time }}</el-col>
-            <el-col :sm="24" :lg="12" class="card-content-item">数据库用户名：{{ service.username }}</el-col>
-            <el-col :sm="24" :lg="12" class="card-content-item">类型：{{ service.type }}</el-col>
-            <el-col :sm="24" :lg="12" class="card-content-item">操作系统进程：{{ service.sp_id }}</el-col>
-            <el-col :sm="24" :lg="12" class="card-content-item">当前会话ID：{{ service.sid }}</el-col>
-          </el-row>
-        </el-card>
-      </el-col>
-      <el-col :span="10" class="module-container">
-        <el-card class="box-card">
-          <div slot="header" class="clearfix">
-            <span class="common-page-title">客户机</span>
-          </div>
-          <div class="card-content">
-            <el-col :sm="24" :lg="12" class="card-content-item">操作系统用户名：{{ host.osuser }}
-            </el-col>
-            <el-col :sm="24" :lg="12" class="card-content-item">客户系统进程：{{ host.process }}</el-col>
-            <el-col :sm="24" :lg="12" class="card-content-item">主机：{{ host.machine }}</el-col>
-            <el-col :sm="24" :lg="12" class="card-content-item">终端：{{ host.terminal }}</el-col>
-            <el-col :sm="24" :lg="12" class="card-content-item">应用程序：{{ host.program }}</el-col>
-          </div>
-        </el-card>
-      </el-col>
-    </el-row>
-    <el-row :gutter="20" type="flex" style="margin-top:20px;">
-      <el-col :span="10">
-        <el-card class="box-card">
-          <div slot="header" class="clearfix">
-            <span class="common-page-title">应用程序</span>
-          </div>
-          <el-row class="card-content">
-            <el-col :sm="24" :lg="12" class="card-content-item">当前SQL：{{ proaram.sql_id }}
-            </el-col>
-            <el-col :sm="24" :lg="12" class="card-content-item">当前SQL开始执行：{{ proaram.sql_exec_start }}</el-col>
-            <el-col :sm="24" :lg="12" class="card-content-item">上一条SQL ID：{{ proaram.prev_sql_id }}</el-col>
-            <el-col :sm="24" :lg="12" class="card-content-item">上一条SQL开始执行时间：{{ proaram.prev_exec_start }}</el-col>
-            <el-col :sm="24" :lg="12" class="card-content-item">当前模块：{{ proaram.module }}</el-col>
-          </el-row>
-        </el-card>
-      </el-col>
-      <el-col :span="10" class="module-container">
-        <el-card class="box-card">
-          <div slot="header" class="clearfix">
-            <span class="common-page-title">等待时间</span>
-          </div>
-          <div class="card-content">
-            <el-col :sm="24" :lg="12" class="card-content-item">当前等待事件：{{ wait.event }}
-            </el-col>
-            <el-col :sm="24" :lg="12" class="card-content-item">当前等待类：{{ wait.hostip }}</el-col>
-            <el-col :sm="24" :lg="12" class="card-content-item">等待持续时间：{{ wait.wait_class }}</el-col>
-            <el-col :sm="24" :lg="12" class="card-content-item">P1：{{ wait.p1 }}</el-col>
-            <el-col :sm="24" :lg="12" class="card-content-item">P1TEXT：{{ wait.p1text }}</el-col>
-            <el-col :sm="24" :lg="12" class="card-content-item">P2：{{ wait.p2 }}
-            </el-col>
-            <el-col :sm="24" :lg="12" class="card-content-item">P2TEXT：{{ wait.p2text }}</el-col>
-            <el-col :sm="24" :lg="12" class="card-content-item">失败堵塞会话：{{ wait.final_blocking_session }}</el-col>
-            <el-col :sm="24" :lg="12" class="card-content-item">失败堵塞状态：{{ wait.final_blocking_status }}</el-col>
-            <el-col :sm="24" :lg="12" class="card-content-item">失败堵塞实例：{{ wait.final_blocking_instance }}</el-col>
-          </div>
-        </el-card>
-      </el-col>
+    <el-row class="card-content"  style="margin-top:20px;">
+      <el-col :span="4" class="card-content-item">当前状态：{{ dbInfo.current_status }}</el-col>
+      <el-col :span="4" class="card-content-item">当前会话ID：{{ dbInfo.id }}</el-col>
+      <el-col :span="4" class="card-content-item">主机：{{ dbInfo.host }}</el-col>
+      <el-col :span="4" class="card-content-item">等待持续时间：{{ dbInfo.wait_time }}</el-col>
+      <el-col :span="4" class="card-content-item">当前SQL开始执行时间：{{ dbInfo.start_time }}</el-col>
     </el-row>
     <el-row :gutter="20" type="flex" style="margin-top:20px;">
       <el-col :span="24">
@@ -89,7 +18,7 @@
             <span class="common-page-title">SQL明细</span>
           </div>
           <div class="card-content">
-            <span>{{sql_text}}</span>
+            <span>{{dbInfo.info}}</span>
           </div>
         </el-card>
       </el-col>
@@ -97,16 +26,12 @@
   </el-card>
 </template>
 <script>
-import { mysqlSessionDetail, killLockWait } from '@/api/management'
-import ManagementService from '@/services/modules/management'
+import { mysqlSessionDetail } from '@/api/management'
+import {mysqlSessionKill} from '@/api/mysql'
 export default {
   data() {
     return {
-      wait: {},
-      proaram: {},
-      host: {},
-      service: {},
-      sql_text: ''
+      dbInfo:{},
     }
   },
   created() {
@@ -126,32 +51,27 @@ export default {
       }
       mysqlSessionDetail(params)
         .then(({ results: data }) => {
-          const { wait, host, proaram, service, sql_text } = data
-          this.service = service
-          this.host = host
-          this.proaram = proaram
-          this.wait = wait
-          this.sql_text = sql_text
+          this.dbInfo = data
         }).catch(err => {
           this.$message.error(err.message)
         })
     },
     immediateStop(type) {
-      const { hostip, dsn, sid, serial_id, inst_id } = this.$route.query
+      const { hostip, dsn } = this.$route.query
+      let kill_ids = []
+      kill_ids.push(this.dbInfo.id)
       const params = {
         hostip,
         dsn,
-        type: type || '',
-        kill_ids: [{ sid: sid.toString(), serial: serial_id.toString() }]
+        kill_ids
       }
-
       this.$confirm(`是否终止进程，该操作不可返回`, '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       })
         .then(() => {
-          ManagementService.killSessions(params)
+          mysqlSessionKill(params)
             .then((data) => {
               this.$message.success(data.message)
             })
@@ -195,4 +115,9 @@ export default {
 .df
     display: flex;
     justify-content: space-between;
+</style>
+<style>
+.el-table th {
+	display: table-cell!important; 
+}
 </style>

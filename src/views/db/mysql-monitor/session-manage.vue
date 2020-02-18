@@ -14,11 +14,7 @@
         <el-col :span="18" style="display: flex">
           <el-button-group style="flex: 0 0 280px">
             <el-button :disabled="!multipleSelection.length" type="primary" @click="immediateStop('immediate')">立即终止会话</el-button>
-            <el-button :disabled="!multipleSelection.length" type="primary" @click="immediateStop">事务处理后终止</el-button>
           </el-button-group>
-          <div style="line-height: 30px;margin-right: 15px">
-            <el-checkbox v-model="filter.background">type</el-checkbox>
-          </div>
           <el-input
             v-model.trim="filter.searchVal"
             type="text"
@@ -76,9 +72,6 @@
             prop="id"
             label="会话ID"
           >
-            <!-- <template slot-scope="scope">
-              <el-button type="text" @click="getDbSessionDetail(scope.row)">{{ scope.row.sid }}</el-button>
-            </template> -->
           </el-table-column>
           <el-table-column
             prop="user"
@@ -104,71 +97,6 @@
             prop="command"
             label="会话状态"
           />
-          <!-- <el-table-column
-            prop="terminal"
-            label="终端"
-            width="120"
-          />
-          <el-table-column
-            prop="program"
-            label="应用程序"
-            width="240"
-          >
-            <template slot-scope="scope">
-              <el-popover
-                placement="top-start"
-                width="200"
-                trigger="hover"
-                :content="scope.row.sql_text"
-                >
-                <span>{{scope.row.sql_text}}</span>
-              </el-popover>
-            </template>
-          </el-table-column> -->
-          <!-- <el-table-column
-            prop="type"
-            label="类型"
-            width="140"
-          /> -->
-          <!---<el-table-column
-            prop="sql_hash_value"
-            label="SQL_HASH_VALUE"
-            width="140"
-          />--->
-          <!-- <el-table-column
-            prop="sql_id"
-            label="SQL_ID"
-            width="140"
-          />
-          <el-table-column
-            prop="sql_exec_start"
-            label="SQL执行时间"
-            width="140"
-          />
-          <el-table-column
-            prop="sql_text"
-            label="SQL明细"
-          /> -->
-          <!-- <el-table-column
-            prop="final_blocking_session_status"
-            label="阻塞会话状态"
-            width="140"
-          />
-          <el-table-column
-            prop="final_blocking_instance"
-            label="阻塞会话实例"
-            width="140"
-          /> -->
-          <!-- <el-table-column
-            prop="final_blocking_session"
-            label="阻塞会话"
-            width="140"
-          />
-          <el-table-column
-            prop="logon_time"
-            label="登录时间"
-            width="170"
-          /> -->
         </el-table>
       </div>
       <div class="page-box">
@@ -185,19 +113,17 @@
 </template>
 <script>
 import Pagination from '@/components/Pagination'
-// import ManagementService from '@/services/modules/management'
 import {mysqlSessionList} from '@/api/management'
-// import { fetchDbInfo, fetchDbSessionList } from '@/api/sql'
+import {mysqlSessionKill} from '@/api/mysql'
 export default {
   components: {
     Pagination
   },
-
   data() {
     return {
       dbInfo: {},
       filter: {
-        searchType: 'SID'
+        searchType: 'user'
       },
       tableData: [],
       multipleSelection: [],
@@ -212,26 +138,18 @@ export default {
       },
       loading: false,
       options: [{
-        value: 'SID',
-        label: 'SID'
-      }, {
-        value: 'USERNAME',
-        label: 'USERNAME'
-      }, {
-        value: 'STATUS',
-        label: 'STATUS'
-      }, {
-        value: 'PROCESS',
-        label: 'PROCESS'
-      }, {
-        value: 'MACHINE',
-        label: 'MACHINE'
-      }, {
-        value: 'SQL_ID',
-        label: 'SQL_ID'
-      }, {
-        value: 'SQL_HASH_VALUE',
-        label: 'SQL_HASH_VALUE'
+        value: '',
+        label: '全部'
+      },{
+        value: 'user',
+        label: '用户名'
+      },{
+        value:'command',
+        label:'状态'
+      },
+       {
+        value: 'host',
+        label: '主机'
       }]
     }
   },
@@ -296,11 +214,8 @@ export default {
     },
     getFilter() {
       let params = {}
-      if (this.filter.searchVal) {
-        params = {
-          actor: this.filter.searchType,
-          target: this.filter.searchVal
-        }
+      if (this.filter.searchVal&&this.filter.searchType) {
+          params[this.filter.searchType] = this.filter.searchVal
       }
       const { hostip, dsn } = this.$route.query
 
@@ -315,14 +230,13 @@ export default {
     immediateStop(type) {
       let sidList = []
       this.multipleSelection.forEach(item => {
-        sidList = [...sidList, ...[{ sid: item.sid.toString(), serial: item.serial_id.toString() }]]
+        sidList.push(item.sid)
       })
       const hostip = this.$route.query.hostip
       const dsn = this.$route.query.dsn
       const params = {
         hostip,
         dsn,
-        type: type || '',
         kill_ids: sidList
       }
 
@@ -333,7 +247,7 @@ export default {
       })
         .then(() => {
           this.eventList.push({ time: this.getNowFormatDate(), msg: `当前执行事件${sidList.length}个` })
-          ManagementService.killSessions(params)
+          mysqlSessionKill(params)
             .then(({ results: data }) => {
               this.$message.success('执行成功')
               this.handleList()
@@ -382,7 +296,8 @@ export default {
     handleClear() {
       this.filter = {
         filter: {
-          searchType: 'SID'
+          searchType: 'user',
+          searchVal:''
         }
       }
       this.pagination.page = 1

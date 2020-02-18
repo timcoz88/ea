@@ -73,6 +73,13 @@ export const constantRoutes = [
         meta: { title: 'TOP SQL详情', affix: false }
       },
       {
+        path: 'mysql-top-sql',
+        component: () => import('@/views/db/mysql-top-sql/index'),
+        name: 'mysqlTopSql',
+        hidden: true,
+        meta: { title: 'TOP SQL详情', affix: false }
+      },
+      {
         path: 'session-detail',
         component: () => import('@/views/db/session-detail/index'),
         name: 'sessionDetail',

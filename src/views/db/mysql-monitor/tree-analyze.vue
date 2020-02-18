@@ -5,8 +5,7 @@
       <el-row :gutter="10">
         <el-col :span="12">
           <el-button-group>
-            <el-button :disabled="radio === ''" type="primary" @click="immediateStop('immediate')">立即终止会话</el-button>
-            <el-button :disabled="radio === ''" type="primary" @click="immediateStop">事务处理后终止</el-button>
+            <el-button type="primary" :disabled="JSON.stringify(currentRow) == '{}'?true:false" @click="immediateStop('immediate')">立即终止会话</el-button>
           </el-button-group>
         </el-col>
         <el-col :span="12" class="text-right">
@@ -21,7 +20,6 @@
       </el-row>
     </div>
     <div class="table-content">
-
       <div class="table-box">
         <el-table
           v-loading="loading"
@@ -30,76 +28,44 @@
           :data="tableData"
           border
           default-expand-all
+          highlight-current-row
           :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
+          @current-change="handleCurrentChange"
           style="width: 100%"
-         
         >
-         <!-- @row-click = "showRow" -->
           <el-table-column
-            prop="level"
-            label="树级别"
-          />
-          <el-table-column
-            prop="username"
-            label="会话用户"
-          />
-          <el-table-column
-            prop="sid"
-            label="会话ID"
+            prop="waiting_trx_id"
+            label="等待的事务ID"
           >
-            <template slot-scope="scope">
-              <el-button type="text" @click="getDbSessionDetail(scope.row)">{{ scope.row.sid }}</el-button>
-            </template>
           </el-table-column>
           <el-table-column
-            prop="serial_id"
-            label="序列号"
+            prop="waiting_thread"
+            label="等待的线程ID"
           />
           <el-table-column
-            prop="inst_id"
-            label="实例"
+            prop="waiting_query"
+            label="等待的SQL"
           />
           <el-table-column
-            prop="wait_class"
-            label="等待类型"
+            prop="wait_time"
+            label="等待时间"
           />
           <el-table-column
-            prop="event"
-            label="等待事件"
+            prop="state"
+            label="等待进行的操作"
           />
           <el-table-column
-            prop="P1"
-            label="p1"
+            prop="blocking_trx_id"
+            label="阻塞的事务ID"
           />
           <el-table-column
-            prop="P2"
-            label="p2"
+            prop="blocking_thread"
+            label="阻塞的线程ID"
           />
           <el-table-column
-            prop="sql_id"
-            label="SQLID"
+            prop="blocking_query"
+            label="阻塞的SQL"
           />
-          <el-table-column
-            prop="status"
-            label="会话状态"
-          />
-          <el-table-column
-            prop="program"
-            label="程序名"
-          />
-          <el-table-column
-            prop="machine"
-            label="服务器"
-          />
-          <el-table-column
-            prop="ctime"
-            label="等待时间秒"
-          />
-          <el-table-column label="选择" width="70" header-align="center" align="center">
-            <template slot-scope="scope">
-              <el-radio v-model="radio" :label="scope.$index" class="radio">&nbsp;</el-radio>
-            </template>
-          </el-table-column>
         </el-table>
       </div>
       <div class="page-box">
@@ -111,22 +77,21 @@
         />
       </div>
     </div>
-    <lock-wait-detail
+    <!-- <lock-wait-detail
       ref="lockWaitDetail"
       :data="currentData"
-      @refresh="handleList"/>
+      @refresh="handleList"/> -->
   </div>
 </template>
 <script>
 import Pagination from '@/components/Pagination'
-import ManagementService from '@/services/modules/management'
-import LockWaitDetail from './lock-wait-detail.vue'
-import qs from 'qs'
+import {mysqlTreeWait,mysqlTreeWaitKill} from '@/api/mysql'
+// import LockWaitDetail from './lock-wait-detail.vue'
 
 export default {
   components: {
     Pagination,
-    LockWaitDetail
+    // LockWaitDetail
   },
 
   data() {
@@ -134,14 +99,12 @@ export default {
       filter: {
       },
       tableData: [],
-      multipleSelection: [],
       dbInfo: {},
       page: 1,
       total: 0,
       loading: false,
       currentData: {},
-      currentRow: {},
-      radio:0
+      currentRow: {}
     }
   },
   computed: {
@@ -160,7 +123,7 @@ export default {
       const currentdate = date.getFullYear() + seperator1 + month + seperator1 + strDate +
         ' ' + date.getHours() + seperator2 + date.getMinutes() +
         seperator2 + date.getSeconds()
-      console.log(currentdate)
+      // console.log(currentdate)
       return currentdate
     }
   },
@@ -169,35 +132,30 @@ export default {
     this.handleList()
   },
   methods: {
-    // showRow(row) {
-    //   this.radio = this.tableData.indexOf(row)
-    //   this.currentRow = row
-    // },
-    handleSelectionChange(val) {
-      this.multipleSelection = val
+    handleCurrentChange(val) {
+      this.currentRow = val;
     },
-    // pagination
     handlePage(page) {
       this.page = page
       this.handleList()
     },
-    getFilter() {
-      let params = {}
-      if (this.filter.searchVal) {
-        params = {
-          actor: this.filter.searchType,
-          target: this.filter.searchVal
-        }
-      }
+    // getFilter() {
+    //   let params = {}
+    //   if (this.filter.searchVal) {
+    //     params = {
+    //       actor: this.filter.searchType,
+    //       target: this.filter.searchVal
+    //     }
+    //   }
 
-      return Object.assign({}, params, {
-        page: this.page,
-        pageSize: 10
-      })
-    },
+    //   return Object.assign({}, params, {
+    //     page: this.page,
+    //     pageSize: 10
+    //   })
+    // },
     immediateStop(type) {
-      const { sid, serial_id, inst_id } = this.currentRow
-      const hostip = this.$route.query.hostip
+      const { waiting_thread} = this.currentRow
+      let {hostip,dsn} = this.$route.query
 
       this.$confirm(`是否终止进程，该操作不可返回`, '提示', {
         confirmButtonText: '确定',
@@ -206,11 +164,11 @@ export default {
       }).then(() => {
         const params = {
           hostip,
-          type: type || '',
-          ids: [`${sid}`, `${serial_id}`, `@${inst_id}`]
+          dsn,
+          ids: [waiting_thread]
         }
 
-        ManagementService.killLockWait(params)
+        mysqlTreeWaitKill(params)
           .then(({ results: data }) => {
             //
             this.$message.success(data.msg)
@@ -222,29 +180,27 @@ export default {
 
       })
     },
-    getDbSessionDetail({ sid, serial_id, inst_id }) {
-      const { hostip } = this.$route.query
-      this.$router.push({
-        name: 'ManagementDbSessionDetail',
-        query: {
-          hostip,
-          sid,
-          serial_id,
-          inst_id
-        }
-      })
-    },
+    // getDbSessionDetail({ sid, serial_id, inst_id }) {
+    //   const { hostip } = this.$route.query
+    //   this.$router.push({
+    //     name: 'ManagementDbSessionDetail',
+    //     query: {
+    //       hostip,
+    //       sid,
+    //       serial_id,
+    //       inst_id
+    //     }
+    //   })
+    // },
     // load data
     handleList() {
       this.loading = true
       const { hostip,dsn } = this.$route.query
-      const urlParams = qs.stringify(this.getFilter())
-      ManagementService.getTreeAnalyze({ hostip,dsn }, urlParams)
+      // const urlParams = qs.stringify(this.getFilter())
+      mysqlTreeWait({ hostip,dsn })
         .then(({ results: data }) => {
           this.tableData = data.results
           this.total = data.totalCount
-          this.radio = ''
-          this.currentRow = {}
         })
         .catch((err) => {
           this.tableData = []
@@ -284,7 +240,7 @@ export default {
       const currentdate = date.getFullYear() + seperator1 + month + seperator1 + strDate +
         ' ' + date.getHours() + seperator2 + date.getMinutes() +
         seperator2 + date.getSeconds()
-      console.log(currentdate)
+      // console.log(currentdate)
       return currentdate
     }
   }

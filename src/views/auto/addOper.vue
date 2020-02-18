@@ -147,6 +147,7 @@ export default {
         taskid: this.$route.query.taskid
       }).then(({ results: data }) => {
         this.form = { ...data }
+        this.form.node_count += 1
       }).catch((err) => {
         this.$message.error(err.message)
       })
@@ -195,15 +196,15 @@ export default {
         this.$message.error('从库host或者data目录不能为空')
         return false
       }
-      if(this.username == ''){ 
+      if(this.form.username == ''){ 
         this.$message.error('用户名不能为空')
         return false
       }
-      if(this.password == ''){ 
+      if(this.form.password == ''){ 
         this.$message.error('密码不能为空')
         return false
       }
-      if(this.dbrootpwd == ''){ 
+      if(this.form.dbrootpwd == ''){ 
         this.$message.error('root用户密码不能为空')
         return false
       }

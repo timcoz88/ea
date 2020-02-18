@@ -36,12 +36,13 @@
         @row-dblclick="getDetail"
         style="width: 100%"
       >
-        <el-table-column prop="schema_name" label="数据库名" width="160" />
-        <el-table-column prop="query" label="SQL详情" />
-        <el-table-column prop="count" label="执行次数" width="160"/>
-        <el-table-column prop="avg_latency(s)" label="执行时间（单位s）"  width="120"/>
-        <el-table-column prop="cnt_no_index" label="未使用索引次数"  width="80"/>
-        <el-table-column prop="cnt_tmp_table" label="使用临时表次数" width="80" />
+        <el-table-column prop="sql_id" label="SQL ID"/>
+        <el-table-column prop="query" label="SQL文本" />
+        <el-table-column prop="schema_name" label="数据库" />
+        <el-table-column prop="time_per" label="耗时比例" />
+        <el-table-column prop="avg_latency(ms)" label="平均耗时(ms)" />
+        <el-table-column prop="avg_row_sent" label="平均返回行数"/>
+        <el-table-column prop="count" label="执行次数"/>
       </el-table>
     </div>
     <div class="page-box">
@@ -68,6 +69,10 @@ export default {
       radio: "desc",
       sortOrder: [
         {
+          label:'全部',
+          value:''
+        },
+        {
           label: "按执行次数",
           value: "count"
         },
@@ -86,8 +91,8 @@ export default {
       ],
       order:'count',
       options: [{
-        value: 'NAME',
-        label: 'SQL执行用户'
+        value: '',
+        label: '全部'
       },{
         value: 'SQL_TEXT',
         label: 'SQL文本'
@@ -104,11 +109,7 @@ export default {
     handlePage(value){
       this.page = value.page
       this.pageSize = value.limit
-      if(this.filter.searchType == 'NAME'){
-        this.getList({
-          "NAME":this.filter.searchVal
-        })
-      }else if(this.filter.searchType == 'SQL_TEXT'){
+      if(this.filter.searchType == 'SQL_TEXT'){
         this.getList({
           "SQL_TEXT":this.filter.searchVal
         })
@@ -154,7 +155,8 @@ export default {
           page:this.page,
           pageSize:this.pageSize,
           ORDER:this.radio,
-          ORDER_TYPE:this.order
+          ORDER_TYPE:this.order,
+
         }))
     },
     reset(){
@@ -162,9 +164,11 @@ export default {
       this.filter.searchType = ''
       this.radio = 'desc'
       this.order = 'ELAPSED_TIME'
+      this.handleSearch()
     },
     getDetail(row, column, event){
-      this.$router.push({name:'topSql',query:{}})
+      const { hostip, dsn } = this.$route.query
+      this.$router.push({name:'mysqlTopSql',query:{hostip, dsn,sql_id:row.sql_id}})
     }
   }
 };

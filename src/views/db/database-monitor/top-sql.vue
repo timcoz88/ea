@@ -68,6 +68,10 @@ export default {
       radio: "desc",
       sortOrder: [
         {
+          label: "全部",
+          value: ""
+        },
+        {
           label: "按执行时间排序",
           value: "ELAPSED_TIME"
         },
@@ -90,6 +94,9 @@ export default {
       ],
       order:'ELAPSED_TIME',
       options: [{
+        value: '',
+        label: '全部'
+      },{
         value: 'NAME',
         label: 'SQL执行用户'
       },{
@@ -166,6 +173,7 @@ export default {
       this.filter.searchType = ''
       this.radio = 'desc'
       this.order = 'ELAPSED_TIME'
+      this.handleSearch()
     },
     getDetail(row, column, event){
       let {hostip,dsn} = this.$route.query

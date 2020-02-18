@@ -2,7 +2,7 @@
   <el-card style="margin:20px;">
     <div class="df">
       <h4>部署配置</h4>
-      <el-button @click="callback">返回</el-button>
+      <el-button style="height: 40px;" @click="callback">返回</el-button>
     </div>
     <el-form ref="form" :model="form" label-position="left" :inline="true">
       <el-row>
@@ -54,7 +54,7 @@ export default {
   },
   methods: {
     callback(){
-      this.$route.push({name:'autoOperation'})
+      this.$router.push({name:'autoOperation'})
     },
     getLog() {
       operationRunLog({

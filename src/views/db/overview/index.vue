@@ -103,10 +103,13 @@ export default {
   data() {
     return {
       loading: true,
-      group: '',
+      group: '全部',
       groupList: [],
       order: '',
       sortOrder: [{
+        label: '全部',
+        value: ''
+      },{
         label: '按警示级别',
         value: 'error'
       }],
@@ -135,12 +138,13 @@ export default {
     getGroup() {
       groupList().then(({ results: data }) => {
         this.groupList = data
+        this.groupList.unshift('全部')
       }).catch(err => this.$message.error(err.message))
     },
     selectID() {
       this.loading = true
       this.order = ''
-      this.group = ''
+      this.group = '全部'
       this.pageSize = 10
       this.page = 1
       this.getData()
@@ -155,7 +159,7 @@ export default {
     },
     orderChange() {
       this.content = ''
-      this.group = ''
+      this.group = '全部'
       this.loading = true
       this.pageSize = 10
       this.page = 1
@@ -175,7 +179,7 @@ export default {
       { page: this.page,
         pageSize: this.pageSize,
         order:this.order,
-        groupid:this.group,
+        groupid:this.group == '全部'?"":this.group,
         dbname:this.content
       }).then(({ results: data }) => {
         this.databaseList = data.results
