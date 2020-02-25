@@ -53,8 +53,8 @@ export default {
     this.getLog()
   },
   methods: {
-    callback(){
-      this.$router.push({name:'autoOperation'})
+    callback() {
+      this.$router.push({ name: 'autoOperation' })
     },
     getLog() {
       operationRunLog({

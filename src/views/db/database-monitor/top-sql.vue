@@ -12,16 +12,18 @@
         slot="prepend"
         v-model="filter.searchType"
         style="width: 160px;"
-        placeholder="请选择查询类型">
+        placeholder="请选择查询类型"
+      >
         <el-option
           v-for="item in options"
           :key="item.value"
           :label="item.label"
-          :value="item.value"/>
+          :value="item.value"
+        />
       </el-select>
     </el-input>
-    <el-select name="grouping" v-model="order">
-      <el-option v-for="(item,key) in sortOrder" :key="key" :label="item.label" :value="item.value"></el-option>
+    <el-select v-model="order" name="grouping">
+      <el-option v-for="(item,key) in sortOrder" :key="key" :label="item.label" :value="item.value" />
     </el-select>
     <el-radio v-model="radio" label="desc" style="margin-left:20px;">顺序</el-radio>
     <el-radio v-model="radio" label="asc">倒序</el-radio>
@@ -29,32 +31,35 @@
     <el-button @click="reset">重置</el-button>
     <div style="margin-top:20px;">
       <el-table
-        v-loading="loading"
         ref="remoteData"
+        v-loading="loading"
         :data="tableData"
         border
-        @row-dblclick="getDetail"
         style="width: 100%"
+        @row-dblclick="getDetail"
       >
         <el-table-column prop="INST_ID" label="实例ID" width="100" />
         <el-table-column prop="SQL_TEXT" label="SQL文本">
           <template slot-scope="scope">
-              <el-popover
-                placement="top-start"
-                width="400"
-                trigger="hover"
-                >
-                <div >
-                  {{scope.row.SQL_TEXT}}
-                </div>
-                <span slot="reference" style="overflow: hidden;
+            <el-popover
+              placement="top-start"
+              width="400"
+              trigger="hover"
+            >
+              <div>
+                {{ scope.row.SQL_TEXT }}
+              </div>
+              <span
+                slot="reference"
+                style="overflow: hidden;
 text-overflow:ellipsis;
-white-space: nowrap;">{{scope.row.SQL_TEXT}}</span>
-              </el-popover>
-            </template>
+white-space: nowrap;"
+              >{{ scope.row.SQL_TEXT }}</span>
+            </el-popover>
+          </template>
         </el-table-column>
         <el-table-column prop="PARRSING_SCHEMA_NAME" label="执行用户" width="200" />
-        <el-table-column prop="ELAPSED_TIME" label="执行时间(s)"  width="200" />
+        <el-table-column prop="ELAPSED_TIME" label="执行时间(s)" width="200" />
         <el-table-column prop="BUFFER_GETS" label="逻辑读" width="120" />
         <el-table-column prop="DISK_CALLS" label="磁盘读" width="120" />
       </el-table>
@@ -65,132 +70,132 @@ white-space: nowrap;">{{scope.row.SQL_TEXT}}</span>
   </div>
 </template>
 <script>
-import {tpsSqlList} from '@/api/overview'
+import { tpsSqlList } from '@/api/overview'
 import Pagination from '@/components/Pagination'
 export default {
   components: {
-        Pagination
-    },
+    Pagination
+  },
   data() {
     return {
-      loading:true,
-      tableData:[],
-      filter:{
-        searchVal:'',
-        searchType:''
+      loading: true,
+      tableData: [],
+      filter: {
+        searchVal: '',
+        searchType: ''
       },
-      options:[],
-      radio: "desc",
+      options: [],
+      radio: 'desc',
       sortOrder: [
         {
-          label: "按执行时间排序",
-          value: "ELAPSED_TIME"
+          label: '按执行时间排序',
+          value: 'ELAPSED_TIME'
         },
         {
-          label: "按CPU时间排序",
-          value: "CPU_TIME"
+          label: '按CPU时间排序',
+          value: 'CPU_TIME'
         },
         {
-          label: "按执行次数排序",
-          value: "EXECUTIONS"
+          label: '按执行次数排序',
+          value: 'EXECUTIONS'
         },
         {
-          label: "按逻辑读排序",
-          value: "BUFFER_GETS"
+          label: '按逻辑读排序',
+          value: 'BUFFER_GETS'
         },
         {
-          label: "按磁盘读排序",
-          value: "DISK_READS"
+          label: '按磁盘读排序',
+          value: 'DISK_READS'
         }
       ],
-      order:'ELAPSED_TIME',
+      order: 'ELAPSED_TIME',
       options: [{
         value: '',
         label: '全部'
-      },{
+      }, {
         value: 'NAME',
         label: 'SQL执行用户'
-      },{
+      }, {
         value: 'SQL_TEXT',
         label: 'SQL文本'
       }],
-      page:1,
-      pageSize:10,
-      total:0,
-    };
+      page: 1,
+      pageSize: 10,
+      total: 0
+    }
   },
-  created(){
+  created() {
     this.getList({})
   },
   methods: {
-    handlePage(value){
+    handlePage(value) {
       this.page = value.page
       this.pageSize = value.limit
-      if(this.filter.searchType == 'NAME'){
+      if (this.filter.searchType == 'NAME') {
         this.getList({
-          "NAME":this.filter.searchVal
+          'NAME': this.filter.searchVal
         })
-      }else if(this.filter.searchType == 'SQL_TEXT'){
+      } else if (this.filter.searchType == 'SQL_TEXT') {
         this.getList({
-          "SQL_TEXT":this.filter.searchVal
+          'SQL_TEXT': this.filter.searchVal
         })
-      }else{
-         this.getList({})
+      } else {
+        this.getList({})
       }
     },
-    getList(data){
+    getList(data) {
       this.loading = true
       const { hostip, dsn } = this.$route.query
-      tpsSqlList(Object.assign({},{
+      tpsSqlList(Object.assign({}, {
         hostip,
         dsn,
-        page:this.page,
-        pageSize:this.pageSize,
-        ORDER:this.radio,
-        ORDER_TYPE:this.order
-      },data)).then(({results:data}) => {
+        page: this.page,
+        pageSize: this.pageSize,
+        ORDER: this.radio,
+        ORDER_TYPE: this.order
+      }, data)).then(({ results: data }) => {
         this.tableData = data.results
         this.total = data.totalCount
       }).catch(err => {
-         this.tableData = []
-         this.total = 0
-         this.page = 1
-         this.pageSize = 10
+        this.tableData = []
+        this.total = 0
+        this.page = 1
+        this.pageSize = 10
         this.$message.error(err.message)
       })
-      .then(() => this.loading = false)
+        .then(() => this.loading = false)
     },
-    handleSearch(){
+    handleSearch() {
       let param = {}
       this.page = 1
       this.pageSize = 10
-      if(this.filter.searchType == 'NAME'){
+      if (this.filter.searchType == 'NAME') {
         param = {
-          "NAME":this.filter.searchVal
+          'NAME': this.filter.searchVal
         }
-      }else if(this.filter.searchType == 'SQL_TEXT'){
-        param = {"SQL_TEXT":this.filter.searchVal}
+      } else if (this.filter.searchType == 'SQL_TEXT') {
+        param = { 'SQL_TEXT': this.filter.searchVal }
       }
 
-        this.getList(Object.assign({},param,{
-          page:this.page,
-          pageSize:this.pageSize,
-          ORDER:this.radio,
-          ORDER_TYPE:this.order
-        }))
+      this.getList(Object.assign({}, param, {
+        page: this.page,
+        pageSize: this.pageSize,
+        ORDER: this.radio,
+        ORDER_TYPE: this.order
+      }))
     },
-    reset(){
+    reset() {
       this.filter.searchVal = ''
       this.filter.searchType = ''
       this.radio = 'desc'
       this.order = 'ELAPSED_TIME'
       this.handleSearch()
     },
-    getDetail(row, column, event){
-      let {hostip,dsn,dbid} = this.$route.query
-      this.$router.push({name:'topSql',query:{hostip,dsn,dbid,'dbtype':'Oracle'}})
-      localStorage.setItem('selectTopSql',JSON.stringify(row))
+    getDetail(row, column, event) {
+      const { hostip, dsn, dbid } = this.$route.query
+      this.$router.push({ name: 'topSql', query: { hostip, dsn, dbid, 'dbtype': 'Oracle' }})
+      localStorage.setItem('selectTopSql', JSON.stringify(row))
     }
   }
-};
+}
 </script>

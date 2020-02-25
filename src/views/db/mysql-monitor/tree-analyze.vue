@@ -22,22 +22,21 @@
     <div class="table-content">
       <div class="table-box">
         <el-table
-          v-loading="loading"
           ref="remoteData"
+          v-loading="loading"
           row-key="sid"
           :data="tableData"
           border
           default-expand-all
           highlight-current-row
           :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
-          @current-change="handleCurrentChange"
           style="width: 100%"
+          @current-change="handleCurrentChange"
         >
           <el-table-column
             prop="waiting_trx_id"
             label="等待的事务ID"
-          >
-          </el-table-column>
+          />
           <el-table-column
             prop="waiting_thread"
             label="等待的线程ID"
@@ -85,12 +84,12 @@
 </template>
 <script>
 import Pagination from '@/components/Pagination'
-import {mysqlTreeWait,mysqlTreeWaitKill} from '@/api/mysql'
+import { mysqlTreeWait, mysqlTreeWaitKill } from '@/api/mysql'
 // import LockWaitDetail from './lock-wait-detail.vue'
 
 export default {
   components: {
-    Pagination,
+    Pagination
     // LockWaitDetail
   },
 
@@ -133,7 +132,7 @@ export default {
   },
   methods: {
     handleCurrentChange(val) {
-      this.currentRow = val;
+      this.currentRow = val
     },
     handlePage(page) {
       this.page = page
@@ -154,8 +153,8 @@ export default {
     //   })
     // },
     immediateStop(type) {
-      const { waiting_thread} = this.currentRow
-      let {hostip,dsn} = this.$route.query
+      const { waiting_thread } = this.currentRow
+      const { hostip, dsn } = this.$route.query
 
       this.$confirm(`是否终止进程，该操作不可返回`, '提示', {
         confirmButtonText: '确定',
@@ -193,9 +192,9 @@ export default {
     // load data
     handleList() {
       this.loading = true
-      const { hostip,dsn } = this.$route.query
+      const { hostip, dsn } = this.$route.query
       // const urlParams = qs.stringify(this.getFilter())
-      mysqlTreeWait({ hostip,dsn })
+      mysqlTreeWait({ hostip, dsn })
         .then(({ results: data }) => {
           this.tableData = data.results
           this.total = data.totalCount

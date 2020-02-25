@@ -68,8 +68,8 @@ export default {
     }
   },
   methods: {
-    callback(){
-      this.$router.push({name:'dbOverview'})
+    callback() {
+      this.$router.push({ name: 'dbOverview' })
     },
     getInfo() {
       const { hostip, dsn } = this.$route.query

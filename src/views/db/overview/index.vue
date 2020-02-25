@@ -28,7 +28,7 @@
         <div v-for="(item,key) in databaseList" :key="key">
           <el-col :span="8" style="padding: 10px;">
             <el-card class="box-card" :class="{isErrorActive:!item.sql_status}">
-              <div @click="dataBase(item.hostip,item.dsn,item.sql_status,item.mysql_type,item.dbid)" :class="{cp:item.sql_status}">
+              <div :class="{cp:item.sql_status}" @click="dataBase(item.hostip,item.dsn,item.sql_status,item.mysql_type,item.dbid)">
                 <div class="df">
                   <span class="vn">
                     <img v-if="item.mysql_type == 'ORACLE'" src="@/assets/oracle.png" style="width: 42px;height: 42px;" class="vn">
@@ -56,7 +56,7 @@
                 <div class="df2 icol">
                   <div class="one">
                     <img src="@/assets/TPS.png" class="notice-img vn">
-                    <span class="vn">{{item.mysql_type == 'ORACLE'?'TPS：':'QPS：'}}</span>
+                    <span class="vn">{{ item.mysql_type == 'ORACLE'?'TPS：':'QPS：' }}</span>
                     <span class="vn">{{ item.qps_num }}</span>
                   </div>
                   <div class="two">
@@ -66,15 +66,17 @@
                   </div>
                 </div>
                 <div style="border-top: 1px solid #e6ebf5;padding:10px 0;height: 37px;">
-                   <el-tooltip class="item" effect="dark" placement="bottom">
-                     <div slot="content"> <p>{{ item.error_msg }}</p></div>
-                        <p style="display: inline-block;
+                  <el-tooltip class="item" effect="dark" placement="bottom">
+                    <div slot="content"> <p>{{ item.error_msg }}</p></div>
+                    <p
+                      style="display: inline-block;
           white-space: nowrap;
           width: 100%;
           overflow: hidden;
-          text-overflow: ellipsis;">{{ item.error_msg }}</p>
-                </el-tooltip>
-                  
+          text-overflow: ellipsis;"
+                    >{{ item.error_msg }}</p>
+                  </el-tooltip>
+
                 </div>
               </div>
             </el-card>
@@ -121,15 +123,18 @@ export default {
     this.getGroup()
     this.getList()
   },
+  destroyed() {
+    clearInterval(timer)
+  },
   methods: {
-    dataBase(hostip, dsn,status,type,dbid) {
-      if(!status){
+    dataBase(hostip, dsn, status, type, dbid) {
+      if (!status) {
         return false
       }
-      if(type == 'MYSQL'){
-        this.$router.push({ name: 'mysqlMonitor', query: { hostip, dsn,dbid }})
-      }else if(type == 'ORACLE'){
-        this.$router.push({ name: 'databaseMonitor', query: { hostip, dsn,dbid }})
+      if (type == 'MYSQL') {
+        this.$router.push({ name: 'mysqlMonitor', query: { hostip, dsn, dbid }})
+      } else if (type == 'ORACLE') {
+        this.$router.push({ name: 'databaseMonitor', query: { hostip, dsn, dbid }})
       }
     },
     getGroup() {
@@ -173,18 +178,18 @@ export default {
     },
     getData() {
       databaseOverview(
-      { page: this.page,
-        pageSize: this.pageSize,
-        order:this.order,
-        groupid:this.group == '全部'?"":this.group,
-        dbname:this.content
-      }).then(({ results: data }) => {
+        { page: this.page,
+          pageSize: this.pageSize,
+          order: this.order,
+          groupid: this.group == '全部' ? '' : this.group,
+          dbname: this.content
+        }).then(({ results: data }) => {
         this.databaseList = data.results
         this.total = data.totalCount
         clearInterval(timer)
         timer = setInterval(() => {
           this.getList()
-        },10000)
+        }, 10000)
       }).catch(err => {
         this.databaseList = []
         this.total = 0
@@ -193,9 +198,6 @@ export default {
         this.$message.error(err.message)
       }).then(_ => this.loading = false)
     }
-  },
-  destroyed(){
-    clearInterval(timer)
   }
 }
 </script>
@@ -252,5 +254,5 @@ p{
 }
 </style>
 <style>
-.el-tooltip__popper{font-size: 14px; width:24%; } 
+.el-tooltip__popper{font-size: 14px; width:24%; }
 </style>

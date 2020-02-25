@@ -118,8 +118,7 @@
           <el-table-column
             prop="program"
             label="应用程序"
-          >
-          </el-table-column>
+          />
           <!-- <el-table-column
             prop="type"
             label="类型"
@@ -150,13 +149,16 @@
                 placement="top-start"
                 width="200"
                 trigger="hover"
-                >
-                <div >
-                  {{scope.row.sql_text}}
+              >
+                <div>
+                  {{ scope.row.sql_text }}
                 </div>
-                <span slot="reference" style="overflow: hidden;
+                <span
+                  slot="reference"
+                  style="overflow: hidden;
 text-overflow:ellipsis;
-white-space: nowrap;">{{scope.row.sql_text}}</span>
+white-space: nowrap;"
+                >{{ scope.row.sql_text }}</span>
               </el-popover>
             </template>
           </el-table-column>
@@ -224,7 +226,7 @@ export default {
       options: [{
         value: '',
         label: '全部'
-      },{
+      }, {
         value: 'SID',
         label: 'SID'
       }, {

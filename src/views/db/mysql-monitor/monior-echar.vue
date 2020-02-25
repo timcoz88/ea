@@ -9,27 +9,27 @@
         end-placeholder="结束日期"
         value-format="yyyy-MM-dd HH:mm:ss"
         @change="timeChange"
-      ></el-date-picker>
+      />
     </div>
     <el-row :gutter="32" style="margin-top:20px;">
       <el-col :span="23">
         <div class="chart-wrapper">
-          <div id="tps" style="width:100%;height:200px;"></div>
+          <div id="tps" style="width:100%;height:200px;" />
         </div>
       </el-col>
     </el-row>
   </div>
 </template>
 <script>
-import { tps } from "@/api/overview";
-import echarts from "echarts";
+import { tps } from '@/api/overview'
+import echarts from 'echarts'
 export default {
   data() {
     return {
       chart: null,
       time: [],
       lineChartData: []
-    };
+    }
   },
   mounted() {
     // this.$nextTick(() => {
@@ -38,48 +38,48 @@ export default {
   },
   beforeDestroy() {
     if (!this.chart) {
-      return;
+      return
     }
-    this.chart.dispose();
-    this.chart = null;
+    this.chart.dispose()
+    this.chart = null
   },
   mounted() {
-    this.getEchars();
+    this.getEchars()
   },
   methods: {
-    getEchars(){
-      const {hostip,dsn} = this.$route.query
+    getEchars() {
+      const { hostip, dsn } = this.$route.query
       tps({
         hostip,
         dsn
       })
-        .then(({results:data}) => {
-            this.chart = echarts.init(document.getElementById('tps'));
-            this.chart.setOption(this.options(data.time,data.value))
+        .then(({ results: data }) => {
+          this.chart = echarts.init(document.getElementById('tps'))
+          this.chart.setOption(this.options(data.time, data.value))
         })
-        .catch(err => this.$message.error(err.message));
+        .catch(err => this.$message.error(err.message))
     },
     timeChange(val) {
-      const {hostip,dsn} = this.$route.query
-        tps({
-            start_tm:val[0],
-            end_time:val[1],
-            hostip,
-            dsn
+      const { hostip, dsn } = this.$route.query
+      tps({
+        start_tm: val[0],
+        end_time: val[1],
+        hostip,
+        dsn
+      })
+        .then(({ results: data }) => {
+          this.chart = echarts.init(document.getElementById('tps'))
+          this.chart.setOption(this.options(data.time, data.value))
         })
-        .then(({results:data}) => {
-            this.chart = echarts.init(document.getElementById('tps'));
-            this.chart.setOption(this.options(data.time,data.value))
-        })
-        .catch(err => this.$message.error(err.message));
+        .catch(err => this.$message.error(err.message))
     },
-    options(time,value) {
-      let options = {
+    options(time, value) {
+      const options = {
         title: {
-            text:'QPS'
+          text: 'QPS'
         },
         xAxis: {
-          data:time,
+          data: time,
           boundaryGap: false,
           axisTick: {
             show: false
@@ -93,9 +93,9 @@ export default {
           containLabel: true
         },
         tooltip: {
-          trigger: "axis",
+          trigger: 'axis',
           axisPointer: {
-            type: "cross"
+            type: 'cross'
           },
           padding: [5, 10]
         },
@@ -105,33 +105,33 @@ export default {
           }
         },
         legend: {
-          data: ["expected"],
-          show:false
+          data: ['expected'],
+          show: false
         },
         series: [
           {
-            name: "expected",
+            name: 'expected',
             itemStyle: {
               normal: {
-                color: "#FF005A",
+                color: '#FF005A',
                 lineStyle: {
-                  color: "#FF005A",
+                  color: '#FF005A',
                   width: 2
                 }
               }
             },
             smooth: true,
-            type: "line",
+            type: 'line',
             data: value,
             animationDuration: 2800,
-            animationEasing: "cubicInOut"
+            animationEasing: 'cubicInOut'
           }
         ]
       }
       return options
     }
   }
-};
+}
 </script>
 <style lang="sass" scoped>
 

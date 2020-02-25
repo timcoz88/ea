@@ -4,11 +4,11 @@
       <el-button @click="callback">返回</el-button>
     </div>
     <div class="page p20">
-      <div class="page-title" v-if="dbtype == 'Oracle'">
-        <p>SQL ID：{{apiResult.sqlid}}</p>
+      <div v-if="dbtype == 'Oracle'" class="page-title">
+        <p>SQL ID：{{ apiResult.sqlid }}</p>
         <p v-if="apiResult.showelapsedtime">执行时长：{{ apiResult.elapsedtime }} s</p>
-        <p>逻辑读：{{getLocalData.BUFFER_GETS}}</p>
-        <p>磁盘读：{{getLocalData.DISK_CALLS}}</p>
+        <p>逻辑读：{{ getLocalData.BUFFER_GETS }}</p>
+        <p>磁盘读：{{ getLocalData.DISK_CALLS }}</p>
       </div>
       <div class="SQLDiv">
         <div class="comment-wrap">
@@ -131,7 +131,7 @@ export default {
     return {
       loading: false,
       dbtype: '',
-      getLocalData:{},
+      getLocalData: {},
       apiResult: {
         sqlid: '',
         showelapsedtime: true, // 是否显示执行时长
@@ -141,7 +141,7 @@ export default {
         sqltext: '', // topsql标红处理后的语句
         sqlTextOrigin: '', // topsql原始语句
         sqlexplain: [], // 执行计划表格数据
-        urlArr4:''
+        urlArr4: ''
       }
     }
   },
@@ -156,7 +156,7 @@ export default {
     // 调用接口后的处理
     // this.apiResult.showelapsedtime = true
     // 'select * from exsql.t_normal1_1 t1,exsql1.t_normal2 t2 where t1.id != :"SYS_B_0"'
-    
+
     // if (this.dbtype === 'Oracle') {
     //   this.apiResult.sqlexplain = [{
     //     cost: '     2   (0)',
@@ -186,61 +186,61 @@ export default {
   },
 
   methods: {
-    getURL(){
-      getOtherURL().then(({results:data}) => {
-          data.results.forEach(ele => {
-            if(ele.url_type == 3){
-              this.urlArr4 = ele.url
-            }
-          });
-          if(this.urlArr4){
-              this.getDetail()
+    getURL() {
+      getOtherURL().then(({ results: data }) => {
+        data.results.forEach(ele => {
+          if (ele.url_type == 3) {
+            this.urlArr4 = ele.url
           }
+        })
+        if (this.urlArr4) {
+          this.getDetail()
+        }
       })
       // .catch(err => this.$message.error(err.message))
     },
-    getDetail(){
-      let {dbid,hostip,dsn} = this.$route.query
-      let id=''
+    getDetail() {
+      const { dbid, hostip, dsn } = this.$route.query
+      let id = ''
       let text = ''
-      if(this.dbtype == 'Oracle'){
+      if (this.dbtype == 'Oracle') {
         id = JSON.parse(localStorage.getItem('selectTopSql')).SQL_ID
         text = JSON.parse(localStorage.getItem('selectTopSql')).SQL_TEXT
-      }else{
+      } else {
         id = JSON.parse(localStorage.getItem('selectTopSql')).sql_id
         text = JSON.parse(localStorage.getItem('selectTopSql')).sql_text
       }
       request({
-          url: this.urlArr4,
-          method: 'post',
-          data:{
-            hostip,
-            dsn,
-            dbid,
-            sqlid:id,
-            sqltext:text
-          }
-        }).then((data) => {
-          if(data.status == 'error'){
-            this.$message(data.msg)
-            return
-          }
-          this.apiResult =  {...data.data}
-          this.apiResult.sqlTextOrigin = text
-          if(this.apiResult.comments!==null&&this.apiResult.comments.length>0){
-            this.commentChange(0)
-          }else{
-            this.apiResult.sqltext=this.apiResult.sqlTextOrigin
-          }
-        })
-        // .catch(err => this.$message.error(err.message))
+        url: this.urlArr4,
+        method: 'post',
+        data: {
+          hostip,
+          dsn,
+          dbid,
+          sqlid: id,
+          sqltext: text
+        }
+      }).then((data) => {
+        if (data.status == 'error') {
+          this.$message(data.msg)
+          return
+        }
+        this.apiResult = { ...data.data }
+        this.apiResult.sqlTextOrigin = text
+        if (this.apiResult.comments !== null && this.apiResult.comments.length > 0) {
+          this.commentChange(0)
+        } else {
+          this.apiResult.sqltext = this.apiResult.sqlTextOrigin
+        }
+      })
+      // .catch(err => this.$message.error(err.message))
     },
-    callback(){
-      let {hostip,dsn,dbid} = this.$route.query
-      if(this.dbtype == 'Oracle'){
-        this.$router.push({name:'databaseMonitor',query:{hostip,dsn,dbid,componentName:"topSql"}})
-      }else{
-        this.$router.push({name:'mysqlMonitor',query:{hostip,dsn,dbid,componentName:"topSql"}})
+    callback() {
+      const { hostip, dsn, dbid } = this.$route.query
+      if (this.dbtype == 'Oracle') {
+        this.$router.push({ name: 'databaseMonitor', query: { hostip, dsn, dbid, componentName: 'topSql' }})
+      } else {
+        this.$router.push({ name: 'mysqlMonitor', query: { hostip, dsn, dbid, componentName: 'topSql' }})
       }
     },
     // 切换说明时标红对应的违规处

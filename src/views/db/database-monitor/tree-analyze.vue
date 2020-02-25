@@ -23,16 +23,16 @@
     <div class="table-content">
       <div class="table-box">
         <el-table
-          v-loading="loading"
           ref="remoteData"
+          v-loading="loading"
           row-key="sid"
           :data="tableData"
           border
           default-expand-all
           highlight-current-row
           :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
-          @current-change="handleCurrentChange"
           style="width: 100%"
+          @current-change="handleCurrentChange"
         >
           <el-table-column
             prop="level"
@@ -124,7 +124,7 @@ import qs from 'qs'
 
 export default {
   components: {
-    Pagination,
+    Pagination
     // LockWaitDetail
   },
 
@@ -167,7 +167,7 @@ export default {
   },
   methods: {
     handleCurrentChange(val) {
-      this.currentRow = val;
+      this.currentRow = val
     },
     handlePage(page) {
       this.page = page
@@ -229,9 +229,9 @@ export default {
     // load data
     handleList() {
       this.loading = true
-      const { hostip,dsn } = this.$route.query
+      const { hostip, dsn } = this.$route.query
       const urlParams = qs.stringify(this.getFilter())
-      ManagementService.getTreeAnalyze({ hostip,dsn }, urlParams)
+      ManagementService.getTreeAnalyze({ hostip, dsn }, urlParams)
         .then(({ results: data }) => {
           this.tableData = data.results
           this.total = data.totalCount

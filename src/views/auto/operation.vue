@@ -4,8 +4,8 @@
       <div>
         <el-button type="primary" @click="addOper">新增</el-button>
         <el-button :disabled="JSON.stringify(multipleSelection) == '{}' || multipleSelection.runstatus == 'deploy'?true:false" @click="operationRunStart">运行</el-button>
-        <el-button @click="edit" :disabled="typeof(multipleSelection.taskid) == 'undefined'?true:false">配置</el-button>
-        <el-button @click="logBtn" :disabled="typeof(multipleSelection.taskid) == 'undefined'?true:false">日志</el-button>
+        <el-button :disabled="typeof(multipleSelection.taskid) == 'undefined'?true:false" @click="edit">配置</el-button>
+        <el-button :disabled="typeof(multipleSelection.taskid) == 'undefined'?true:false" @click="logBtn">日志</el-button>
         <el-button :disabled="multipleSelection.runstatus == 'deploy'?true:false" @click="delBtn">删除</el-button>
       </div>
       <div class="df2">
@@ -82,7 +82,7 @@ export default {
       statusList: [{
         label: '全部',
         value: ''
-      },{
+      }, {
         label: '失败',
         value: 'fail'
       },

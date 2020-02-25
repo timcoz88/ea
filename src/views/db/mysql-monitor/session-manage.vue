@@ -71,8 +71,7 @@
           <el-table-column
             prop="id"
             label="会话ID"
-          >
-          </el-table-column>
+          />
           <el-table-column
             prop="user"
             label="会话用户"
@@ -85,18 +84,21 @@
             prop="info"
             label="SQL详情"
           >
-          <template slot-scope="scope">
+            <template slot-scope="scope">
               <el-popover
                 placement="top-start"
                 width="300"
                 trigger="hover"
-                >
-                <div >
-                  {{scope.row.info}}
+              >
+                <div>
+                  {{ scope.row.info }}
                 </div>
-                <span slot="reference" style="overflow: hidden;
+                <span
+                  slot="reference"
+                  style="overflow: hidden;
 text-overflow:ellipsis;
-white-space: nowrap;">{{scope.row.info}}</span>
+white-space: nowrap;"
+                >{{ scope.row.info }}</span>
               </el-popover>
             </template>
           </el-table-column>
@@ -128,8 +130,8 @@ white-space: nowrap;">{{scope.row.info}}</span>
 </template>
 <script>
 import Pagination from '@/components/Pagination'
-import {mysqlSessionList} from '@/api/management'
-import {mysqlSessionKill,mysqlSessionCount} from '@/api/mysql'
+import { mysqlSessionList } from '@/api/management'
+import { mysqlSessionKill, mysqlSessionCount } from '@/api/mysql'
 export default {
   components: {
     Pagination
@@ -155,14 +157,14 @@ export default {
       options: [{
         value: '',
         label: '全部'
-      },{
+      }, {
         value: 'user',
         label: '用户名'
-      },{
-        value:'command',
-        label:'状态'
+      }, {
+        value: 'command',
+        label: '状态'
       },
-       {
+      {
         value: 'host',
         label: '主机'
       }]
@@ -218,7 +220,7 @@ export default {
       this.$router.push({ name: 'mysqlSessionDetail', query: {
         hostip: this.$route.query.hostip,
         dsn: this.$route.query.dsn,
-        session_id:id
+        session_id: id
       }})
     },
     // pagination
@@ -228,9 +230,9 @@ export default {
       this.handleList()
     },
     getFilter() {
-      let params = {}
-      if (this.filter.searchVal&&this.filter.searchType) {
-          params[this.filter.searchType] = this.filter.searchVal
+      const params = {}
+      if (this.filter.searchVal && this.filter.searchType) {
+        params[this.filter.searchType] = this.filter.searchVal
       }
       const { hostip, dsn } = this.$route.query
 
@@ -243,7 +245,7 @@ export default {
       })
     },
     immediateStop(type) {
-      let sidList = []
+      const sidList = []
       this.multipleSelection.forEach(item => {
         sidList.push(item.id)
       })
@@ -312,7 +314,7 @@ export default {
       this.filter = {
         filter: {
           searchType: 'user',
-          searchVal:''
+          searchVal: ''
         }
       }
       this.pagination.page = 1
