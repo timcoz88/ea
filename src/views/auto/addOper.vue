@@ -66,6 +66,18 @@
         </el-col>
       </el-row>
       <el-row>
+        <el-col :span="6">
+          <el-form-item label="工号" label-width="70px" label-position="left">
+            <el-input v-model.trim="form.staffno" placeholder="请输入工号" />
+          </el-form-item>
+        </el-col>
+        <el-col :span="6">
+          <el-form-item label="工号密码" style="margin-left:10px;" label-width="80px" label-position="center">
+            <el-input v-model.trim="form.staffpwd" placeholder="请输入工号密码" style="width:100%;" show-password />
+          </el-form-item>
+        </el-col>
+      </el-row>
+      <el-row>
         <el-col :span="12">
           <el-form-item label="数据库root用户密码" label-width="160px" label-position="left">
             <el-input v-model.trim="form.dbrootpwd" placeholder="请输入root密码" style="width:100%;" show-password />
@@ -98,7 +110,7 @@ export default {
   name: 'AutoOper',
   data() {
     return {
-      numList: [3, 4, 5, 6, 7, 8, 9],
+      numList: [2,3, 4, 5, 6, 7, 8, 9],
       form: {
         taskid: localStorage.getItem('username') + '_' + new Date().getTime(),
         node_count: 3,
@@ -115,6 +127,8 @@ export default {
         }],
         username: '',
         password: '',
+        staffno:'',
+        staffpwd:'',
         dbrootpwd: '',
         localFile:{}
       },
@@ -133,13 +147,15 @@ export default {
       this.localFile=event.raw;
       let reader = new FileReader()
       reader.readAsDataURL(this.localFile);
+      reader.onload=()=>{
+        document.querySelector('.el-upload-list__item-name').href= reader.result
+      }
     },
     uploadform(file) {
       const formData = new FormData()
       formData.append('file', file.file),
       upLoad(formData).then(({results:data}) => {
-        this.form.dbconfigfile = data.path
-        // document.querySelector('.el-upload-list__item-name').href = data.url
+        this.form.dbconfigfile = data[0].path
       })
     },
     getDetail() {
@@ -147,16 +163,13 @@ export default {
         taskid: this.$route.query.taskid
       }).then(({ results: data }) => {
         this.form = { ...data }
-        this.form.node_count += 1
       }).catch((err) => {
         this.$message.error(err.message)
       })
     },
     numChange(value) {
-      // this.form.slave_nodes = []
       let nodeLen = this.form.slave_nodes.length
       if(nodeLen > (value-1)){
-        console.log(nodeLen - value)
         for (let i = 0; i < ( nodeLen - value + 1); i++) {
           this.form.slave_nodes.splice(this.form.slave_nodes-1,1)
         }
@@ -177,11 +190,11 @@ export default {
         this.$message.error('任务ID不能为空')
         return false
       }
-      if(this.form.primary_node == '' ){
+      if(this.form.primary_node.host == '' ){
         this.$message.error('主库host不能为空')
         return false
       }
-      if(this.form.data_directory == '' ){
+      if(this.form.primary_node.data_directory == '' ){
         this.$message.error('主库data目录不能为空')
         return false
       }
@@ -198,15 +211,23 @@ export default {
         this.$message.error('从库host或者data目录不能为空')
         return false
       }
-      if(this.form.username == ''){ 
+      if(this.form.username == ''){
         this.$message.error('用户名不能为空')
         return false
       }
-      if(this.form.password == ''){ 
+      if(this.form.password == ''){
         this.$message.error('密码不能为空')
         return false
       }
-      if(this.form.dbrootpwd == ''){ 
+      if(this.form.staffno == ''){
+        this.$message.error('工号不能为空')
+        return false
+      }
+      if(this.form.staffpwd == ''){
+        this.$message.error('工号密码不能为空')
+        return false
+      }
+      if(this.form.dbrootpwd == ''){
         this.$message.error('root用户密码不能为空')
         return false
       }

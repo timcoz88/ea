@@ -8,7 +8,7 @@
             <el-button type="primary" :disabled="JSON.stringify(currentRow) == '{}'?true:false" @click="immediateStop('immediate')">立即终止会话</el-button>
           </el-button-group>
         </el-col>
-        <el-col :span="12" class="text-right">
+        <!-- <el-col :span="12" class="text-right">
           <el-button
             type="primary"
             @click="handleSearch"
@@ -16,7 +16,7 @@
             搜索
           </el-button>
           <el-button @click="handleClear">重置</el-button>
-        </el-col>
+        </el-col> -->
       </el-row>
     </div>
     <div class="table-content">
@@ -165,19 +165,17 @@ export default {
         const params = {
           hostip,
           dsn,
-          ids: [waiting_thread]
+          kill_ids: [waiting_thread]
         }
 
         mysqlTreeWaitKill(params)
           .then(({ results: data }) => {
-            //
-            this.$message.success(data.msg)
+            this.$message.success(data[0].messages)
             this.handleList()
           })
-          .catch(() => {
+          .catch((err) => {
+            this.$message.error(err.message)
           })
-      }).catch(() => {
-
       })
     },
     // getDbSessionDetail({ sid, serial_id, inst_id }) {

@@ -76,7 +76,7 @@ export default {
     options(time,value) {
       let options = {
         title: {
-            text:'TPS'
+            text:'QPS'
         },
         xAxis: {
           data:time,

@@ -9,15 +9,15 @@
             <el-button type="primary" :disabled="JSON.stringify(currentRow) == '{}'?true:false" @click="immediateStop">事务处理后终止</el-button>
           </el-button-group>
         </el-col>
-        <el-col :span="12" class="text-right">
+        <!-- <el-col :span="12" class="text-right">
           <el-button
             type="primary"
             @click="handleSearch"
           >
             搜索
           </el-button>
-          <el-button @click="handleClear">重置</el-button>
-        </el-col>
+          <el-button @click="handleClear">重置</el-button> -->
+        <!-- </el-col> -->
       </el-row>
     </div>
     <div class="table-content">
@@ -46,9 +46,9 @@
             prop="sid"
             label="会话ID"
           >
-            <template slot-scope="scope">
+            <!-- <template slot-scope="scope">
               <el-button type="text" @click="getDbSessionDetail(scope.row)">{{ scope.row.sid }}</el-button>
-            </template>
+            </template> -->
           </el-table-column>
           <el-table-column
             prop="serial_id"
@@ -110,22 +110,22 @@
         />
       </div>
     </div>
-    <lock-wait-detail
+    <!-- <lock-wait-detail
       ref="lockWaitDetail"
       :data="currentData"
-      @refresh="handleList"/>
+      @refresh="handleList"/> -->
   </div>
 </template>
 <script>
 import Pagination from '@/components/Pagination'
 import ManagementService from '@/services/modules/management'
-import LockWaitDetail from './lock-wait-detail.vue'
+// import LockWaitDetail from './lock-wait-detail.vue'
 import qs from 'qs'
 
 export default {
   components: {
     Pagination,
-    LockWaitDetail
+    // LockWaitDetail
   },
 
   data() {

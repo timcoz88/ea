@@ -70,6 +70,8 @@ export default {
 }
 </script>
 <style lang="sass" scoped>
+pre
+  white-space: pre-wrap
 .df
   display: flex
   justify-content: space-between

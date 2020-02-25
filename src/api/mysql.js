@@ -34,3 +34,10 @@ export function mysqlTreeWaitKill(query) {
       data: query
     })
 }
+export function mysqlSessionCount(query) {
+  return request({
+    url: '/v1/dbs/mysql/session/count',
+    method: 'post',
+    data: query
+  })
+}

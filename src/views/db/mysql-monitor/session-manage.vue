@@ -3,10 +3,10 @@
     <div>
       <h4>会话管理</h4>
       <el-row class="card-content">
-        <el-col :span="4" class="card-content-item">最大会话数：{{ dbInfo.session_res && dbInfo.session_res.max_cnt }}</el-col>
-        <el-col :span="4" class="card-content-item">当前会话数：{{ dbInfo.session_res && dbInfo.session_res.cur_cnt }}</el-col>
-        <el-col :span="4" class="card-content-item">活动会话数：{{ dbInfo.session_res && dbInfo.session_res.act_cnt }}</el-col>
-        <el-col :span="4" class="card-content-item">阻塞会话数：{{ dbInfo.session_res && dbInfo.session_res.block_cnt }}</el-col>
+        <el-col :span="4" class="card-content-item">最大会话数：{{ dbInfo.max }}</el-col>
+        <el-col :span="4" class="card-content-item">当前会话数：{{ dbInfo.new }}</el-col>
+        <el-col :span="4" class="card-content-item">活跃会话数：{{ dbInfo.active }}</el-col>
+        <el-col :span="4" class="card-content-item">阻塞会话数：{{ dbInfo.block }}</el-col>
       </el-row>
     </div>
     <div class="filter-container" style="margin-top: 20px">
@@ -75,23 +75,38 @@
           </el-table-column>
           <el-table-column
             prop="user"
-            label="执行会话的用户"
+            label="会话用户"
           />
           <el-table-column
             prop="state"
-            label="会话正在执行的操作"
+            label="执行状态"
           />
           <el-table-column
             prop="info"
-            label="会话执行的SQL详情"
-          />
+            label="SQL详情"
+          >
+          <template slot-scope="scope">
+              <el-popover
+                placement="top-start"
+                width="300"
+                trigger="hover"
+                >
+                <div >
+                  {{scope.row.info}}
+                </div>
+                <span slot="reference" style="overflow: hidden;
+text-overflow:ellipsis;
+white-space: nowrap;">{{scope.row.info}}</span>
+              </el-popover>
+            </template>
+          </el-table-column>
           <el-table-column
             prop="time"
-            label="会话处于当前状态的时间（单位S）"
+            label="持续时间(s)"
           />
           <el-table-column
             prop="host"
-            label="当前会话客户端的主机"
+            label="主机"
           />
           <el-table-column
             prop="command"
@@ -114,7 +129,7 @@
 <script>
 import Pagination from '@/components/Pagination'
 import {mysqlSessionList} from '@/api/management'
-import {mysqlSessionKill} from '@/api/mysql'
+import {mysqlSessionKill,mysqlSessionCount} from '@/api/mysql'
 export default {
   components: {
     Pagination
@@ -175,7 +190,7 @@ export default {
 
   created() {
     this.handleList()
-    // this.getInfo()
+    this.getInfo()
   },
   methods: {
     tableRowClassName({ row, rowIndex }) {
@@ -230,7 +245,7 @@ export default {
     immediateStop(type) {
       let sidList = []
       this.multipleSelection.forEach(item => {
-        sidList.push(item.sid)
+        sidList.push(item.id)
       })
       const hostip = this.$route.query.hostip
       const dsn = this.$route.query.dsn
@@ -262,7 +277,7 @@ export default {
     },
     getInfo() {
       const { hostip, dsn } = this.$route.query
-      fetchDbInfo({ hostip, dsn })
+      mysqlSessionCount({ hostip, dsn })
         .then(({ results: data }) => {
           this.dbInfo = data
         })

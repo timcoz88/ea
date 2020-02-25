@@ -16,9 +16,6 @@
             <el-button :disabled="!multipleSelection.length" type="primary" @click="immediateStop('immediate')">立即终止会话</el-button>
             <el-button :disabled="!multipleSelection.length" type="primary" @click="immediateStop">事务处理后终止</el-button>
           </el-button-group>
-          <div style="line-height: 30px;margin-right: 15px">
-            <el-checkbox v-model="filter.background">type</el-checkbox>
-          </div>
           <el-input
             v-model.trim="filter.searchVal"
             type="text"
@@ -41,8 +38,10 @@
               />
             </el-select>
           </el-input>
+          <div style="line-height: 30px;margin-left: 15px">
+            <el-checkbox v-model="filter.background">显示系统会话</el-checkbox>
+          </div>
         </el-col>
-
         <el-col :span="6" class="text-right">
 
           <el-button
@@ -75,6 +74,7 @@
           <el-table-column
             prop="sid"
             label="会话ID"
+            width="90"
           >
             <!-- <template slot-scope="scope">
               <el-button type="text" @click="getDbSessionDetail(scope.row)">{{ scope.row.sid }}</el-button>
@@ -83,14 +83,17 @@
           <el-table-column
             prop="serial_id"
             label="序列ID"
+            width="90"
           />
           <el-table-column
             prop="username"
             label="用户名"
+            width="140"
           />
           <el-table-column
             prop="status"
             label="状态"
+            width="100"
           />
           <el-table-column
             prop="event"
@@ -100,10 +103,12 @@
           <el-table-column
             prop="process"
             label="系统进程"
+            width="140"
           />
           <el-table-column
             prop="machine"
             label="主机"
+            width="200"
           />
           <el-table-column
             prop="terminal"
@@ -113,18 +118,7 @@
           <el-table-column
             prop="program"
             label="应用程序"
-            width="240"
           >
-            <template slot-scope="scope">
-              <el-popover
-                placement="top-start"
-                width="200"
-                trigger="hover"
-                :content="scope.row.sql_text"
-                >
-                <span>{{scope.row.sql_text}}</span>
-              </el-popover>
-            </template>
           </el-table-column>
           <!-- <el-table-column
             prop="type"
@@ -144,13 +138,28 @@
           <el-table-column
             prop="sql_exec_start"
             label="SQL执行时间"
-            width="140"
+            width="160"
           />
           <el-table-column
             prop="sql_text"
-            width="200"
+            width="250"
             label="SQL明细"
-          />
+          >
+            <template slot-scope="scope">
+              <el-popover
+                placement="top-start"
+                width="200"
+                trigger="hover"
+                >
+                <div >
+                  {{scope.row.sql_text}}
+                </div>
+                <span slot="reference" style="overflow: hidden;
+text-overflow:ellipsis;
+white-space: nowrap;">{{scope.row.sql_text}}</span>
+              </el-popover>
+            </template>
+          </el-table-column>
           <!-- <el-table-column
             prop="final_blocking_session_status"
             label="阻塞会话状态"

@@ -28,7 +28,7 @@
         <div v-for="(item,key) in databaseList" :key="key">
           <el-col :span="8" style="padding: 10px;">
             <el-card class="box-card" :class="{isErrorActive:!item.sql_status}">
-              <div @click="dataBase(item.hostip,item.dsn,item.sql_status,item.mysql_type,item.dbid)">
+              <div @click="dataBase(item.hostip,item.dsn,item.sql_status,item.mysql_type,item.dbid)" :class="{cp:item.sql_status}">
                 <div class="df">
                   <span class="vn">
                     <img v-if="item.mysql_type == 'ORACLE'" src="@/assets/oracle.png" style="width: 42px;height: 42px;" class="vn">
@@ -56,7 +56,7 @@
                 <div class="df2 icol">
                   <div class="one">
                     <img src="@/assets/TPS.png" class="notice-img vn">
-                    <span class="vn">TPS：</span>
+                    <span class="vn">{{item.mysql_type == 'ORACLE'?'TPS：':'QPS：'}}</span>
                     <span class="vn">{{ item.qps_num }}</span>
                   </div>
                   <div class="two">
@@ -140,7 +140,7 @@ export default {
     },
     selectID() {
       this.loading = true
-      this.order = ''
+      this.order = 'error'
       this.group = '全部'
       this.pageSize = 10
       this.page = 1
@@ -148,7 +148,7 @@ export default {
     },
     groupChange(val) {
       this.loading = true
-      this.order = ''
+      this.order = 'error'
       this.content = ''
       this.pageSize = 10
       this.page = 1
@@ -215,6 +215,9 @@ export default {
 .df{
     display: flex;
     justify-content: space-between;
+}
+.cp{
+  cursor: pointer;
 }
 
 .notice-img{

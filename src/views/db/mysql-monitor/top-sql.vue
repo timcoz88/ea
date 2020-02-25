@@ -37,12 +37,27 @@
         style="width: 100%"
       >
         <el-table-column prop="sql_id" label="SQL ID"/>
-        <el-table-column prop="query" label="SQL文本" />
+        <el-table-column prop="sql_text" label="SQL文本">
+          <template slot-scope="scope">
+              <el-popover
+                placement="top-start"
+                width="400"
+                trigger="hover"
+                >
+                <div >
+                  {{scope.row.sql_text}}
+                </div>
+                <span slot="reference" style="overflow: hidden;
+text-overflow:ellipsis;
+white-space: nowrap;">{{scope.row.sql_text}}</span>
+              </el-popover>
+            </template>
+        </el-table-column>
         <el-table-column prop="schema_name" label="数据库" />
-        <el-table-column prop="time_per" label="耗时比例" />
-        <el-table-column prop="avg_latency(ms)" label="平均耗时(ms)" />
-        <el-table-column prop="avg_row_sent" label="平均返回行数"/>
-        <el-table-column prop="count" label="执行次数"/>
+        <el-table-column prop="time_per" label="耗时比例" width="120"/>
+        <el-table-column prop="avg_latency" label="平均耗时(s)" width="120" />
+        <el-table-column prop="avg_row_sent" label="平均返回行数" width="120"/>
+        <el-table-column prop="count" label="执行次数" width="120"/>
       </el-table>
     </div>
     <div class="page-box">
@@ -69,28 +84,25 @@ export default {
       radio: "desc",
       sortOrder: [
         {
-          label: "按执行次数",
+          label: "耗时比例",
+          value: "time_per"
+        },
+        {
+          label: "平均耗时(s)",
+          value: "avg_latency"
+        },
+        {
+          label: "执行次数",
           value: "count"
         },
         {
-          label: "按平均响应时间",
-          value: "avg_latency(s)"
-        },
-        {
-          label: "按全表扫次数",
-          value: "cnt_no_index"
-        },
-        {
-          label: "按使用临时表次数",
-          value: "cnt_tmp_table"
+          label: "平均返回行数",
+          value: "avg_row_sent"
         }
       ],
       order:'count',
       options: [{
-        value: '',
-        label: '全部'
-      },{
-        value: 'SQL_TEXT',
+        value: 'sql_text',
         label: 'SQL文本'
       }],
       page:1,
@@ -105,9 +117,9 @@ export default {
     handlePage(value){
       this.page = value.page
       this.pageSize = value.limit
-      if(this.filter.searchType == 'SQL_TEXT'){
+      if(this.filter.searchType == 'sql_text'){
         this.getList({
-          "SQL_TEXT":this.filter.searchVal
+          "sql_text":this.filter.searchVal
         })
       }else{
          this.getList({})
@@ -139,27 +151,21 @@ export default {
       let param = {}
       this.page = 1
       this.pageSize = 10
-      if(this.filter.searchType == 'NAME'){
-        param = {
-          "NAME":this.filter.searchVal
-        }
-      }else if(this.filter.searchType == 'SQL_TEXT'){
-        param = {"SQL_TEXT":this.filter.searchVal}
+      if(this.filter.searchType == 'sql_text'){
+        param = {"sql_text":this.filter.searchVal}
       }
-
-        this.getList(Object.assign({},param,{
-          page:this.page,
-          pageSize:this.pageSize,
-          ORDER:this.radio,
-          ORDER_TYPE:this.order,
-
-        }))
+      this.getList(Object.assign({},param,{
+        page:this.page,
+        pageSize:this.pageSize,
+        ORDER:this.radio,
+        ORDER_TYPE:this.order,
+      }))
     },
     reset(){
       this.filter.searchVal = ''
       this.filter.searchType = ''
       this.radio = 'desc'
-      this.order = 'ELAPSED_TIME'
+      this.order = 'count'
       this.handleSearch()
     },
     getDetail(row, column, event){

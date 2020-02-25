@@ -56,8 +56,10 @@ export default {
         end_time:''
       })
         .then(({results:data}) => {
-            this.chart = echarts.init(document.getElementById('tps'));
-            this.chart.setOption(this.options(data.time,data.value))
+            if(document.getElementById('tps')){
+              this.chart = echarts.init(document.getElementById('tps'));
+              this.chart.setOption(this.options(data.time,data.value))
+            }
         })
         .catch(err => this.$message.error(err.message));
     },

@@ -133,20 +133,11 @@ export default {
       dbtype: '',
       getLocalData:{},
       apiResult: {
-        sqlid: 'c2ayd0t8raf3b',
+        sqlid: '',
         showelapsedtime: true, // 是否显示执行时长
         elapsedtime: 1, // 执行时长
         commentIndex: 0,
-        comments: [
-          {
-            reg: ['\\bfrom\\b[,\\s*[\\S*\\.]\\S*("|\\b)]*'],
-            comment: '多表关联操作时，表与表之间并没有使用连接条件进行表数据匹配，会使Oracle产生笛卡尔积连接操作，严重影响数据库性能'
-          },
-          {
-            reg: ['\\bselect\\b\\s*\\*\\s*\\bfrom\\b'],
-            comment: '查询时没有指明目标字段，容易因版本变更等原因导致返回数据异常'
-          }
-        ],
+        comments: [],
         sqltext: '', // topsql标红处理后的语句
         sqlTextOrigin: '', // topsql原始语句
         sqlexplain: [], // 执行计划表格数据
@@ -210,7 +201,15 @@ export default {
     },
     getDetail(){
       let {dbid,hostip,dsn} = this.$route.query
-      let { SQL_ID,SQL_TEXT} = JSON.parse(localStorage.getItem('selectTopSql'))
+      let id=''
+      let text = ''
+      if(this.dbtype == 'Oracle'){
+        id = JSON.parse(localStorage.getItem('selectTopSql')).SQL_ID
+        text = JSON.parse(localStorage.getItem('selectTopSql')).SQL_TEXT
+      }else{
+        id = JSON.parse(localStorage.getItem('selectTopSql')).sql_id
+        text = JSON.parse(localStorage.getItem('selectTopSql')).sql_text
+      }
       request({
           url: this.urlArr4,
           method: 'post',
@@ -218,22 +217,30 @@ export default {
             hostip,
             dsn,
             dbid,
-            sqlid:SQL_ID,
-            sqltext:SQL_TEXT
+            sqlid:id,
+            sqltext:text
           }
-        }).then(({data}) => {
-          this.apiResult.sqlTextOrigin = SQL_TEXT
-          this.apiResult =  {...data}
-          this.commentChange(0)
+        }).then((data) => {
+          if(data.status == 'error'){
+            this.$message(data.msg)
+            return
+          }
+          this.apiResult =  {...data.data}
+          this.apiResult.sqlTextOrigin = text
+          if(this.apiResult.comments!==null&&this.apiResult.comments.length>0){
+            this.commentChange(0)
+          }else{
+            this.apiResult.sqltext=this.apiResult.sqlTextOrigin
+          }
         })
         // .catch(err => this.$message.error(err.message))
     },
     callback(){
-      let {hostip,dsn} = this.$route.query
+      let {hostip,dsn,dbid} = this.$route.query
       if(this.dbtype == 'Oracle'){
-        this.$router.push({name:'databaseMonitor',query:{hostip,dsn,componentName:"topSql"}})
+        this.$router.push({name:'databaseMonitor',query:{hostip,dsn,dbid,componentName:"topSql"}})
       }else{
-        this.$router.push({name:'mysqlMonitor',query:{hostip,dsn,componentName:"topSql"}})
+        this.$router.push({name:'mysqlMonitor',query:{hostip,dsn,dbid,componentName:"topSql"}})
       }
     },
     // 切换说明时标红对应的违规处

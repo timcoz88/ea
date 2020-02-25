@@ -36,12 +36,27 @@
         @row-dblclick="getDetail"
         style="width: 100%"
       >
-        <el-table-column prop="INST_ID" label="实例ID" width="160" />
-        <el-table-column prop="SQL_TEXT" label="SQL文本" />
-        <el-table-column prop="PARRSING_SCHEMA_NAME" label="执行用户" width="160"/>
-        <el-table-column prop="ELAPSED_TIME" label="执行时间(s)"  width="120"/>
-        <el-table-column prop="BUFFER_GETS" label="逻辑读"  width="80"/>
-        <el-table-column prop="DISK_CALLS" label="磁盘读" width="80" />
+        <el-table-column prop="INST_ID" label="实例ID" width="100" />
+        <el-table-column prop="SQL_TEXT" label="SQL文本">
+          <template slot-scope="scope">
+              <el-popover
+                placement="top-start"
+                width="400"
+                trigger="hover"
+                >
+                <div >
+                  {{scope.row.SQL_TEXT}}
+                </div>
+                <span slot="reference" style="overflow: hidden;
+text-overflow:ellipsis;
+white-space: nowrap;">{{scope.row.SQL_TEXT}}</span>
+              </el-popover>
+            </template>
+        </el-table-column>
+        <el-table-column prop="PARRSING_SCHEMA_NAME" label="执行用户" width="200" />
+        <el-table-column prop="ELAPSED_TIME" label="执行时间(s)"  width="200" />
+        <el-table-column prop="BUFFER_GETS" label="逻辑读" width="120" />
+        <el-table-column prop="DISK_CALLS" label="磁盘读" width="120" />
       </el-table>
     </div>
     <div class="page-box">
