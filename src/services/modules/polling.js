@@ -56,7 +56,7 @@ class PollingService {
   }
 
   doHealth1(params = {}) {
-    return request.post('/push', params)
+    return request.post('/s/paramiko/push/rpt', params)
   }
 
   // 自动巡检-查看日志

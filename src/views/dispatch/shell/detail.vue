@@ -21,7 +21,11 @@
             <el-table-column
               prop="created"
               label="创建时间"
-            />
+            >
+              <template slot-scope="{row}">
+                <span>{{ row.created | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
+              </template>
+            </el-table-column>
             <el-table-column
               prop="jobnm"
               label="调用程序名称"
@@ -29,11 +33,19 @@
             <el-table-column
               prop="job_start"
               label="作业发起时间"
-            />
+            >
+              <template slot-scope="{row}">
+                <span>{{ row.job_start | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
+              </template>
+            </el-table-column>
             <el-table-column
               prop="job_end"
               label="作业结束时间"
-            />
+            >
+              <template slot-scope="{row}">
+                <span>{{ row.job_end | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
+              </template>
+            </el-table-column>
           </el-table>
         </div>
         <div class="detail-item">
@@ -50,11 +62,19 @@
             <el-table-column
               prop="job_start"
               label="任务发起时间"
-            />
+            >
+              <template slot-scope="{row}">
+                <span>{{ row.job_start | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
+              </template>
+            </el-table-column>
             <el-table-column
               prop="job_end"
               label="任务结束时间"
-            />
+            >
+              <template slot-scope="{row}">
+                <span>{{ row.job_end | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
+              </template>
+            </el-table-column>
             <el-table-column
               prop="jobsta"
               label="任务执行状态"

@@ -107,7 +107,7 @@ class ManagementService {
   }
   // 自动巡检日志
   getAdminEvent(taskid) {
-    return request.get(`/event/${taskid}`)
+    return request.get(`/dbs/execute/rpt/new/event/${taskid}`)
   }
   getDbManageList(params) {
     return request.get(`/dbinfo`, params)
@@ -153,7 +153,7 @@ class ManagementService {
   }
   // 表对象分析
   getSqlManageDetail(data) {
-    return request.post(`/sql/manage/detail`, data)
+    return request.post(`/dbs/sql/manage/detail`, data)
   }
   // 表分析统计信息
   getAnalyzeList(data) {

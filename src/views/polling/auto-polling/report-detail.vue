@@ -103,7 +103,8 @@ export default {
   },
   computed: {
     itemIssueList() {
-      return Array.from(this.reportDetail.issue) || []
+      console.log(this.reportDetail)
+      return this.reportDetail.issue ? (Array.from(this.reportDetail.issue) || []) : []
     }
   },
   methods: {

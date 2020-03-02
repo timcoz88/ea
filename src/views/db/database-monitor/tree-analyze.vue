@@ -6,7 +6,7 @@
         <el-col :span="12">
           <el-button-group>
             <el-button type="primary" :disabled="JSON.stringify(currentRow) == '{}'?true:false" @click="immediateStop('immediate')">立即终止会话</el-button>
-            <el-button type="primary" :disabled="JSON.stringify(currentRow) == '{}'?true:false" @click="immediateStop">事务处理后终止</el-button>
+            <el-button type="primary" :disabled="JSON.stringify(currentRow) == '{}'?true:false" @click="immediateStop()">事务处理后终止</el-button>
           </el-button-group>
         </el-col>
         <!-- <el-col :span="12" class="text-right">
@@ -189,7 +189,6 @@ export default {
     },
     immediateStop(type) {
       const { sid, serial_id, inst_id } = this.currentRow
-      const hostip = this.$route.query.hostip
 
       this.$confirm(`是否终止进程，该操作不可返回`, '提示', {
         confirmButtonText: '确定',
@@ -197,7 +196,7 @@ export default {
         type: 'warning'
       }).then(() => {
         const params = {
-          hostip,
+          ...this.$route.query,
           type: type || '',
           ids: [`${sid}`, `${serial_id}`, `@${inst_id}`]
         }
@@ -215,11 +214,10 @@ export default {
       })
     },
     getDbSessionDetail({ sid, serial_id, inst_id }) {
-      const { hostip } = this.$route.query
       this.$router.push({
         name: 'ManagementDbSessionDetail',
         query: {
-          hostip,
+          ...this.$route.query,
           sid,
           serial_id,
           inst_id
@@ -229,9 +227,8 @@ export default {
     // load data
     handleList() {
       this.loading = true
-      const { hostip, dsn } = this.$route.query
       const urlParams = qs.stringify(this.getFilter())
-      ManagementService.getTreeAnalyze({ hostip, dsn }, urlParams)
+      ManagementService.getTreeAnalyze(this.$route.query, urlParams)
         .then(({ results: data }) => {
           this.tableData = data.results
           this.total = data.totalCount

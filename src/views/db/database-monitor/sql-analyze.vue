@@ -58,14 +58,14 @@
             <el-button
               :disabled="radio === ''"
               type="primary"
-              @click="$router.push({name: 'sqlPlanDetail', query: { hostip : $route.query.hostip, sql_id: currentRow.SQL_ID }})"
+              @click="$router.push({name: 'sqlPlanDetail', query: { hostip : $route.query.hostip, dsn: $route.query.dsn, sql_id: currentRow.SQL_ID,  }})"
             >
               查询计划
             </el-button>
             <el-button
               :disabled="radio === ''"
               type="primary"
-              @click="$router.push({name: 'fixPlanDetail', query: { hostip : $route.query.hostip, sql_id: currentRow.SQL_ID }})"
+              @click="$router.push({name: 'fixPlanDetail', query: { hostip : $route.query.hostip, dsn: $route.query.dsn, sql_id: currentRow.SQL_ID }})"
             >
               固定执行计划
             </el-button>

@@ -32,7 +32,11 @@
           <el-tag :type="row.next_run_time ? 'success' : 'danger'">{{ row.next_run_time ? '在用' : '暂停' }}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="开始时间" prop="start_date" />
+      <el-table-column align="center" label="开始时间" prop="start_date">
+        <template slot-scope="{row}">
+          <span>{{ row.start_date | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
+        </template>
+      </el-table-column>
       <el-table-column align="center" label="运行间隔" prop="size">
         <template slot-scope="{ row }">
           <!-- 时间要前端算 -->

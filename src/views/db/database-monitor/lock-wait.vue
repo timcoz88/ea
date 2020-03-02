@@ -5,7 +5,7 @@
         <el-col :span="12">
           <el-button-group>
             <el-button :disabled="radio === ''" type="primary" @click="immediateStop('immediate')">立即终止会话</el-button>
-            <el-button :disabled="radio === ''" type="primary" @click="immediateStop">事务处理后终止</el-button>
+            <el-button :disabled="radio === ''" type="primary" @click="immediateStop()">事务处理后终止</el-button>
           </el-button-group>
         </el-col>
         <el-col :span="12" class="text-right">
@@ -157,11 +157,10 @@ export default {
       this.currentRow = row
     },
     getDbSessionDetail({ sid, serial_id, inst_id }) {
-      const { hostip } = this.$route.query
       this.$router.push({
         name: 'ManagementDbSessionDetail',
         query: {
-          hostip,
+          ...this.$route.query,
           sid,
           serial_id,
           inst_id
@@ -189,9 +188,8 @@ export default {
     },
     immediateStop(type) {
       const { sid, serial_id, inst_id } = this.currentRow
-      const hostip = this.$route.query.hostip
       const params = {
-        hostip,
+        ...this.$route.query,
         type: type || '',
         ids: [`${sid}`, `${serial_id}`, `@${inst_id}`]
       }
@@ -208,9 +206,8 @@ export default {
     // load data
     handleList() {
       this.loading = true
-      const { hostip } = this.$route.query
       const urlParams = qs.stringify(this.getFilter())
-      ManagementService.getLockWait({ hostip }, urlParams)
+      ManagementService.getLockWait(this.$route.query, urlParams)
         .then(({ results: data }) => {
           this.tableData = data.results
           this.total = data.totalCount

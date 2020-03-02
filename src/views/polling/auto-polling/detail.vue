@@ -20,7 +20,11 @@
             <el-table-column
               prop="created"
               label="创建时间"
-            />
+            >
+              <template slot-scope="{row}">
+                <span>{{ row.created | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
+              </template>
+            </el-table-column>
             <el-table-column
               prop="resnm"
               label="调用程序名称"
@@ -28,11 +32,19 @@
             <el-table-column
               prop="taskstm"
               label="作业发起时间"
-            />
+            >
+              <template slot-scope="{row}">
+                <span>{{ row.taskstm | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
+              </template>
+            </el-table-column>
             <el-table-column
               prop="tasketm"
               label="作业结束时间"
-            />
+            >
+              <template slot-scope="{row}">
+                <span>{{ row.tasketm | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
+              </template>
+            </el-table-column>
           </el-table>
         </div>
         <div class="detail-item">
@@ -49,11 +61,19 @@
             <el-table-column
               prop="taskstm"
               label="任务发起时间"
-            />
+            >
+              <template slot-scope="{row}">
+                <span>{{ row.taskstm | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
+              </template>
+            </el-table-column>
             <el-table-column
               prop="tasketm"
               label="任务结束时间"
-            />
+            >
+              <template slot-scope="{row}">
+                <span>{{ row.tasketm | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
+              </template>
+            </el-table-column>
             <el-table-column
               prop="statusText"
               label="任务执行状态"
@@ -158,7 +178,8 @@ export default {
 
   methods: {
     getAdminEvent() {
-      ManagementService.getAdminEvent({hostip: this.item.hostip})
+      console.log(this.item)
+      ManagementService.getAdminEvent(this.item.hostip)
         .then(({ results: data }) => {
           this.eventData = (data || [])
           this.$nextTick(() => {

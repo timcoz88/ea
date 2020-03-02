@@ -2,13 +2,13 @@
   <div class="navbar">
     <hamburger id="hamburger-container" :is-active="sidebar.opened" class="hamburger-container" @toggleClick="toggleSideBar" />
 
-    <!-- <breadcrumb id="breadcrumb-container" class="breadcrumb-container" /> -->
-    <el-select v-model="selectProject" style="margin-top: 6px;" @change="selectProjectChange">
-      <el-option v-for="item in projectList" 
+     <breadcrumb id="breadcrumb-container" class="breadcrumb-container" />
+    <!--<el-select v-model="selectProject" style="margin-top: 6px;" @change="selectProjectChange">
+      <el-option v-for="item in projectList"
         :key="item.value"
         :label="item.label"
         :value="item.value"></el-option>
-    </el-select>
+    </el-select>-->
     <div class="right-menu">
       <template v-if="device!=='mobile'">
         <!--<search id="header-search" class="right-menu-item" />-->
@@ -16,33 +16,33 @@
 <!--
         <error-log class="errLog-container right-menu-item hover-effect" />
 -->
-        <svg-icon class-name="data-source-icon" icon-class="data-source" style="width: 26px;height: 48px;cursor: pointer;" @click="linkTo('svg')"/>
-        <i class="el-icon-user-solid" style="width: 28px;font-size: 25px;height: 60px;vertical-align: middle;cursor: pointer;margin-left:10px;" @click="linkTo('i')"></i>
-        <!-- <screenfull id="screenfull" class="right-menu-item hover-effect" />
+        <!--<svg-icon class-name="data-source-icon" icon-class="data-source" style="width: 26px;height: 48px;cursor: pointer;" @click="linkTo('svg')"/>
+        <i class="el-icon-user-solid" style="width: 28px;font-size: 25px;height: 60px;vertical-align: middle;cursor: pointer;margin-left:10px;" @click="linkTo('i')"></i>-->
+         <screenfull id="screenfull" class="right-menu-item hover-effect" />
 
         <el-tooltip content="Global Size" effect="dark" placement="bottom">
           <size-select id="size-select" class="right-menu-item hover-effect" />
-        </el-tooltip> -->
+        </el-tooltip>
 
       </template>
 
-      <!-- <el-dropdown class="avatar-container right-menu-item hover-effect" trigger="click">
+       <el-dropdown class="avatar-container right-menu-item hover-effect" trigger="click">
         <div class="avatar-wrapper">
           <img :src="avatar+'?imageView2/1/w/80/h/80'" class="user-avatar">
           <i class="el-icon-caret-bottom" />
         </div>
-        <el-dropdown-menu slot="dropdown"> -->
-          <!--<router-link to="/profile/index">
+        <el-dropdown-menu slot="dropdown">
+          <router-link to="/profile/index">
             <el-dropdown-item>Profile</el-dropdown-item>
-          </router-link>-->
-          <!-- <router-link to="/">
+          </router-link>
+           <router-link to="/">
             <el-dropdown-item>工作台</el-dropdown-item>
-          </router-link> -->
-          <!-- <el-dropdown-item divided>
+          </router-link>
+           <el-dropdown-item divided>
             <span style="display:block;" @click="logout">注销</span>
           </el-dropdown-item>
         </el-dropdown-menu>
-      </el-dropdown> -->
+      </el-dropdown>
     </div>
   </div>
 </template>

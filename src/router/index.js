@@ -38,7 +38,7 @@ import mysqlRouter from './modules/mysql'
  * a base page that does not have permission requirements
  * all roles can be accessed
  */
-export const constantRoutes = [
+/* export const constantRoutes = [
   {
     path: '/',
     component: Layout,
@@ -95,38 +95,7 @@ export const constantRoutes = [
       }
     ]
   },
-  {
-    path: '/auto-task',
-    component: Layout,
-    redirect: '/auto-task/operation',
-    name: 'handler',
-    hidden:true,
-    meta: {
-      title: '自动化任务',
-      icon: 'skill'
-    },
-    children: [
-      {
-        path: 'operation',
-        component: () => import('@/views/auto/operation'),
-        name: 'autoOperation',
-        hidden:false,
-        meta: { title: '自动化运维', affix: false }
-      }, {
-        path: 'addOper',
-        component: () => import('@/views/auto/addOper'),
-        name: 'addOper',
-        hidden: true,
-        meta: { title: '新增部署任务', affix: false }
-      }, {
-        path: 'deploymentLog',
-        component: () => import('@/views/auto/deploymentLog'),
-        name: 'deploymentLog',
-        hidden: true,
-        meta: { title: '部署日志', affix: false }
-      }
-    ]
-  },
+
   {
     path: '/404',
     component: () => import('@/views/error-page/404'),
@@ -147,419 +116,697 @@ export const constantRoutes = [
     component: () => import('@/views/login/auth-redirect'),
     hidden: true
   }
+] */
+export const constantRoutes = [
+  {
+    path: '/redirect',
+    component: Layout,
+    hidden: true,
+    children: [
+      {
+        path: '/redirect/:path*',
+        component: () => import('@/views/redirect/index')
+      }
+    ]
+  },
+  {
+    path: '/login',
+    component: () => import('@/views/login/index'),
+    hidden: true
+  },
+  {
+    path: '/auth-redirect',
+    component: () => import('@/views/login/auth-redirect'),
+    hidden: true
+  },
+  {
+    path: '/404',
+    component: () => import('@/views/error-page/404'),
+    hidden: true
+  },
+  {
+    path: '/401',
+    component: () => import('@/views/error-page/401'),
+    hidden: true
+  },
+  {
+    path: '/',
+    component: Layout,
+    redirect: '/dashboard',
+    children: [
+      {
+        path: 'dashboard',
+        component: () => import('@/views/dashboard/index'),
+        name: 'Dashboard',
+        meta: { title: '工作台', icon: 'dashboard', affix: true }
+      }
+    ]
+  },
+  {
+    path: '/resource',
+    component: Layout,
+    redirect: '/resource/host',
+    name: 'resource',
+    meta: {
+      title: '资源管理',
+      icon: 'example'
+    },
+    children: [
+      {
+        path: 'host',
+        component: () => import('@/views/resource/host/index'),
+        name: 'host',
+        meta: { title: '服务器资源', affix: false }
+      },
+      {
+        path: 'db',
+        component: () => import('@/views/resource/db/index'),
+        name: 'db',
+        meta: { title: '数据库资源', affix: false }
+      },
+      {
+        path: 'shell',
+        component: () => import('@/views/resource/shell/index'),
+        name: 'shell',
+        meta: { title: '脚本资源', affix: false }
+      },
+      {
+        path: 'email',
+        component: () => import('@/views/resource/email/index'),
+        name: 'email',
+        meta: { title: '邮箱管理', affix: false }
+      },
+      {
+        path: 'task',
+        component: () => import('@/views/resource/task/index'),
+        name: 'task',
+        meta: { title: '定时任务', affix: false }
+      },
+      {
+        path: 'audit',
+        component: () => import('@/views/resource/audit/index'),
+        name: 'audit',
+        meta: { title: '审计' }
+      },
+      {
+        path: 'warning-sql',
+        component: () => import('@/views/resource/warning-sql/index'),
+        name: 'warningSql',
+        meta: { title: 'SQL预警管理' }
+      }
+    ]
+  },
+  /*{
+    path: '/dispatch',
+    component: Layout,
+    redirect: '/dispatch/shell',
+    name: 'dispatch',
+    meta: {
+      title: '调度管理',
+      icon: 'skill'
+    },
+    children: [
+      {
+        path: 'shell',
+        component: () => import('@/views/dispatch/shell/index'),
+        name: 'dispatchShell',
+        meta: { title: '脚本调度', affix: false }
+      },
+      {
+        path: 'history',
+        component: () => import('@/views/dispatch/shell/history'),
+        name: 'dispatchHistory',
+        hidden: true,
+        meta: { title: '调度历史', affix: false }
+      }
+    ]
+  },*/
+  {
+    path: '/db',
+    component: Layout,
+    redirect: '/db/overview',
+    name: 'dispatch',
+    meta: {
+      title: '数据库管理',
+      icon: 'skill'
+    },
+    /* children: [
+      {
+        path: 'aa',
+        component: () => import('@/views/db/aa/index'),
+        name: 'aa',
+        meta: { title: '11', affix: false }
+      },
+      {
+        path: 'overview',
+        component: () => import('@/views/db/overview/index'),
+        name: 'dbOverview',
+        meta: { title: '概览', affix: false }
+      },
+      {
+        path: 'database-monitor',
+        component: () => import('@/views/db/database-monitor/index'),
+        name: 'databaseMonitor',
+        hidden: true,
+        meta: { title: '数据库监控', affix: false }
+      },
+      {
+        path: 'top-sql',
+        component: () => import('@/views/db/top-sql/index'),
+        name: 'topSql',
+        hidden: true,
+        meta: { title: 'TOP SQL详情', affix: false }
+      },
+      {
+        path: 'session-detail',
+        component: () => import('@/views/db/session-detail/index'),
+        name: 'sessionDetail',
+        hidden: true,
+        meta: { title: '会话详情', affix: false }
+      },
+      {
+        path: 'oracle',
+        component: () => import('@/views/db/oracle/index'),
+        name: 'dbOracle',
+        meta: { title: 'ORACLE', affix: false }
+      },
+      {
+        path: 'oracle-detail',
+        component: () => import('@/views/db/db-manage-detail/index'),
+        name: 'dbOracleDetail',
+        hidden: true,
+        meta: { title: '数据库管理详情', affix: false }
+      },
+      {
+        path: 'auto',
+        component: () => import('@/views/polling/auto-polling/index'),
+        name: 'polling-auto',
+        meta: {
+          title: '自动化巡检',
+          key: 'polling-auto',
+          noCache: false
+        }
+      },
+      {
+        path: 'polling-report',
+        component: () => import('@/views/polling/polling-report/index'),
+        name: 'polling-report',
+        hidden: true,
+        meta: {
+          title: '巡检报告',
+          key: 'polling-report',
+          noCache: false
+        }
+      },
+      {
+        path: 'polling-report-detail',
+        component: () => import('@/views/polling/polling-report/report-detail'),
+        name: 'polling-report-detail',
+        hidden: true,
+        meta: {
+          title: '详细巡检报告',
+          key: 'polling-report',
+          noCache: false
+        }
+      },
+      {
+        path: 'sql-manage-detail',
+        component: () => import('@/views/db/sql-manage-detail/index'),
+        name: 'sqlManageDetail',
+        hidden: true,
+        meta: {
+          title: '表管理详情',
+          key: 'sql-manage-detail',
+          noCache: false
+        }
+      }, {
+        path: 'table-analyze-detail',
+        component: () => import('@/views/db/table-analyze/index'),
+        name: 'tableAnalyzeDetail',
+        hidden: true,
+        meta: {
+          title: '表分析详情',
+          key: 'table-analyze-detail',
+          noCache: false
+        }
+      }, {
+        path: 'user-admin-edit',
+        component: () => import('@/views/db/user-admin-edit'),
+        name: 'userAdminEdit',
+        hidden: true,
+        meta: {
+          title: '权限修改',
+          key: 'user-admin-edit',
+          noCache: false
+        }
+      }, {
+        path: 'sql-plan-detail',
+        component: () => import('@/views/db/sql-plan-detail'),
+        name: 'sqlPlanDetail',
+        hidden: true,
+        meta: {
+          title: 'sql计划',
+          key: 'user-admin-edit',
+          noCache: false
+        }
+      }, {
+        path: 'fix-plan-detail',
+        component: () => import('@/views/db/fix-plan-detail'),
+        name: 'fixPlanDetail',
+        hidden: true,
+        meta: {
+          title: '固定执行计划',
+          key: 'user-admin-edit',
+          noCache: false
+        }
+      },
+    ]*/
+    children: [
+      /*{
+        path: 'oracle',
+        component: () => import('@/views/db/oracle/index'),
+        hidden: true,
+        name: 'dbOracle',
+        meta: { title: 'ORACLE', affix: false }
+      },*/
+      {
+        path: 'oracle-detail',
+        component: () => import('@/views/db/db-manage-detail/index'),
+        name: 'dbOracleDetail',
+        hidden: true,
+        meta: { title: '数据库管理详情', affix: false }
+      },
+      {
+        path: 'sql-manage-detail',
+        component: () => import('@/views/db/sql-manage-detail/index'),
+        name: 'sqlManageDetail',
+        hidden: true,
+        meta: {
+          title: '表管理详情',
+          key: 'sql-manage-detail',
+          noCache: false
+        }
+      }, {
+        path: 'table-analyze-detail',
+        component: () => import('@/views/db/table-analyze/index'),
+        name: 'tableAnalyzeDetail',
+        hidden: true,
+        meta: {
+          title: '表分析详情',
+          key: 'table-analyze-detail',
+          noCache: false
+        }
+      },{
+        path: 'table-analyze-detail',
+        component: () => import('@/views/db/db-session-detail/index'),
+        name: 'ManagementDbSessionDetail',
+        hidden: true,
+        meta: {
+          title: '锁等待详情',
+          key: 'sessionDetail-detail',
+          noCache: false
+        }
+      }, {
+        path: 'user-admin-edit',
+        component: () => import('@/views/db/user-admin-edit'),
+        name: 'userAdminEdit',
+        hidden: true,
+        meta: {
+          title: '权限修改',
+          key: 'user-admin-edit',
+          noCache: false
+        }
+      }, {
+        path: 'sql-plan-detail',
+        component: () => import('@/views/db/sql-plan-detail'),
+        name: 'sqlPlanDetail',
+        hidden: true,
+        meta: {
+          title: 'sql计划',
+          key: 'user-admin-edit',
+          noCache: false
+        }
+      }, {
+        path: 'fix-plan-detail',
+        component: () => import('@/views/db/fix-plan-detail'),
+        name: 'fixPlanDetail',
+        hidden: true,
+        meta: {
+          title: '固定执行计划',
+          key: 'user-admin-edit',
+          noCache: false
+        }
+      },
+      {
+        path: 'overview',
+        component: () => import('@/views/db/overview/index'),
+        name: 'dbOverview',
+        meta: { title: '数据库管理', icon: 'dashboard', affix: true }
+      },
+      {
+        path: 'mysql-monitor',
+        component: () => import('@/views/db/mysql-monitor/index'),
+        name: 'mysqlMonitor',
+        hidden: true,
+        meta: { title: '数据库监控', affix: false }
+      },
+      {
+        path: 'database-monitor',
+        component: () => import('@/views/db/database-monitor/index'),
+        name: 'databaseMonitor',
+        hidden: true,
+        meta: { title: '数据库监控', affix: false }
+      },
+      {
+        path: 'top-sql',
+        component: () => import('@/views/db/top-sql/index'),
+        name: 'topSql',
+        hidden: true,
+        meta: { title: 'TOP SQL详情', affix: false }
+      },
+      // {
+      //   path: 'mysql-top-sql',
+      //   component: () => import('@/views/db/mysql-top-sql/index'),
+      //   name: 'mysqlTopSql',
+      //   hidden: true,
+      //   meta: { title: 'TOP SQL详情', affix: false }
+      // },
+      {
+        path: 'session-detail',
+        component: () => import('@/views/db/session-detail/index'),
+        name: 'sessionDetail',
+        hidden: true,
+        meta: { title: '会话详情', affix: false }
+      },
+      {
+        path: 'mysql-session-detail',
+        component: () => import('@/views/db/mysql-session-detail/index'),
+        name: 'mysqlSessionDetail',
+        hidden: true,
+        meta: { title: '会话详情', affix: false }
+      }
+    ]
+  },
+  {
+    path: '/fault',
+    component: Layout,
+    meta: {
+      title: '故障预警',
+      icon: 'bug'
+    },
+    redirect: '/fault/warning',
+    children: [
+      {
+        path: 'warning',
+        component: () => import('@/views/fault/warning'),
+        name: 'FaultWarning',
+        meta: {
+          title: '故障预警',
+          noCache: false
+        }
+      },
+      {
+        path: 'history',
+        component: () => import('@/views/fault/history'),
+        name: 'FaultHistory',
+        meta: {
+          title: '历史操作',
+          key: 'fault-history',
+          noCache: false
+        }
+      },
+      {
+        path: 'query-detail',
+        component: () => import('@/views/fault/warning/query-detail.vue'),
+        name: 'queryDetail',
+        hidden: true,
+        meta: {
+          title: '问题详情',
+          key: 'query-history',
+          noCache: false
+        }
+      }
+      // {
+      //   path: 'history',
+      //   component: Container,
+      //   meta: {
+      //     title: '历史查询',
+      //     show: true
+      //   },
+      //   children: [
+      //     {
+      //       path: '',
+      //       component: () => import('@/views/fault/history/index'),
+      //       meta: {
+      //         key: 'fault-history'
+      //       }
+      //     },
+      //     {
+      //       path: 'detail',
+      //       component: () => import('@/views/fault/history/history-detail'),
+      //       meta: {
+      //         title: '历史查询详情',
+      //         key: 'fault-history'
+      //       },
+      //       alwaysShow: true
+      //     }
+      //   ]
+      // }
+      // {
+      //   path: 'health',
+      //   component: () => import('@/views/fault/health/index'),
+      //   meta: {
+      //     title: '健康查询',
+      //     key: 'fault-health',
+      //     noCache: false
+      //   }
+      // }
+    ]
+  },
+  {
+    path: '/handler',
+    component: Layout,
+    redirect: '/handler/record',
+    name: 'handler',
+    alwaysShow: true,
+    meta: {
+      title: '资源调度',
+      icon: 'skill'
+    },
+    children: [
+      {
+        path: 'record',
+        component: () => import('@/views/handler/record/collection'),
+        name: 'handlerRecord',
+        hidden: true,
+        meta: { title: '交付历史', affix: false }
+      }, {
+        path: 'recordResult',
+        component: () => import('@/views/handler/record/result'),
+        name: 'recordResult',
+        meta: { 'title': '表格结果', affix: false },
+        hidden: true
+      },
+      {
+        path: 'updateHost',
+        component: () => import('@/views/resource/updateHost'),
+        name: 'updateHost',
+        meta: { title: '批量修改', affix: false }
+      },
+      {
+        path: 'taskManager',
+        component: () => import('@/views/resource/task/taskManager'),
+        name: 'taskManager',
+        meta: { title: '交付检查', affix: false }
+      },
+      {
+        path: 'jx-collect',
+        component: () => import('@/views/handler/jx-collect/taskManager'),
+        name: 'jxCollect',
+        meta: { title: '基线收集', affix: false }
+      },
+      {
+        path: 'jx-record',
+        component: () => import('@/views/handler/jx-record/collection'),
+        name: 'handlerJxRecord',
+        hidden: true,
+        meta: { title: '基线历史', affix: false }
+      },
+      {
+        path: 'warning-collect',
+        component: () => import('@/views/handler/warning-collect/taskManager'),
+        name: 'warningCollect',
+        meta: { title: '故障收集', affix: false }
+      },
+      {
+        path: 'warning-record',
+        component: () => import('@/views/handler/warning-record/collection'),
+        name: 'handlerWarningRecord',
+        hidden: true,
+        meta: { title: '故障历史', affix: false }
+      },
+      {
+        path: 'shell',
+        component: () => import('@/views/dispatch/shell/index'),
+        name: 'dispatchShell',
+        meta: { title: '脚本调度', affix: false }
+      },
+      {
+        path: 'history',
+        component: () => import('@/views/dispatch/shell/history'),
+        name: 'dispatchHistory',
+        hidden: true,
+        meta: { title: '调度历史', affix: false }
+      }
+      ]
+  },
+  /*{
+    path:'/auto-task',
+    component:Layout,
+    redirect: '/auto-task/operation',
+    name: 'handler',
+    alwaysShow: true,
+    meta: {
+      title: '自动化任务',
+      icon: 'skill'
+    },
+    children: [
+      {
+        path:'operation',
+        component:() => import('@/views/auto/operation'),
+        name:'autoOperation',
+        meta:{title:'自动化运维',affix:false}
+      },{
+        path:'addOper',
+        component:() => import('@/views/auto/addOper'),
+        name:'addOper',
+        hidden: true,
+        meta:{title:'新增部署任务',affix:false}
+      },{
+        path:'deploymentLog',
+        component:() => import('@/views/auto/deploymentLog'),
+        name:'deploymentLog',
+        hidden: true,
+        meta:{title:'部署日志',affix:false}
+      }
+    ]*/
+  {
+    path: '/auto-task',
+    component: Layout,
+    redirect: '/auto-task/operation',
+    name: 'handler',
+    meta: {
+      title: '自动化管理',
+      icon: 'skill'
+    },
+    children: [
+      {
+        path: 'operation',
+        component: () => import('@/views/auto/operation'),
+        name: 'autoOperation',
+        hidden:false,
+        meta: { title: 'MYSQL部署', affix: false }
+      },
+      {
+        path: 'auto',
+        component: () => import('@/views/polling/auto-polling/index'),
+        name: 'polling-auto',
+        meta: {
+          title: '自动化巡检',
+          key: 'polling-auto',
+          noCache: false
+        }
+      },
+      {
+        path: 'polling-report',
+        component: () => import('@/views/polling/polling-report/index'),
+        name: 'polling-report',
+        hidden: true,
+        meta: {
+          title: '巡检报告',
+          key: 'polling-report',
+          noCache: false
+        }
+      },
+      {
+        path: 'polling-report-detail',
+        component: () => import('@/views/polling/polling-report/report-detail'),
+        name: 'polling-report-detail',
+        hidden: true,
+        meta: {
+          title: '详细巡检报告',
+          key: 'polling-report',
+          noCache: false
+        }
+      },
+      {
+        path: 'addOper',
+        component: () => import('@/views/auto/addOper'),
+        name: 'addOper',
+        hidden: true,
+        meta: { title: '新增部署任务', affix: false }
+      }, {
+        path: 'deploymentLog',
+        component: () => import('@/views/auto/deploymentLog'),
+        name: 'deploymentLog',
+        hidden: true,
+        meta: { title: '部署日志', affix: false }
+      }
+    ]
+  },
+  {
+    path: '/system',
+    component: Layout,
+    redirect: '/system/user',
+    name: 'system',
+    meta: {
+      title: '系统管理',
+      icon: 'component'
+    },
+    children: [
+      {
+        path: 'user',
+        component: () => import('@/views/system/user/index'),
+        name: 'user',
+        meta: { title: '用户管理', affix: false }
+      },
+      {
+        path: 'plugin',
+        component: () => import('@/views/system/plugin/index'),
+        name: 'plugin',
+        meta: { title: '插件管理', affix: false }
+      }
+    ]
+  },
+  // mysqlRouter
+/*  {
+    path: '/guide',
+    component: Layout,
+    redirect: '/guide/index',
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/guide/index'),
+        name: 'Guide',
+        meta: { title: 'Guide', icon: 'guide', noCache: true }
+      }
+    ]
+  },
+  {
+    path: '/profile',
+    component: Layout,
+    redirect: '/profile/index',
+    hidden: true,
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/profile/index'),
+        name: 'Profile',
+        meta: { title: 'Profile', icon: 'user', noCache: true }
+      }
+    ]
+  }*/
 ]
-// export const constantRoutes = [
-//   {
-//     path: '/redirect',
-//     component: Layout,
-//     hidden: true,
-//     children: [
-//       {
-//         path: '/redirect/:path*',
-//         component: () => import('@/views/redirect/index')
-//       }
-//     ]
-//   },
-//   {
-//     path: '/login',
-//     component: () => import('@/views/login/index'),
-//     hidden: true
-//   },
-//   {
-//     path: '/auth-redirect',
-//     component: () => import('@/views/login/auth-redirect'),
-//     hidden: true
-//   },
-//   {
-//     path: '/404',
-//     component: () => import('@/views/error-page/404'),
-//     hidden: true
-//   },
-//   {
-//     path: '/401',
-//     component: () => import('@/views/error-page/401'),
-//     hidden: true
-//   },
-//   {
-//     path: '/',
-//     component: Layout,
-//     redirect: '/dashboard',
-//     children: [
-//       {
-//         path: 'dashboard',
-//         component: () => import('@/views/dashboard/index'),
-//         name: 'Dashboard',
-//         meta: { title: '工作台', icon: 'dashboard', affix: true }
-//       }
-//     ]
-//   },
-//   {
-//     path: '/system',
-//     component: Layout,
-//     redirect: '/system/user',
-//     name: 'system',
-//     meta: {
-//       title: '系统管理',
-//       icon: 'component'
-//     },
-//     children: [
-//       {
-//         path: 'user',
-//         component: () => import('@/views/system/user/index'),
-//         name: 'user',
-//         meta: { title: '用户管理', affix: false }
-//       },
-//       {
-//         path: 'plugin',
-//         component: () => import('@/views/system/plugin/index'),
-//         name: 'plugin',
-//         meta: { title: '插件管理', affix: false }
-//       }
-//     ]
-//   },
-//   {
-//     path: '/resource',
-//     component: Layout,
-//     redirect: '/resource/host',
-//     name: 'resource',
-//     meta: {
-//       title: '资源管理',
-//       icon: 'example'
-//     },
-//     children: [
-//       {
-//         path: 'host',
-//         component: () => import('@/views/resource/host/index'),
-//         name: 'host',
-//         meta: { title: '服务器资源', affix: false }
-//       },
-//       {
-//         path: 'db',
-//         component: () => import('@/views/resource/db/index'),
-//         name: 'db',
-//         meta: { title: '数据库资源', affix: false }
-//       },
-//       {
-//         path: 'shell',
-//         component: () => import('@/views/resource/shell/index'),
-//         name: 'shell',
-//         meta: { title: '脚本资源', affix: false }
-//       },
-//       {
-//         path: 'email',
-//         component: () => import('@/views/resource/email/index'),
-//         name: 'email',
-//         meta: { title: '邮箱管理', affix: false }
-//       },
-//       {
-//         path: 'task',
-//         component: () => import('@/views/resource/task/index'),
-//         name: 'task',
-//         meta: { title: '定时任务', affix: false }
-//       },
-//       {
-//         path: 'audit',
-//         component: () => import('@/views/resource/audit/index'),
-//         name: 'audit',
-//         meta: { title: '审计' }
-//       },
-//       {
-//         path: 'warning-sql',
-//         component: () => import('@/views/resource/warning-sql/index'),
-//         name: 'warningSql',
-//         meta: { title: 'SQL预警管理' }
-//       }
-//     ]
-//   },
-//   {
-//     path: '/dispatch',
-//     component: Layout,
-//     redirect: '/dispatch/shell',
-//     name: 'dispatch',
-//     meta: {
-//       title: '调度管理',
-//       icon: 'skill'
-//     },
-//     children: [
-//       {
-//         path: 'shell',
-//         component: () => import('@/views/dispatch/shell/index'),
-//         name: 'dispatchShell',
-//         meta: { title: '脚本调度', affix: false }
-//       },
-//       {
-//         path: 'history',
-//         component: () => import('@/views/dispatch/shell/history'),
-//         name: 'dispatchHistory',
-//         hidden: true,
-//         meta: { title: '调度历史', affix: false }
-//       }
-//     ]
-//   },
-//   {
-//     path: '/db',
-//     component: Layout,
-//     redirect: '/db/overview',
-//     name: 'dispatch',
-//     meta: {
-//       title: '数据库管理',
-//       icon: 'skill'
-//     },
-//     children: [
-//       {
-//         path: 'aa',
-//         component: () => import('@/views/db/aa/index'),
-//         name: 'aa',
-//         meta: { title: '11', affix: false }
-//       },
-//       {
-//         path: 'overview',
-//         component: () => import('@/views/db/overview/index'),
-//         name: 'dbOverview',
-//         meta: { title: '概览', affix: false }
-//       },
-//       {
-//         path: 'database-monitor',
-//         component: () => import('@/views/db/database-monitor/index'),
-//         name: 'databaseMonitor',
-//         hidden: true,
-//         meta: { title: '数据库监控', affix: false }
-//       },
-//       {
-//         path: 'top-sql',
-//         component: () => import('@/views/db/top-sql/index'),
-//         name: 'topSql',
-//         hidden: true,
-//         meta: { title: 'TOP SQL详情', affix: false }
-//       },
-//       {
-//         path: 'session-detail',
-//         component: () => import('@/views/db/session-detail/index'),
-//         name: 'sessionDetail',
-//         hidden: true,
-//         meta: { title: '会话详情', affix: false }
-//       },
-//       {
-//         path: 'oracle',
-//         component: () => import('@/views/db/oracle/index'),
-//         name: 'dbOracle',
-//         meta: { title: 'ORACLE', affix: false }
-//       },
-//       {
-//         path: 'oracle-detail',
-//         component: () => import('@/views/db/db-manage-detail/index'),
-//         name: 'dbOracleDetail',
-//         hidden: true,
-//         meta: { title: '数据库管理详情', affix: false }
-//       },
-//       {
-//         path: 'auto',
-//         component: () => import('@/views/polling/auto-polling/index'),
-//         name: 'polling-auto',
-//         meta: {
-//           title: '自动化巡检',
-//           key: 'polling-auto',
-//           noCache: false
-//         }
-//       },
-//       {
-//         path: 'polling-report',
-//         component: () => import('@/views/polling/polling-report/index'),
-//         name: 'polling-report',
-//         hidden: true,
-//         meta: {
-//           title: '巡检报告',
-//           key: 'polling-report',
-//           noCache: false
-//         }
-//       },
-//       {
-//         path: 'polling-report-detail',
-//         component: () => import('@/views/polling/polling-report/report-detail'),
-//         name: 'polling-report-detail',
-//         hidden: true,
-//         meta: {
-//           title: '详细巡检报告',
-//           key: 'polling-report',
-//           noCache: false
-//         }
-//       },
-//       {
-//         path: 'sql-manage-detail',
-//         component: () => import('@/views/db/sql-manage-detail/index'),
-//         name: 'sqlManageDetail',
-//         hidden: true,
-//         meta: {
-//           title: '表管理详情',
-//           key: 'sql-manage-detail',
-//           noCache: false
-//         }
-//       }, {
-//         path: 'table-analyze-detail',
-//         component: () => import('@/views/db/table-analyze/index'),
-//         name: 'tableAnalyzeDetail',
-//         hidden: true,
-//         meta: {
-//           title: '表分析详情',
-//           key: 'table-analyze-detail',
-//           noCache: false
-//         }
-//       }, {
-//         path: 'user-admin-edit',
-//         component: () => import('@/views/db/user-admin-edit'),
-//         name: 'userAdminEdit',
-//         hidden: true,
-//         meta: {
-//           title: '权限修改',
-//           key: 'user-admin-edit',
-//           noCache: false
-//         }
-//       }, {
-//         path: 'sql-plan-detail',
-//         component: () => import('@/views/db/sql-plan-detail'),
-//         name: 'sqlPlanDetail',
-//         hidden: true,
-//         meta: {
-//           title: 'sql计划',
-//           key: 'user-admin-edit',
-//           noCache: false
-//         }
-//       }, {
-//         path: 'fix-plan-detail',
-//         component: () => import('@/views/db/fix-plan-detail'),
-//         name: 'fixPlanDetail',
-//         hidden: true,
-//         meta: {
-//           title: '固定执行计划',
-//           key: 'user-admin-edit',
-//           noCache: false
-//         }
-//       },
-//     ]
-//   },
-//   {
-//     path: '/handler',
-//     component: Layout,
-//     redirect: '/handler/record',
-//     name: 'handler',
-//     alwaysShow: true,
-//     meta: {
-//       title: '资源调度',
-//       icon: 'skill'
-//     },
-//     children: [
-//       {
-//         path: 'record',
-//         component: () => import('@/views/handler/record/collection'),
-//         name: 'handlerRecord',
-//         hidden: true,
-//         meta: { title: '交付历史', affix: false }
-//       }, {
-//         path: 'recordResult',
-//         component: () => import('@/views/handler/record/result'),
-//         name: 'recordResult',
-//         meta: { 'title': '表格结果', affix: false },
-//         hidden: true
-//       },
-//       {
-//         path: 'updateHost',
-//         component: () => import('@/views/resource/updateHost'),
-//         name: 'updateHost',
-//         meta: { title: '批量修改', affix: false }
-//       },
-//       {
-//         path: 'taskManager',
-//         component: () => import('@/views/resource/task/taskManager'),
-//         name: 'taskManager',
-//         meta: { title: '交付检查', affix: false }
-//       },
-//       {
-//         path: 'jx-collect',
-//         component: () => import('@/views/handler/jx-collect/taskManager'),
-//         name: 'jxCollect',
-//         meta: { title: '基线收集', affix: false }
-//       },
-//       {
-//         path: 'jx-record',
-//         component: () => import('@/views/handler/jx-record/collection'),
-//         name: 'handlerJxRecord',
-//         hidden: true,
-//         meta: { title: '基线历史', affix: false }
-//       },
-//       {
-//         path: 'warning-collect',
-//         component: () => import('@/views/handler/warning-collect/taskManager'),
-//         name: 'warningCollect',
-//         meta: { title: '故障收集', affix: false }
-//       },
-//       {
-//         path: 'warning-record',
-//         component: () => import('@/views/handler/warning-record/collection'),
-//         name: 'handlerWarningRecord',
-//         hidden: true,
-//         meta: { title: '故障历史', affix: false }
-//       },
-//     ]
-//   },{
-//     path:'/auto-task',
-//     component:Layout,
-//     redirect: '/auto-task/operation',
-//     name: 'handler',
-//     alwaysShow: true,
-//     meta: {
-//       title: '自动化任务',
-//       icon: 'skill'
-//     },
-//     children: [
-//       {
-//         path:'operation',
-//         component:() => import('@/views/auto/operation'),
-//         name:'autoOperation',
-//         meta:{title:'自动化运维',affix:false}
-//       },{
-//         path:'addOper',
-//         component:() => import('@/views/auto/addOper'),
-//         name:'addOper',
-//         hidden: true,
-//         meta:{title:'新增部署任务',affix:false}
-//       },{
-//         path:'deploymentLog',
-//         component:() => import('@/views/auto/deploymentLog'),
-//         name:'deploymentLog',
-//         hidden: true,
-//         meta:{title:'部署日志',affix:false}
-//       }
-//     ]
-//   },
-//   mysqlRouter
-// /*  {
-//     path: '/guide',
-//     component: Layout,
-//     redirect: '/guide/index',
-//     children: [
-//       {
-//         path: 'index',
-//         component: () => import('@/views/guide/index'),
-//         name: 'Guide',
-//         meta: { title: 'Guide', icon: 'guide', noCache: true }
-//       }
-//     ]
-//   },
-//   {
-//     path: '/profile',
-//     component: Layout,
-//     redirect: '/profile/index',
-//     hidden: true,
-//     children: [
-//       {
-//         path: 'index',
-//         component: () => import('@/views/profile/index'),
-//         name: 'Profile',
-//         meta: { title: 'Profile', icon: 'user', noCache: true }
-//       }
-//     ]
-//   }*/
-// ]
 
 /**
  * asyncRoutes

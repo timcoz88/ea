@@ -14,7 +14,7 @@
         <el-col :span="18" style="display: flex">
           <el-button-group style="flex: 0 0 280px">
             <el-button :disabled="!multipleSelection.length" type="primary" @click="immediateStop('immediate')">立即终止会话</el-button>
-            <el-button :disabled="!multipleSelection.length" type="primary" @click="immediateStop">事务处理后终止</el-button>
+            <el-button :disabled="!multipleSelection.length" type="primary" @click="immediateStop()">事务处理后终止</el-button>
           </el-button-group>
           <el-input
             v-model.trim="filter.searchVal"

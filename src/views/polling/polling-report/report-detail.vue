@@ -75,7 +75,11 @@
             prop="rpt_tm"
             label="巡检时间"
             header-align="center"
-          />
+          >
+            <template slot-scope="{row}">
+              <span>{{ row.rpt_tm | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
+            </template>
+          </el-table-column>
           <el-table-column
             label="巡检报告"
             header-align="center"

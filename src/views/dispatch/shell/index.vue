@@ -124,11 +124,19 @@
           <el-table-column
             prop="start_time"
             label="发起时间"
-          />
+          >
+            <template slot-scope="{row}">
+              <span>{{ row.start_time | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
+            </template>
+          </el-table-column>
           <el-table-column
             prop="end_time"
             label="结束时间"
-          />
+          >
+            <template slot-scope="{row}">
+              <span>{{ row.end_time | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
+            </template>
+          </el-table-column>
           <el-table-column
             fixed="right"
             label="状态"

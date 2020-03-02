@@ -200,7 +200,7 @@ export default {
       this.$router.push({
         name: 'sqlManageDetail',
         query: {
-          hostip: this.$route.query.hostip,
+          ...this.$route.query,
           name: OWNER,
           table: TABLE_NAME
         }

@@ -127,11 +127,11 @@ export default {
         ostype: [{ required: true, message: '请选择服务器类型', trigger: 'change' }]
       },
       options: [{
-        value: 'MYSQL',
-        label: 'MYSQL'
+        value: 'LINUX',
+        label: 'LINUX'
       }, {
-        value: 'ORACLE',
-        label: 'ORACLE'
+        value: 'AIX',
+        label: 'AIX'
       }],
       shellOptions: [],
       index: 0,

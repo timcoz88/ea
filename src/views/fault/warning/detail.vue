@@ -22,43 +22,33 @@
             <el-card :body-style="{padding:'10px'}">
               <div class="card-content">
                 <div class="card-content-item">预警级别：{{ data.msglvl }}</div>
-                <div class="card-content-item">预警时间：{{ data.msgtm | parseTime('{y}-{m}-{d} {h}:{i}') }}</div>
+                <div class="card-content-item">预警时间：{{ data.msgtm | parseTime('{y}-{m}-{d} {h}:{i}')  }}</div>
                 <div class="card-content-item">预警事件：{{ data.monnm }}</div>
                 <div class="card-content-item">事件状态：{{ statusMap[data.msgstat] }}</div>
               </div>
             </el-card>
           </el-col>
         </el-row>
-        <div class="detail-title" style="padding-top: 30px">问题列表</div>
+        <div class="detail-title" style="padding-top: 15px">问题列表
+          <el-button
+            type="text"
+            style="margin-left: 20px"
+            @click="linkClick(data.chkid, data.db.hostip, data.db.dsn)">问题详情
+          </el-button>
+        </div>
         <el-table
-          :data="data.msgdata"
+          :data="tableData"
           border
           style="width: 100%"
         >
           <el-table-column
-            label="用户名"
+            v-for="(item, index) in tableHeaderData"
+            :label="tableHeaderData[index]"
+            :key="index"
+            :prop="index+ ''"
           >
-            <template slot-scope="scope">
-              {{ scope.row[0] }}
-            </template>
-          </el-table-column>
-          <el-table-column
-            label="对象名"
-          >
-            <template slot-scope="scope">
-              {{ scope.row[1] }}
-            </template>
-          </el-table-column>
-          <el-table-column
-            label="检查结果"
-          >
-            <template slot-scope="scope">
-
-              <div v-for="(item, index) in scope.row" :key="index">
-                <template v-if="index > 1">
-                  {{ item }}
-                </template>
-              </div>
+            <template slot-scope="{row}">
+              {{ row[index] }}
             </template>
           </el-table-column>
         </el-table>
@@ -68,7 +58,6 @@
             v-model="data.recommand "
             autosize
             disabled
-            readonly
             type="textarea"
             placeholder="分析建议"
           />
@@ -159,8 +148,40 @@ export default {
       statusMap
     }
   },
+  computed: {
+    tableHeaderData() {
+      if (this.data.msgdata) {
+        return this.data.msgdata[0] || []
+      }
+      return []
+    },
+    tableData() {
+      if (this.data.msgdata) {
+        const len = this.data.msgdata.length
+        console.log(len)
+        const detail = [...this.data.msgdata]
+        if (len) {
+          return detail.splice(1, len)
+        }
 
+        return []
+      }
+
+      return []
+    }
+  },
   methods: {
+    linkClick(id, hostip, dsn) {
+      const targetRouter = this.$router.resolve({
+        path: '/fault/query-detail',
+        query: {
+          id: id,
+          hostip,
+          dsn
+        }
+      })
+      window.open(targetRouter.href, '_blank')
+    },
     show() {
       this.dialogVisible = true
     },

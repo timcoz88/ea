@@ -83,35 +83,39 @@
               label="系统类型"
             />
             <el-table-column
+              prop="dbtype"
+              label="数据库类型"
+            />
+            <el-table-column
               prop="dbnm"
               label="数据库名"
             />
             <el-table-column
-              prop="last_task_tm"
+              prop="last_time"
               label="上次巡检时间"
             >
               <template slot-scope="{row}">
-                <span>{{ row.last_task_tm | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
+                <span>{{ row.last_time | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
               </template>
             </el-table-column>
             <el-table-column
-              prop="start_task_tm"
+              prop="start_time"
               label="任务开始时间"
             >
               <template slot-scope="{row}">
-                <span>{{ row.start_task_tm | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
+                <span>{{ row.start_time | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
               </template>
             </el-table-column>
             <el-table-column
-              prop="end_task_tm"
+              prop="end_time"
               label="任务结束时间"
             >
               <template slot-scope="{row}">
-                <span>{{ row.end_task_tm | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
+                <span>{{ row.end_time | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
               </template>
             </el-table-column>
             <el-table-column
-              prop="status"
+              prop="job_status"
               label="执行状态"
             />
             <el-table-column
@@ -296,7 +300,7 @@ export default {
     },
     openReport({ hostip }) {
       managementRepo.viewReportDetail({ hostip }).then(({ results: data }) => {
-        this.chooseItemReport = data
+        this.chooseItemReport = data || {}
         this.$refs.reportDetail.show()
       }, Function.prototype).then(() => {
       })
@@ -312,11 +316,23 @@ export default {
       return this.multipleSelection.map((item) => {
         return {
           id: item.id,
+          resid: '17',
           type: 'health',
           module: 'health',
           extra: { iplist: item.hostip }
         }
       })
+      /*
+      * [
+ {
+ "id": 121,
+ "type": "health",
+ "module": "health",
+ "resid":17,
+ "extra": {"iplist": "1.1.1.100"}
+ }
+]
+      * */
       // return this.multipleSelection.map(v => v.hostip)
     },
     autoWork() {

@@ -7,7 +7,7 @@
     </div>
     <el-button-group>
       <el-button type="primary" @click="immediateStop('immediate')">立即终止会话</el-button>
-      <el-button type="primary" @click="immediateStop">事务处理后终止</el-button>
+      <el-button type="primary" @click="immediateStop()">事务处理后终止</el-button>
     </el-button-group>
     <div class="page-session-detail">
       <el-row :gutter="20">
@@ -88,7 +88,7 @@
   </div>
 </template>
 <script>
-import ManagementService from 'service/management'
+import ManagementService from  '@/services/modules/management'
 
 export default {
   components: {},
@@ -107,9 +107,9 @@ export default {
   },
   methods: {
     getDbSessionDetail() {
-      const { hostip, sid, serial_id, inst_id } = this.$route.query
+      const { sid, serial_id, inst_id, ...restParams } = this.$route.query
       const params = {
-        hostip,
+        ...restParams,
         ids: [`${sid}`, `${serial_id}`, `${inst_id}`]
       }
       ManagementService.getDbSessionDetail(params)
@@ -123,15 +123,14 @@ export default {
     },
     immediateStop(type) {
       // this.$message()
-      const { sid, serial_id, inst_id } = this.$route.query
-      const hostip = this.$route.query.hostip
+      const { sid, serial_id, inst_id, ...restParams } = this.$route.query
       this.$confirm(`是否终止进程，该操作不可返回`, '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
         const params = {
-          hostip,
+          ...restParams,
           type: type || '',
           ids: [`${sid}`, `${serial_id}`, `@${inst_id}`]
         }

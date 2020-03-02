@@ -16,7 +16,7 @@
             <el-col :span="6" class="card-content-item">binlog：{{ dbInfo.variable_value }}</el-col>
             <el-col :span="6" class="card-content-item">数据库类型：{{ dbInfo.db_type }}</el-col>
             <el-col :span="6" class="card-content-item">数据库版本：{{ dbInfo.db_ver }}</el-col>
-            <el-col :span="6" class="card-content-item">启动时间：{{ dbInfo.start_time }}</el-col>
+            <el-col :span="6" class="card-content-item">启动时间：{{ dbInfo.start_time | parseTime('{y}-{m}-{d} {h}:{i}')}}</el-col>
           </el-row>
         </el-card>
       </el-col>

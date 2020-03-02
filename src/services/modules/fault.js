@@ -1,4 +1,4 @@
-import request from '@/utils/request'
+import request from '@/services'
 
 class FaultService {
   // 获取错误信息
@@ -10,24 +10,24 @@ class FaultService {
     throw new Error(message)
   }
 
-  getWarningList(data = {}) {
-    return request.get('/moninfo', data)
+  getWarningList(params) {
+    return request.get('sw/moninfo', params)
   }
 
   analysisWarning(data = {}) {
-    return request.patch(`/moninfo/${data.id}`, data)
+    return request.patch(`sw/moninfo/${data.id}`, data)
   }
 
   getFaultWarningItem(id, params) {
-    return request.get(`/moninfo/${id}`, params)
+    return request.get(`sw/moninfo/${id}`, params)
   }
 
   getHistory(data = {}) {
-    return request.get('/moninfo', data)
+    return request.get('sw/moninfo/his', data)
   }
   getQueryDetail(chkid, params) {
     // window.open(targetRouter.href, "_blank");
-    return request.get(`sql/${chkid}`, params)
+    return request.post(`sw/moninfo/${chkid}/time`, params)
   }
 }
 

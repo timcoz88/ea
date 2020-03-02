@@ -19,7 +19,7 @@
             <el-col :span="4" class="card-content-item">数据库归档：{{ dbInfo.db_res && dbInfo.db_res.archiver }}</el-col>
             <!-- <el-col :span="4" class="card-content-item">实例名：{{ dbInfo.db_res && dbInfo.db_res.instance_nm }}</el-col>
             <el-col :span="4" class="card-content-item">实例ID：{{ dbInfo.db_res && dbInfo.db_res.inst_id }}</el-col> -->
-            
+
             <!-- <el-col :span="4" class="card-content-item">数据库说明：{{ dbInfo.dbinfo }}</el-col> -->
             <el-col :span="4" class="card-content-item">数据库版本：{{ dbInfo.db_res && dbInfo.db_res.version }}</el-col>
             <el-col :span="6" class="card-content-item">启动时间：{{ dbInfo.db_res && dbInfo.db_res.startup_tm }}</el-col>
@@ -32,16 +32,18 @@
     <div class="db-manage-detail-page">
       <el-tabs v-model="componentName" type="card">
         <el-tab-pane label="监控图表" name="moniorEchar" />
+        <el-tab-pane label="SQL分析" name="sqlAnalyze"/>
         <el-tab-pane label="会话管理" name="sessionManage" />
         <el-tab-pane label="TOP SQL" name="topSql" />
-        <!-- <el-tab-pane label="SQL分析" name="sqlAnalyze"/>
-          <el-tab-pane label="表对象管理" name="TableObjManage"/>
-          <el-tab-pane label="用户管理" name="userManage"/>
-          <el-tab-pane label="锁等待" name="lockWait"/> -->
+        <el-tab-pane label="表对象管理" name="TableObjManage"/>
+        <el-tab-pane label="用户管理" name="userManage"/>
+        <el-tab-pane label="锁等待" name="lockWait"/>
         <el-tab-pane label="阻塞树分析" name="treeAnalyze" />
       </el-tabs>
 
-      <component :is="componentName" />
+      <keep-alive>
+        <component :is="componentName" />
+      </keep-alive>
     </div>
   </div>
 
@@ -57,6 +59,7 @@ import sqlAnalyze from './sql-analyze.vue'
 import UserManage from './user-manage.vue'
 import { fetchDbInfo } from '@/api/sql'
 export default {
+  name: 'databaseMonitor',
   components: {
     moniorEchar,
     topSql,
